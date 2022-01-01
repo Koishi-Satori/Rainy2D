@@ -3,56 +3,81 @@ package rainy2D.render;
 import rainy2D.render.element.Element;
 import rainy2D.render.element.ElementBullet;
 import rainy2D.resource.ImageLocation;
+import rainy2D.util.MathData;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 
 public class RenderHelper {
 
-    //对象渲染(inset)
-    public static void renderIn(Element e, Graphics g) {
+    /**
+     * 传入element自动渲染
+     * @param e 一个element
+     * @param g 画笔
+     */
+    public static void render(Element e, Graphics g) {
 
-        render((int) e.getOffsetX(), (int) e.getOffsetY(), e.getWidth(), e.getHeight(), e.getIml(), g);
+        render(MathData.toInt(e.getOffsetX()), MathData.toInt(e.getOffsetY()), e.getWidth(), e.getHeight(), e.getImage(), g);
 
     }
 
-    //渲染(inset)
+    /**
+     * 中心坐标渲染
+     * @param x 中心坐标x
+     * @param y 中心坐标y
+     * @param width 宽度
+     * @param height 高度
+     * @param iml 图片路径
+     * @param g 画笔
+     */
     public static void renderIn(int x, int y, int width, int height, ImageLocation iml, Graphics g) {
 
         render(x - width / 2, y - height / 2, width, height, iml, g);
 
     }
 
-    public static void renderIn(int x, int y, int width, int height, Image im, Graphics g) {
+    public static void renderIn(int x, int y, int width, int height, Image img, Graphics g) {
 
-        render(x - width / 2, y - height / 2, width, height, im, g);
+        render(x - width / 2, y - height / 2, width, height, img, g);
 
     }
 
-    //渲染(offset)
+    /**
+     * 标准坐标渲染
+     * @param offsetX 左上角坐标x
+     * @param offsetY 左上角坐标y
+     * @param width 宽度
+     * @param height 高度
+     * @param iml 图片路径
+     * @param g 画笔
+     */
     public static void render(int offsetX, int offsetY, int width, int height, ImageLocation iml, Graphics g) {
 
-        g.drawImage(iml.getImage(), offsetX, offsetY, width, height, null);
+        render(offsetX, offsetY, width, height, iml.getImage(), g);
 
     }
 
-    public static void render(int offsetX, int offsetY, int width, int height, Image im, Graphics g) {
+    public static void render(int offsetX, int offsetY, int width, int height, Image img, Graphics g) {
 
-        g.drawImage(im, offsetX, offsetY, width, height, null);
+        g.drawImage(img, offsetX, offsetY, width, height, null);
 
     }
 
-    //背景渲染(offset)
+    /**
+     * 自动长宽渲染
+     * @param offsetX 左上角坐标x
+     * @param offsetY 左上角坐标y
+     * @param iml 图片路径
+     * @param g 画笔
+     */
     public static void render(int offsetX, int offsetY, ImageLocation iml, Graphics g) {
 
         render(offsetX, offsetY, iml.getWidth(), iml.getHeight(), iml, g);
 
     }
 
-    public static void render(int offsetX, int offsetY, Image im, Graphics g) {
+    public static void render(int offsetX, int offsetY, Image img, Graphics g) {
 
-        render(offsetX, offsetY, im.getWidth(null), im.getHeight(null), im, g);
+        render(offsetX, offsetY, img.getWidth(null), img.getHeight(null), img, g);
 
     }
 

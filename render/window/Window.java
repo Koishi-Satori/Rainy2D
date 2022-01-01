@@ -1,5 +1,7 @@
 package rainy2D.render.window;
 
+import rainy2D.render.screen.Screen;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,11 +14,12 @@ public class Window extends JFrame {
     int y;
     int width;
     int height;
-    Toolkit kit;
 
-    //右下方检测误差值，用于防止玩家出界
-    public static final int RIGHT_OFFSET = 17;
-    public static final int DOWN_OFFSET = 38;
+    Toolkit kit;
+    Screen screenIn;
+
+    boolean isFull;
+    boolean isNoFrame;
 
     public Window(String title, Image icon, int width, int height) {
 
@@ -31,6 +34,7 @@ public class Window extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle(title);
         this.setIconImage(icon);
+        this.setResizable(false);
 
     }
 
@@ -39,6 +43,38 @@ public class Window extends JFrame {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         gd.setFullScreenWindow(this);
+        this.isFull = true;
+
+    }
+
+    public void deleteFrame() {
+
+        this.setUndecorated(true);
+        this.isNoFrame = true;
+
+    }
+
+    public void setScreenIn(Screen screenIn) {
+
+        this.screenIn = screenIn;
+
+    }
+
+    public Screen getScreenIn() {
+
+        return screenIn;
+
+    }
+
+    public boolean isFull() {
+
+        return isFull;
+
+    }
+
+    public boolean isNoFrame() {
+
+        return isNoFrame;
 
     }
 

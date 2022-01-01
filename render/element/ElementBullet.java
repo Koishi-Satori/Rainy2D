@@ -61,7 +61,7 @@ public class ElementBullet extends ElementImageInset {
 
         this.locate(EntityVector.vectorX(x, speed, angle), EntityVector.vectorY(y, speed, angle));
 
-        if(x + width + 10 < 0 || x + 10 > window.getWidth() || y + height + 85 < window.getY() || y + 10 > window.getHeight()) {
+        if(x + width + 10 < 0 || x - 300 > window.getWidth() || y + height + 85 < window.getY() || y + 10 > window.getHeight()) {
             this.setOutWindow(true);
         } else {
             this.setOutWindow(false);

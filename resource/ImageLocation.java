@@ -1,9 +1,7 @@
 package rainy2D.resource;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class ImageLocation {
@@ -16,13 +14,11 @@ public class ImageLocation {
 
     }
 
-    public Image getImage() {
-
-        File file = new File(path);
+    public BufferedImage getImage() {
 
         try {
-            BufferedImage image = ImageIO.read(file);
-            return image;
+
+            return ImageIO.read(ImageLocation.class.getResource("/" + path));
         }
         catch (IOException e) {
             e.printStackTrace();

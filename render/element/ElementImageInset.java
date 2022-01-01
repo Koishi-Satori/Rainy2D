@@ -1,7 +1,6 @@
 package rainy2D.render.element;
 
 import rainy2D.render.RenderHelper;
-import rainy2D.render.window.Window;
 import rainy2D.resource.ImageLocation;
 
 import java.awt.*;
@@ -23,13 +22,6 @@ public class ElementImageInset extends ElementImageOffset {
     public ElementImageInset(double x, double y, ImageLocation iml) {
 
         super(x - iml.getWidth() / 2, y - iml.getHeight() / 2, iml.getWidth(), iml.getHeight(), iml);
-
-    }
-
-    @Override
-    public void render(Graphics g) {
-
-        RenderHelper.renderIn(this, g);
 
     }
 

@@ -63,4 +63,16 @@ public class Rect {
 
     }
 
+    public int getX2() {
+
+        return width - x;
+
+    }
+
+    public int getY2() {
+
+        return height - y;
+
+    }
+
 }

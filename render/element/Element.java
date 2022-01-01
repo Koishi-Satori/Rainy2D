@@ -5,9 +5,11 @@ import rainy2D.shape.Circle;
 import rainy2D.render.window.Window;
 import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Rect;
+import rainy2D.util.MathData;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 /**
  * 构造器：offset
@@ -21,13 +23,10 @@ public class Element {
     double offsetY;
     int width;
     int height;
-    boolean visible;
     boolean outWindow;
-    ImageLocation iml;
 
-    int tickTime;
-    boolean isUsed;
-    int indexInPool;
+    ImageLocation iml;
+    BufferedImage img;
 
     public Element(double offsetX, double offsetY, int width, int height, ImageLocation iml) {
 
@@ -38,17 +37,25 @@ public class Element {
         this.width = width;
         this.height = height;
         this.iml = iml;
-        this.visible = true;
+        this.callImageChange();
 
     }
 
     public void render(Graphics g) {
 
-        RenderHelper.render((int) offsetX, (int) offsetY, width, height, iml, g);
+        RenderHelper.render(this, g);
 
     }
 
     public void tick(Window window) {
+    }
+
+    public void callImageChange() {
+
+        if(iml != null) {
+            this.img = iml.getImage();
+        }
+
     }
 
     public boolean isMouseHanging(MouseEvent event) {
@@ -70,6 +77,15 @@ public class Element {
 
     }
 
+    public void locateOffset(double offsetX, double offsetY) {
+
+        this.x = offsetX + width / 2;
+        this.y = offsetY + height / 2;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+
+    }
+
     public void size(int width, int height) {
 
         this.width = width;
@@ -77,27 +93,10 @@ public class Element {
 
     }
 
-    public void setImage(ImageLocation location) {
+    public void setImageLocation(ImageLocation iml) {
 
-        this.iml = location;
-
-    }
-
-    public void setIndexInPool(int indexInPool) {
-
-        this.indexInPool = indexInPool;
-
-    }
-
-    public void setVisible(boolean visible) {
-
-        this.visible = visible;
-
-    }
-
-    public void setUsed(boolean used) {
-
-        isUsed = used;
+        this.iml = iml;
+        this.callImageChange();
 
     }
 
@@ -144,27 +143,9 @@ public class Element {
 
     }
 
-    public ImageLocation getIml() {
+    public BufferedImage getImage() {
 
-        return iml;
-
-    }
-
-    public int getIndexInPool() {
-
-        return indexInPool;
-
-    }
-
-    public boolean isVisible() {
-
-        return visible;
-
-    }
-
-    public boolean isUsed() {
-
-        return isUsed;
+        return img;
 
     }
 
@@ -176,13 +157,13 @@ public class Element {
 
     public Circle getCircle() {
 
-        return new Circle((int) x, (int) y, width / 2 - 3);
+        return new Circle(MathData.toInt(x), MathData.toInt(y), MathData.toInt(width / 6));
 
     }
 
     public Rect getRect() {
 
-        return new Rect((int) offsetX, (int) offsetY, width, height);
+        return new Rect(MathData.toInt(offsetX), MathData.toInt(offsetY), width, height);
 
     }
 

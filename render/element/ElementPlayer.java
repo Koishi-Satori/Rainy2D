@@ -4,6 +4,8 @@ import rainy2D.render.RenderHelper;
 import rainy2D.render.window.Window;
 import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Circle;
+import rainy2D.shape.Rect;
+import rainy2D.util.MathData;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -32,11 +34,11 @@ public class ElementPlayer extends ElementImageOffset {
 
     public ElementPlayer(double x, double y, ImageLocation iml) {
 
-        super(x, y, iml.getWidth(), iml.getHeight(), iml);
+        super(x, y, 32, 48, iml);
 
         this.speed = 3.5;
         this.speedQuick = this.speed;
-        this.speedSlow = this.speed / 3;
+        this.speedSlow = 1;
         this.health = 3;
         this.defence = 0;
         this.magicLevel = 1500;
@@ -50,7 +52,7 @@ public class ElementPlayer extends ElementImageOffset {
         super.render(g);
 
         if(shift) {
-            RenderHelper.renderIn((int) x, (int) y, 12, 12, new ImageLocation("img/plp.png"), g);
+            RenderHelper.renderIn(MathData.toInt(x), MathData.toInt(y), 12, 12, new ImageLocation("img/plp.png"), g);
         }
 
     }
@@ -69,20 +71,26 @@ public class ElementPlayer extends ElementImageOffset {
         if(down)
             this.walkDown();
 
-        if(x - width / 2 < 0) {
-            x = width / 2;
+        this.checkIfOutField(window.getScreenIn().getField());
+
+    }
+
+    public void checkIfOutField(Rect field) {
+
+        if(offsetX < field.getX()) {
+            this.locateOffset(field.getX(), offsetY);
         }
 
-        if(y - height / 2 < 0) {
-            y = height / 2;
+        if(offsetY < field.getY()) {
+            this.locateOffset(offsetX, field.getY());
         }
 
-        if(x + width / 2 + Window.RIGHT_OFFSET > window.getWidth()) {
-            x = window.getWidth() - width / 2 - Window.RIGHT_OFFSET;
+        if(x + width / 2 > field.getX2()) {
+            this.locate(field.getX2() - width / 2, y);
         }
 
-        if(y + height / 2 + Window.DOWN_OFFSET > window.getHeight()) {
-            y = window.getHeight() - height / 2 - Window.DOWN_OFFSET;
+        if(y + height / 2 > field.getY2()) {
+            this.locate(x, field.getY2() - height / 2);
         }
 
     }
@@ -189,7 +197,7 @@ public class ElementPlayer extends ElementImageOffset {
     @Override
     public Circle getCircle() {
 
-        return new Circle((int) x, (int) y, 1);
+        return new Circle(MathData.toInt(x), MathData.toInt(y), MathData.toInt(width / 8));
 
     }
 

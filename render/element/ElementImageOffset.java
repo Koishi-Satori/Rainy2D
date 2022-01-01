@@ -1,14 +1,10 @@
 package rainy2D.render.element;
 
-import rainy2D.render.RenderHelper;
-import rainy2D.render.window.Window;
 import rainy2D.resource.ImageLocation;
-
-import java.awt.*;
 
 /**
  * 构造器：offset
- * 超类：inset
+ * 超类：offset
  */
 public class ElementImageOffset extends Element {
 
