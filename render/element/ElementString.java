@@ -1,5 +1,6 @@
 package rainy2D.render.element;
 
+import rainy2D.render.ShapeHelper;
 import rainy2D.resource.ImageLocation;
 
 import java.awt.*;
@@ -23,7 +24,7 @@ public class ElementString extends Element {
     @Override
     public void render(Graphics g) {
 
-
+        ShapeHelper.renderString(this, g);
 
     }
 

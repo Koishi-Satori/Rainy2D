@@ -5,6 +5,7 @@ import rainy2D.render.RenderHelper;
 import rainy2D.render.ShapeHelper;
 import rainy2D.render.element.Element;
 import rainy2D.render.element.ElementBullet;
+import rainy2D.render.element.ElementString;
 import rainy2D.render.window.Window;
 import rainy2D.shape.Rect;
 import rainy2D.util.MathData;
@@ -43,6 +44,7 @@ public class Screen extends JPanel implements Runnable {
     public ArrayList<Element> imageBottom = new ArrayList<>();
     public ArrayList<ElementBullet> bullets = new ArrayList<>();
     public ArrayList<Element> imageFront = new ArrayList<>();
+    public ArrayList<ElementString> strings = new ArrayList<>();
 
     public BulletPool pool;
 
@@ -170,6 +172,7 @@ public class Screen extends JPanel implements Runnable {
         this.renderFrontImage(gBuffer);
         this.bulletTick(gBuffer);
         this.drawOverField(gBuffer);
+        this.renderStrings(gBuffer);
 
         int outScreenOffset = (SC_WIDTH - totalWidth) / 2;
         RenderHelper.render(outScreenOffset, 0, totalWidth, totalHeight, iBuffer, g);
@@ -265,6 +268,17 @@ public class Screen extends JPanel implements Runnable {
         for(int i = 0; i < imageFront.size(); i++) {
             e = imageFront.get(i);
             e.tick(window);
+            e.render(g);
+        }
+
+    }
+
+    public void renderStrings(Graphics g) {
+
+        ElementString e;
+
+        for(int i = 0; i < strings.size(); i++) {
+            e = strings.get(i);
             e.render(g);
         }
 
