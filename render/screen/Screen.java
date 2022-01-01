@@ -16,17 +16,25 @@ import java.util.ArrayList;
 
 public class Screen extends JPanel implements Runnable {
 
+    public int SC_LEFT;
+    public int SC_TOP;
     public int SC_WIDTH;
     public int SC_HEIGHT;
+    public int WI_WIDTH;
+    public int WI_HEIGHT;
 
-    int wBuffer;
-    int hBuffer;
-    double overPercent;
-    int totalWidth;
-    int totalHeight;
-
-    int centeredX;
-    int centeredY;
+    /**
+     * 一些内部变量，如果你不非常了解，请不要乱动！
+     * wBuffer:缓冲图像宽
+     * hBuffer:缓冲图像高
+     * totalWidth:实际显示宽度（保持比例）
+     * totalHeight：实际显示高度
+     */
+    private int wBuffer;
+    private int hBuffer;
+    private double overPercent;
+    private int totalWidth;
+    private int totalHeight;
 
     int fps;
     int time;
@@ -51,12 +59,10 @@ public class Screen extends JPanel implements Runnable {
     public Screen(Window window) {
 
         this.window = window;
+        this.WI_WIDTH = window.getWidth();
+        this.WI_HEIGHT = window.getHeight();
 
-        this.SC_WIDTH = this.window.getWidth();
-        this.SC_HEIGHT = this.window.getHeight();
-        this.centeredX = window.getWidth() / 2;
-        this.centeredY = window.getHeight() / 2;
-        this.field = new Rect(0, 0, SC_WIDTH, SC_HEIGHT);
+        this.field = new Rect(0, 0, WI_WIDTH, WI_HEIGHT);
         this.setDefaultSize(900, 600);
         this.setDefaultFps(60);
 
@@ -72,9 +78,14 @@ public class Screen extends JPanel implements Runnable {
 
         this.wBuffer = width;
         this.hBuffer = height;
-        this.overPercent =  MathData.toDouble(SC_HEIGHT) / hBuffer;
+        this.overPercent =  MathData.toDouble(WI_HEIGHT) / hBuffer;
         this.totalHeight = MathData.toInt(height * overPercent);
         this.totalWidth = MathData.toInt(width * overPercent);
+
+        this.SC_WIDTH = totalWidth;
+        this.SC_HEIGHT = totalHeight;
+        this.SC_LEFT = (WI_WIDTH - SC_WIDTH) / 2;
+        this.SC_TOP = (WI_HEIGHT - SC_HEIGHT) / 2;
 
     }
 
@@ -130,7 +141,7 @@ public class Screen extends JPanel implements Runnable {
     /**
      * 添加元素进list，就会被渲染
      * @param e 所有render.element包中的类
-     * @param list 参考类的三个数组，imageBottom为背景，bullets为子弹，imageFront为UI
+     * @param list 参考类的几个数组，imageBottom为背景，bullets为子弹，imageFront为UI
      */
     public void add(Element e, ArrayList list) {
 
@@ -141,6 +152,10 @@ public class Screen extends JPanel implements Runnable {
     /**
      * 默认生成的是一个900x600的图像
      * 放置组件都要在这个范围内进行，然后按比例绘制到屏幕上。
+     * 原理：
+     * 先在底层的window上设置相同大小的screen，然后创建缓冲图片，在图片上绘制画面，并按比例缩放到window上。
+     * 所以严格来说只有一个image组件的样子（笑）
+     * 需要注意的是，添加组件时是绘制在缓冲图上，所以请不要使用SC系列的变量了。范围为[0, 0] ~ [wBuffer, hBuffer]
      * @param g 没什么可说的？
      */
     @Override
@@ -152,7 +167,7 @@ public class Screen extends JPanel implements Runnable {
             this.gBuffer = this.iBuffer.getGraphics();
             this.gBuffer.setColor(getBackground());
         }
-        ShapeHelper.renderRect(0, 0, SC_WIDTH, SC_HEIGHT, gBuffer);
+        ShapeHelper.renderRect(0, 0, WI_WIDTH, WI_HEIGHT, gBuffer);
         super.paint(gBuffer);
 
         //初始化
@@ -174,10 +189,9 @@ public class Screen extends JPanel implements Runnable {
         this.drawOverField(gBuffer);
         this.renderStrings(gBuffer);
 
-        int outScreenOffset = (SC_WIDTH - totalWidth) / 2;
-        RenderHelper.render(outScreenOffset, 0, totalWidth, totalHeight, iBuffer, g);
-        ShapeHelper.renderRect2D(0, 0, outScreenOffset, SC_HEIGHT, g);
-        ShapeHelper.renderRect2D(totalWidth + outScreenOffset, 0, SC_WIDTH, SC_HEIGHT, g);
+        RenderHelper.render(SC_LEFT, SC_TOP, SC_WIDTH, SC_HEIGHT, iBuffer, g);
+        ShapeHelper.renderRect2D(0, 0, SC_LEFT, WI_HEIGHT, g);
+        ShapeHelper.renderRect2D(SC_WIDTH + SC_LEFT, 0, WI_WIDTH, WI_HEIGHT, g);
 
     }
 
@@ -229,10 +243,10 @@ public class Screen extends JPanel implements Runnable {
         int right = this.field.getX2();
         int bottom = this.field.getY2();
 
-        g.fillRect(0, 0, left, SC_HEIGHT);
-        g.fillRect(0, 0, SC_WIDTH, top);
-        g.fillRect(right, top, SC_WIDTH - right, SC_HEIGHT - top);
-        g.fillRect(left, bottom, SC_WIDTH - left, SC_HEIGHT - bottom);
+        g.fillRect(0, 0, left, WI_HEIGHT);
+        g.fillRect(0, 0, WI_WIDTH, top);
+        g.fillRect(right, top, WI_WIDTH - right, WI_HEIGHT - top);
+        g.fillRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom);
 
     }
 
