@@ -1,11 +1,12 @@
 package rainy2D.render.screen;
 
 import rainy2D.pool.BulletPool;
+import rainy2D.pool.EffectPool;
 import rainy2D.render.RenderHelper;
 import rainy2D.render.ShapeHelper;
 import rainy2D.render.element.Element;
 import rainy2D.render.element.ElementBullet;
-import rainy2D.render.element.ElementString;
+import rainy2D.render.element.ElementEffect;
 import rainy2D.render.window.Window;
 import rainy2D.shape.Rect;
 import rainy2D.util.MathData;
@@ -37,6 +38,7 @@ public class Screen extends JPanel implements Runnable {
     private int totalHeight;
 
     int fps;
+    public double nowFps;
     int time;
 
     /**
@@ -52,9 +54,9 @@ public class Screen extends JPanel implements Runnable {
     public ArrayList<Element> imageBottom = new ArrayList<>();
     public ArrayList<ElementBullet> bullets = new ArrayList<>();
     public ArrayList<Element> imageFront = new ArrayList<>();
-    public ArrayList<ElementString> strings = new ArrayList<>();
+    public ArrayList<ElementEffect> effects = new ArrayList<>();
 
-    public BulletPool pool;
+    public BulletPool bulletPool;
 
     public Screen(Window window) {
 
@@ -132,10 +134,9 @@ public class Screen extends JPanel implements Runnable {
     }
 
     /**
-     * 继承并复写，相当于swing默认的paint方法
-     * @param g 即paint的画笔
+     * 继承并复写，逻辑都在这里进行。
      */
-    public void tick(Graphics g) {
+    public void tick() {
     }
 
     /**
@@ -180,19 +181,43 @@ public class Screen extends JPanel implements Runnable {
         if(time == Integer.MAX_VALUE) {
             this.time = 0;
         }
-        this.tick(gBuffer);
+        this.tick();
 
-        //遍历调刻和渲染
-        this.renderBottomImage(gBuffer);
-        this.renderFrontImage(gBuffer);
-        this.bulletTick(gBuffer);
-        this.drawOverField(gBuffer);
-        this.renderStrings(gBuffer);
+        //遍历调刻和渲染(越后调用，图层处于越高层）
+        this.renderBottomImage(gBuffer);//包装完毕方法
+        this.renderFrontImage(gBuffer);//包装完毕方法
+        this.bulletTick(gBuffer);//包装完毕方法
+
+        this.renderInField(gBuffer);//自定义方法
+        this.renderOverField(gBuffer);//自定义方法
+        this.renderStrings(gBuffer);//自定义方法
+        this.renderAboveField(gBuffer);//自定义方法
 
         RenderHelper.render(SC_LEFT, SC_TOP, SC_WIDTH, SC_HEIGHT, iBuffer, g);
         ShapeHelper.renderRect2D(0, 0, SC_LEFT, WI_HEIGHT, g);
         ShapeHelper.renderRect2D(SC_WIDTH + SC_LEFT, 0, WI_WIDTH, WI_HEIGHT, g);
 
+    }
+
+    /**
+     * 请复写这个方法，调用ShapeHelper绘制文字。
+     * 为什么不将string视为一个element？因为有bug...
+     * @param g gBuffer
+     * @layer top
+     */
+    public void renderStrings(Graphics g) {
+    }
+
+    /**
+     * 在field范围内高自由度地绘制
+     */
+    public void renderInField(Graphics g) {
+    }
+
+    /**
+     * 在最顶层自由绘制
+     */
+    public void renderAboveField(Graphics g) {
     }
 
     @Override
@@ -229,6 +254,10 @@ public class Screen extends JPanel implements Runnable {
 
                 }
 
+                if(time % 5 == 0) {
+                    this.nowFps = fps - totalNano / 1000000.0;
+                }
+
             }
         } catch(InterruptedException e) {
             e.printStackTrace();
@@ -236,7 +265,7 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    public void drawOverField(Graphics g) {
+    public void renderOverField(Graphics g) {
 
         int left = this.field.getX();
         int top = this.field.getY();
@@ -287,26 +316,31 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    public void renderStrings(Graphics g) {
-
-        ElementString e;
-
-        for(int i = 0; i < strings.size(); i++) {
-            e = strings.get(i);
-            e.render(g);
-        }
-
-    }
-
+    /**
+     * @return 获得一个计时器
+     */
     public int getTimer() {
 
         return time;
 
     }
 
+    /**
+     * @return 玩家可移动的范围，也就是游戏内容范围
+     */
     public Rect getField() {
 
         return field;
+
+    }
+
+    /**
+     * 好吧，你还需要更自由的？
+     * @return 在缓冲图作画的画笔
+     */
+    public Graphics getGraphicsBuffer() {
+
+        return gBuffer;
 
     }
 
@@ -340,7 +374,7 @@ public class Screen extends JPanel implements Runnable {
 
                 if(e.isOutWindow()) {
                     bullets.remove(e);
-                    pool.reuse(e);
+                    bulletPool.reuse(e);
                     length--;
                 }
             }

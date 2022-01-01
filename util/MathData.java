@@ -10,7 +10,7 @@ public class MathData {
 
     public static double toDouble(int value) {
 
-        return (double) value;
+        return Double.valueOf(value);
 
     }
 
@@ -28,15 +28,11 @@ public class MathData {
 
     public static double random(int min, int max) {
 
-        double r = Math.random() * max * 2;
-        while(!(r > min && r < max)) {
-            r = Math.random() * max * 2;
-        }
-        return r;
+        return toInt(Math.random() * (max - min) + min);
 
     }
 
-    public static double toTheta(double angle) {
+    public static double toRadians(double angle) {
 
         return angle / (3.1415926535 / 180);
 

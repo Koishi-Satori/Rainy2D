@@ -53,7 +53,7 @@ public class Element {
     public void callImageChange() {
 
         if(iml != null) {
-            this.img = iml.getImage();
+            this.img = iml.get();
         }
 
     }

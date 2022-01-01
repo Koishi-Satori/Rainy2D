@@ -7,13 +7,13 @@ public class EntityVector {
 
     public static double vectorX(double x, double speed, double angle) {
 
-        return x + speed * Math.cos(MathData.toTheta(angle));
+        return x + speed * Math.cos(MathData.toRadians(angle));
 
     }
 
     public static double vectorY(double y, double speed, double angle) {
 
-        return y + speed * Math.sin(MathData.toTheta(angle));
+        return y + speed * Math.sin(MathData.toRadians(angle));
 
     }
 

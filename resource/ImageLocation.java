@@ -4,7 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class ImageLocation {
+public class ImageLocation implements Location {
 
     String path;
 
@@ -14,11 +14,10 @@ public class ImageLocation {
 
     }
 
-    public BufferedImage getImage() {
+    public BufferedImage get() {
 
         try {
-
-            return ImageIO.read(ImageLocation.class.getResource("/" + path));
+            return ImageIO.read(ImageLocation.class.getResource("/img/" + path));
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -30,13 +29,13 @@ public class ImageLocation {
 
     public int getWidth() {
 
-        return getImage().getWidth(null);
+        return get().getWidth(null);
 
     }
 
     public int getHeight() {
 
-        return getImage().getHeight(null);
+        return get().getHeight(null);
 
     }
 

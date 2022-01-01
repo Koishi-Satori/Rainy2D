@@ -1,7 +1,6 @@
 package rainy2D.render;
 
 import rainy2D.render.element.Element;
-import rainy2D.render.element.ElementBullet;
 import rainy2D.resource.ImageLocation;
 import rainy2D.util.MathData;
 
@@ -52,7 +51,7 @@ public class RenderHelper {
      */
     public static void render(int offsetX, int offsetY, int width, int height, ImageLocation iml, Graphics g) {
 
-        render(offsetX, offsetY, width, height, iml.getImage(), g);
+        render(offsetX, offsetY, width, height, iml.get(), g);
 
     }
 

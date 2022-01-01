@@ -2,9 +2,10 @@ package rainy2D.vector;
 
 import rainy2D.resource.ImageLocation;
 
-public class DCBullet {
+public class R2DBullet {
 
-    public static final ImageLocation BL_LIGHT = new ImageLocation("img/plp.png");
+    public static final ImageLocation BL_LIGHT1 = new ImageLocation("plp.png");
+    public static final ImageLocation BL_LIGHT2 = new ImageLocation("bl01.png");
 
     /**
      * 不可旋转子弹，不会改变方向

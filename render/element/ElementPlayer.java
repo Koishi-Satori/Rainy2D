@@ -52,7 +52,7 @@ public class ElementPlayer extends ElementImageOffset {
         super.render(g);
 
         if(shift) {
-            RenderHelper.renderIn(MathData.toInt(x), MathData.toInt(y), 12, 12, new ImageLocation("img/plp.png"), g);
+            RenderHelper.renderIn(MathData.toInt(x), MathData.toInt(y), 12, 12, new ImageLocation("plp.png"), g);
         }
 
     }
@@ -77,20 +77,20 @@ public class ElementPlayer extends ElementImageOffset {
 
     public void checkIfOutField(Rect field) {
 
-        if(offsetX < field.getX()) {
-            this.locateOffset(field.getX(), offsetY);
+        if(x < field.getX()) {
+            this.locate(field.getX(), y);
         }
 
-        if(offsetY < field.getY()) {
-            this.locateOffset(offsetX, field.getY());
+        if(y < field.getY()) {
+            this.locate(x, field.getY());
         }
 
-        if(x + width / 2 > field.getX2()) {
-            this.locate(field.getX2() - width / 2, y);
+        if(x > field.getX2()) {
+            this.locate(field.getX2(), y);
         }
 
-        if(y + height / 2 > field.getY2()) {
-            this.locate(x, field.getY2() - height / 2);
+        if(y > field.getY2()) {
+            this.locate(x, field.getY2());
         }
 
     }

@@ -25,7 +25,7 @@ public class ElementBullet extends ElementImageInset {
 
     public ElementBullet(Element shooter, int width, int height, double speed, double angle, ImageLocation iml) {
 
-        super(shooter.getX(), shooter.getY(), width, height, iml);
+        super(shooter.x, shooter.y, width, height, iml);
 
         this.speed = speed;
         this.angle = angle;
@@ -41,7 +41,9 @@ public class ElementBullet extends ElementImageInset {
 
     }
 
-    //从池中取出时调用设置属性
+    /**
+     * 从池中取出时调用设置属性
+     */
     public void takeOutWith(double x, double y, int width, int height, double speed, double angle, ImageLocation iml) {
 
         this.width = width;
@@ -49,6 +51,7 @@ public class ElementBullet extends ElementImageInset {
         this.speed = speed;
         this.angle = angle;
         this.iml = iml;
+        this.callImageChange();
         this.x = x;
         this.y = y;
 

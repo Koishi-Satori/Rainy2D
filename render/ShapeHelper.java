@@ -1,8 +1,5 @@
 package rainy2D.render;
 
-import rainy2D.render.element.ElementString;
-import rainy2D.util.MathData;
-
 import java.awt.*;
 
 public class ShapeHelper {
@@ -25,15 +22,11 @@ public class ShapeHelper {
 
     }
 
-    public static void renderString(ElementString e, Graphics g) {
+    public static void renderString(int x, int y, Font f, Color c, String str, Graphics g) {
 
-        Color c = g.getColor();
-        Font f = g.getFont();
-        g.setColor(e.getColor());
-        g.setFont(e.getFont());
-        g.drawString(e.getString(), MathData.toInt(e.getOffsetX()), MathData.toInt(e.getOffsetY()));
         g.setColor(c);
         g.setFont(f);
+        g.drawString(str, x, y);
 
     }
 
