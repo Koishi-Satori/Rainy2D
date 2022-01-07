@@ -1,6 +1,4 @@
-package rainy2D.render.window;
-
-import rainy2D.render.screen.Screen;
+package rainy2D.render.desktop;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,13 +22,15 @@ public class Window extends JFrame {
     public Window(String title, Image icon, int width, int height) {
 
         this.kit = Toolkit.getDefaultToolkit();
+        int xSize = kit.getScreenSize().width;
+        int ySize = kit.getScreenSize().height;
         this.x = getX();
         this.y = getY();
         this.width = width;
         this.height = height;
 
-        this.setLocation((xSize - width) / 2, (ySize - height) / 2);
         this.setSize(width, height);
+        this.setLocation((xSize - width) / 2, (ySize - height) / 2);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle(title);
         this.setIconImage(icon);
@@ -38,15 +38,24 @@ public class Window extends JFrame {
 
     }
 
+    /**
+     * 全屏
+     * 修了好久的bug
+     */
     public void fullFrame() {
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         gd.setFullScreenWindow(this);
         this.isFull = true;
+        this.width = xSize;
+        this.height = ySize;
 
     }
 
+    /**
+     * 去除边框
+     */
     public void deleteFrame() {
 
         this.setUndecorated(true);
@@ -75,6 +84,18 @@ public class Window extends JFrame {
     public boolean isNoFrame() {
 
         return isNoFrame;
+
+    }
+
+    public int getWidth() {
+
+        return width;
+
+    }
+
+    public int getHeight() {
+
+        return height;
 
     }
 

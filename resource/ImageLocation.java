@@ -4,7 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class ImageLocation implements Location {
+public class ImageLocation {
 
     String path;
 
@@ -29,13 +29,13 @@ public class ImageLocation implements Location {
 
     public int getWidth() {
 
-        return get().getWidth(null);
+        return get().getWidth();
 
     }
 
     public int getHeight() {
 
-        return get().getHeight(null);
+        return get().getHeight();
 
     }
 

@@ -1,10 +1,10 @@
 package rainy2D.render.element;
 
-import rainy2D.render.RenderHelper;
+import rainy2D.render.helper.RenderHelper;
 import rainy2D.shape.Circle;
-import rainy2D.render.window.Window;
+import rainy2D.render.desktop.Window;
 import rainy2D.resource.ImageLocation;
-import rainy2D.shape.Rect;
+import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
 
 import java.awt.*;
@@ -50,6 +50,9 @@ public class Element {
     public void tick(Window window) {
     }
 
+    /**
+     * 当imageLocation改变时调用
+     */
     public void callImageChange() {
 
         if(iml != null) {
@@ -67,7 +70,11 @@ public class Element {
 
     }
 
-    //设置器方法
+    /**
+     * 请务必使用locate设置位置！否则不会渲染
+     * @param x 中心x
+     * @param y 中心y
+     */
     public void locate(double x, double y) {
 
         this.x = x;
@@ -77,6 +84,11 @@ public class Element {
 
     }
 
+    /**
+     * 请务必使用locate设置位置！否则不会渲染
+     * @param offsetX 左上角x
+     * @param offsetY 左上角y
+     */
     public void locateOffset(double offsetX, double offsetY) {
 
         this.x = offsetX + width / 2;
@@ -86,7 +98,7 @@ public class Element {
 
     }
 
-    public void size(int width, int height) {
+    public void setSize(int width, int height) {
 
         this.width = width;
         this.height = height;
@@ -157,13 +169,13 @@ public class Element {
 
     public Circle getCircle() {
 
-        return new Circle(MathData.toInt(x), MathData.toInt(y), MathData.toInt(width / 6));
+        return new Circle(MathData.round(x), MathData.round(y), MathData.round(width / 6));
 
     }
 
-    public Rect getRect() {
+    public Rectangle getRect() {
 
-        return new Rect(MathData.toInt(offsetX), MathData.toInt(offsetY), width, height);
+        return new Rectangle(MathData.round(offsetX), MathData.round(offsetY), width, height);
 
     }
 

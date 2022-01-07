@@ -1,14 +1,11 @@
-package rainy2D.render.screen;
+package rainy2D.render.desktop;
 
-import rainy2D.pool.BulletPool;
-import rainy2D.pool.EffectPool;
-import rainy2D.render.RenderHelper;
-import rainy2D.render.ShapeHelper;
+import rainy2D.render.helper.RenderHelper;
+import rainy2D.render.helper.ShapeHelper;
+import rainy2D.util.BulletCacheList;
 import rainy2D.render.element.Element;
 import rainy2D.render.element.ElementBullet;
-import rainy2D.render.element.ElementEffect;
-import rainy2D.render.window.Window;
-import rainy2D.shape.Rect;
+import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
 
 import javax.swing.*;
@@ -23,6 +20,9 @@ public class Screen extends JPanel implements Runnable {
     public int SC_HEIGHT;
     public int WI_WIDTH;
     public int WI_HEIGHT;
+
+    int leftBuffer;
+    int topBuffer;
 
     /**
      * 一些内部变量，如果你不非常了解，请不要乱动！
@@ -39,7 +39,13 @@ public class Screen extends JPanel implements Runnable {
 
     int fps;
     public double nowFps;
+    /**
+     * time根据fps递增
+     * cycle在[0-1]以0.01的速度循环
+     */
     int time;
+    double cycle;
+    boolean cycleState;
 
     /**
      * init:第一次注册组件限制，防止多次注册
@@ -47,16 +53,18 @@ public class Screen extends JPanel implements Runnable {
     boolean init;
 
     Window window;
-    Rect field;
+    Rectangle field;
     Image iBuffer;
     Graphics gBuffer;
+    Color gBufferColor;
 
     public ArrayList<Element> imageBottom = new ArrayList<>();
     public ArrayList<ElementBullet> bullets = new ArrayList<>();
     public ArrayList<Element> imageFront = new ArrayList<>();
-    public ArrayList<ElementEffect> effects = new ArrayList<>();
 
-    public BulletPool bulletPool;
+    public BulletCacheList bulletCache;
+
+    boolean isPause;
 
     public Screen(Window window) {
 
@@ -64,7 +72,7 @@ public class Screen extends JPanel implements Runnable {
         this.WI_WIDTH = window.getWidth();
         this.WI_HEIGHT = window.getHeight();
 
-        this.field = new Rect(0, 0, WI_WIDTH, WI_HEIGHT);
+        this.field = new Rectangle(0, 0, WI_WIDTH, WI_HEIGHT);
         this.setDefaultSize(900, 600);
         this.setDefaultFps(60);
 
@@ -75,19 +83,26 @@ public class Screen extends JPanel implements Runnable {
     /**
      * 设置分辨率（默认900x600）
      * 一旦设置就不要更改了哦
+     * 分辨率必须与window的大小相同，否则会出现奇奇怪怪的bug
+     * 分辨率必须小于屏幕长宽
      */
     public void setDefaultSize(int width, int height) {
 
         this.wBuffer = width;
         this.hBuffer = height;
         this.overPercent =  MathData.toDouble(WI_HEIGHT) / hBuffer;
-        this.totalHeight = MathData.toInt(height * overPercent);
-        this.totalWidth = MathData.toInt(width * overPercent);
+        this.totalHeight = MathData.round(height * overPercent);
+        this.totalWidth = MathData.round(width * overPercent);
 
         this.SC_WIDTH = totalWidth;
         this.SC_HEIGHT = totalHeight;
         this.SC_LEFT = (WI_WIDTH - SC_WIDTH) / 2;
         this.SC_TOP = (WI_HEIGHT - SC_HEIGHT) / 2;
+
+        this.leftBuffer = this.SC_LEFT;
+        this.topBuffer = this.SC_TOP;
+
+        this.callChangeSize();
 
     }
 
@@ -103,13 +118,16 @@ public class Screen extends JPanel implements Runnable {
 
     /**
      * 设置背景颜色（RGB）
-     * @param r 红色
-     * @param g 绿色
-     * @param b 蓝色
      */
-    public void setColor(int r, int g, int b) {
+    public void setColor(Color c) {
 
-        this.setBackground(new Color(r, g, b));
+        this.setBackground(c);
+
+    }
+
+    public void setColorOverField(Color c) {
+
+        this.gBufferColor = c;
 
     }
 
@@ -127,7 +145,7 @@ public class Screen extends JPanel implements Runnable {
      * 子类的构造器中调用，传入刷新的区域（游戏屏幕区）。不调用默认全屏刷新
      * @param field 一个矩形，在shape包中。
      */
-    public void setRepaintField(Rect field) {
+    public void setRepaintField(Rectangle field) {
 
         this.field = field;
 
@@ -164,7 +182,7 @@ public class Screen extends JPanel implements Runnable {
 
         //双缓冲
         if(iBuffer == null) {
-            this.iBuffer = this.createImage(wBuffer, hBuffer);
+            this.callChangeSize();
             this.gBuffer = this.iBuffer.getGraphics();
             this.gBuffer.setColor(getBackground());
         }
@@ -177,10 +195,7 @@ public class Screen extends JPanel implements Runnable {
         }
 
         //计时调刻
-        this.time ++;
-        if(time == Integer.MAX_VALUE) {
-            this.time = 0;
-        }
+        this.cycleTime();
         this.tick();
 
         //遍历调刻和渲染(越后调用，图层处于越高层）
@@ -193,9 +208,42 @@ public class Screen extends JPanel implements Runnable {
         this.renderStrings(gBuffer);//自定义方法
         this.renderAboveField(gBuffer);//自定义方法
 
+        //将缓冲图片绘制到screen上
         RenderHelper.render(SC_LEFT, SC_TOP, SC_WIDTH, SC_HEIGHT, iBuffer, g);
+        //当屏幕比例不对时，在两边绘制黑色方框
         ShapeHelper.renderRect2D(0, 0, SC_LEFT, WI_HEIGHT, g);
         ShapeHelper.renderRect2D(SC_WIDTH + SC_LEFT, 0, WI_WIDTH, WI_HEIGHT, g);
+
+    }
+
+    /**
+     * 时间和循环的变化
+     */
+    public void cycleTime() {
+
+        this.time ++;
+        if(time == Integer.MAX_VALUE) {
+            this.time = 0;
+        }
+        if(cycle >= 1) {
+            this.cycleState = false;
+        } else if(cycle <= 0 ) {
+            this.cycleState = true;
+        }
+        if(cycleState) {
+            this.cycle += 0.01;
+        } else {
+            this.cycle -= 0.01;
+        }
+
+    }
+
+    /**
+     * 当设置分辨率时调用
+     */
+    public void callChangeSize() {
+
+        this.iBuffer = this.createImage(wBuffer, hBuffer);
 
     }
 
@@ -227,44 +275,10 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    @Override
-    public void run() {
-
-        try {
-            //绘制、FPS调控
-            while(true) {
-
-                long fpsTime = MathData.toLong(1000.0 / fps * 1000000.0);
-                long beforeNano = System.nanoTime();
-
-                this.repaint();
-                this.window.setScreenIn(this);
-
-                long totalNano = System.nanoTime() - beforeNano;
-
-                if(totalNano > fpsTime) {
-                    continue;
-                }
-
-                Thread.sleep((fpsTime - (System.nanoTime() - beforeNano)) / 1000000);
-
-                while((System.nanoTime()) - beforeNano < fpsTime) {
-
-                    System.nanoTime();
-
-                }
-
-                if(time % 5 == 0) {
-                    this.nowFps = fps - totalNano / 1000000.0;
-                }
-
-            }
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
-
+    /**
+     * 填充除field以外的部分
+     * @param g 画笔
+     */
     public void renderOverField(Graphics g) {
 
         int left = this.field.getX();
@@ -272,10 +286,12 @@ public class Screen extends JPanel implements Runnable {
         int right = this.field.getX2();
         int bottom = this.field.getY2();
 
-        g.fillRect(0, 0, left, WI_HEIGHT);
-        g.fillRect(0, 0, WI_WIDTH, top);
-        g.fillRect(right, top, WI_WIDTH - right, WI_HEIGHT - top);
-        g.fillRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom);
+        g.setColor(gBufferColor);
+
+        ShapeHelper.renderRect(0, 0, left, WI_HEIGHT, g);
+        ShapeHelper.renderRect(0, 0, WI_WIDTH, top, g);
+        ShapeHelper.renderRect(right, top, WI_WIDTH - right, WI_HEIGHT - top, g);
+        ShapeHelper.renderRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom, g);
 
     }
 
@@ -326,11 +342,32 @@ public class Screen extends JPanel implements Runnable {
     }
 
     /**
+     * @return 获得一个循环数值
+     */
+    public double getCycle() {
+
+        return cycle;
+
+    }
+
+    /**
      * @return 玩家可移动的范围，也就是游戏内容范围
      */
-    public Rect getField() {
+    public Rectangle getField() {
 
         return field;
+
+    }
+
+    public double getPercent() {
+
+        return overPercent;
+
+    }
+
+    public void pause() {
+
+        this.isPause = !isPause;
 
     }
 
@@ -346,9 +383,30 @@ public class Screen extends JPanel implements Runnable {
 
     public Point randomPoint() {
 
-        int x = MathData.toInt(MathData.random(field.getX(), field.getX2()));
-        int y = MathData.toInt(MathData.random(field.getY(), field.getY2()));
+        int x = MathData.round(MathData.random(field.getX(), field.getX2()));
+        int y = MathData.round(MathData.random(field.getY(), field.getY2()));
         return new Point(x, y);
+
+    }
+
+    /**
+     * 屏幕摇晃
+     * @param force 力度
+     */
+    public void earthQuake(int force) {
+
+        this.SC_LEFT = MathData.round(leftBuffer + MathData.random(- force, force));
+        this.SC_TOP = MathData.round(topBuffer + MathData.random(- force, force));
+
+    }
+
+    /**
+     * 还原屏幕位置
+     */
+    public void resetLocation() {
+
+        this.SC_LEFT = this.leftBuffer;
+        this.SC_TOP = this.topBuffer;
 
     }
 
@@ -359,6 +417,42 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
+    @Override
+    public void run() {
+
+        try {
+            //绘制、FPS调控
+            while(true) {
+
+                long fpsTime = MathData.toLong(1000.0 / fps * 1000000.0);
+                long beforeNano = System.nanoTime();
+
+                if(!isPause) {
+                    this.repaint();
+                    this.window.setScreenIn(this);
+                }
+
+                long totalNano = System.nanoTime() - beforeNano;
+
+                if(totalNano > fpsTime) {
+                    continue;
+                }
+
+                Thread.sleep((fpsTime - (System.nanoTime() - beforeNano)) / 1000000);
+
+                while((System.nanoTime()) - beforeNano < fpsTime) {
+
+                    System.nanoTime();
+
+                }
+
+            }
+        } catch(InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private class BulletRemover extends Thread {
 
         @Override
@@ -366,20 +460,20 @@ public class Screen extends JPanel implements Runnable {
 
             ElementBullet e;
             int length = bullets.size();
-            int iterator = 0;
 
             for (int i = 0; i < length; i++) {
                 e = bullets.get(i);
-                iterator++;
+
+                if(e == null) {
+                    continue;
+                }
 
                 if(e.isOutWindow()) {
                     bullets.remove(e);
-                    bulletPool.reuse(e);
+                    bulletCache.reuse(e);
                     length--;
                 }
             }
-
-            window.setTitle("RL-01 ~ White building in Youkaity [ BL: " + iterator + " ]");
 
         }
 

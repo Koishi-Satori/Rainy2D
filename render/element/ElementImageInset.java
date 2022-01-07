@@ -1,9 +1,6 @@
 package rainy2D.render.element;
 
-import rainy2D.render.RenderHelper;
 import rainy2D.resource.ImageLocation;
-
-import java.awt.*;
 
 /**
  * 构造器：inset

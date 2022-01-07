@@ -1,11 +1,9 @@
 package rainy2D.render.element;
 
-import rainy2D.render.RenderHelper;
-import rainy2D.render.window.Window;
+import rainy2D.render.desktop.Window;
 import rainy2D.resource.ImageLocation;
-import rainy2D.vector.EntityVector;
-
-import java.awt.*;
+import rainy2D.shape.Rectangle;
+import rainy2D.vector.R2DVector;
 
 /**
  * 构造器：inset (shooter)
@@ -62,9 +60,14 @@ public class ElementBullet extends ElementImageInset {
 
         super.tick(window);
 
-        this.locate(EntityVector.vectorX(x, speed, angle), EntityVector.vectorY(y, speed, angle));
+        this.locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
 
-        if(x + width + 10 < 0 || x - 300 > window.getWidth() || y + height + 85 < window.getY() || y + 10 > window.getHeight()) {
+        Rectangle field = window.getScreenIn().getField();
+
+        if(x + width < field.getX() ||
+                x > field.getX() + field.getWidth() ||
+                y + height < field.getY() ||
+                y > field.getY() + field.getHeight()) {
             this.setOutWindow(true);
         } else {
             this.setOutWindow(false);

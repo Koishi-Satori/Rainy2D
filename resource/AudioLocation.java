@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 
-public class AudioLocation implements Location {
+public class AudioLocation {
 
     String path;
 

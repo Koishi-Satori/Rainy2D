@@ -1,4 +1,4 @@
-package rainy2D.render;
+package rainy2D.render.helper;
 
 import rainy2D.render.element.Element;
 import rainy2D.resource.ImageLocation;
@@ -15,7 +15,7 @@ public class RenderHelper {
      */
     public static void render(Element e, Graphics g) {
 
-        render(MathData.toInt(e.getOffsetX()), MathData.toInt(e.getOffsetY()), e.getWidth(), e.getHeight(), e.getImage(), g);
+        render(e.getOffsetX(), e.getOffsetY(), e.getWidth(), e.getHeight(), e.getImage(), g);
 
     }
 
@@ -28,13 +28,13 @@ public class RenderHelper {
      * @param iml 图片路径
      * @param g 画笔
      */
-    public static void renderIn(int x, int y, int width, int height, ImageLocation iml, Graphics g) {
+    public static void renderIn(double x, double y, int width, int height, ImageLocation iml, Graphics g) {
 
         render(x - width / 2, y - height / 2, width, height, iml, g);
 
     }
 
-    public static void renderIn(int x, int y, int width, int height, Image img, Graphics g) {
+    public static void renderIn(double x, double y, int width, int height, Image img, Graphics g) {
 
         render(x - width / 2, y - height / 2, width, height, img, g);
 
@@ -49,15 +49,15 @@ public class RenderHelper {
      * @param iml 图片路径
      * @param g 画笔
      */
-    public static void render(int offsetX, int offsetY, int width, int height, ImageLocation iml, Graphics g) {
+    public static void render(double offsetX, double offsetY, int width, int height, ImageLocation iml, Graphics g) {
 
         render(offsetX, offsetY, width, height, iml.get(), g);
 
     }
 
-    public static void render(int offsetX, int offsetY, int width, int height, Image img, Graphics g) {
+    public static void render(double offsetX, double offsetY, int width, int height, Image img, Graphics g) {
 
-        g.drawImage(img, offsetX, offsetY, width, height, null);
+        g.drawImage(img, MathData.round(offsetX), MathData.round(offsetY), width, height, null);
 
     }
 
@@ -68,13 +68,13 @@ public class RenderHelper {
      * @param iml 图片路径
      * @param g 画笔
      */
-    public static void render(int offsetX, int offsetY, ImageLocation iml, Graphics g) {
+    public static void render(double offsetX, double offsetY, ImageLocation iml, Graphics g) {
 
         render(offsetX, offsetY, iml.getWidth(), iml.getHeight(), iml, g);
 
     }
 
-    public static void render(int offsetX, int offsetY, Image img, Graphics g) {
+    public static void render(double offsetX, double offsetY, Image img, Graphics g) {
 
         render(offsetX, offsetY, img.getWidth(null), img.getHeight(null), img, g);
 

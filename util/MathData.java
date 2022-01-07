@@ -2,9 +2,9 @@ package rainy2D.util;
 
 public class MathData {
 
-    public static int toInt(double value) {
+    public static int round(double value) {
 
-        return (int) value;
+        return (int) (value);
 
     }
 
@@ -14,21 +14,15 @@ public class MathData {
 
     }
 
-    public static double toDouble(long value) {
-
-        return (double) value;
-
-    }
-
     public static long toLong(double value) {
 
-        return (long) value;
+        return (long) (value);
 
     }
 
     public static double random(int min, int max) {
 
-        return toInt(Math.random() * (max - min) + min);
+        return round(Math.random() * (max - min) + min);
 
     }
 

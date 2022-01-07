@@ -3,7 +3,7 @@ package rainy2D.vector;
 import rainy2D.render.element.Element;
 import rainy2D.util.MathData;
 
-public class EntityVector {
+public class R2DVector {
 
     public static double vectorX(double x, double speed, double angle) {
 

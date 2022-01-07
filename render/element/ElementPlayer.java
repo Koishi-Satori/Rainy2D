@@ -1,10 +1,10 @@
 package rainy2D.render.element;
 
-import rainy2D.render.RenderHelper;
-import rainy2D.render.window.Window;
+import rainy2D.render.helper.RenderHelper;
+import rainy2D.render.desktop.Window;
 import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Circle;
-import rainy2D.shape.Rect;
+import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
 
 import java.awt.*;
@@ -18,6 +18,7 @@ import java.awt.event.KeyEvent;
 public class ElementPlayer extends ElementImageOffset {
 
     double speed;
+    double speedBackup;
     double speedQuick;
     double speedSlow;
     int health;
@@ -30,15 +31,18 @@ public class ElementPlayer extends ElementImageOffset {
     boolean up;
     boolean down;
     boolean shoot;
-    boolean shift;
+    boolean slow;
+    boolean run;
 
     public ElementPlayer(double x, double y, ImageLocation iml) {
 
         super(x, y, 32, 48, iml);
 
         this.speed = 3.5;
-        this.speedQuick = this.speed;
+        this.speedQuick = 6;
         this.speedSlow = 1;
+        this.speedBackup = this.speed;
+
         this.health = 3;
         this.defence = 0;
         this.magicLevel = 1500;
@@ -51,8 +55,8 @@ public class ElementPlayer extends ElementImageOffset {
 
         super.render(g);
 
-        if(shift) {
-            RenderHelper.renderIn(MathData.toInt(x), MathData.toInt(y), 12, 12, new ImageLocation("plp.png"), g);
+        if(slow) {
+            RenderHelper.renderIn(MathData.round(x), MathData.round(y), 12, 12, new ImageLocation("plp.png"), g);
         }
 
     }
@@ -62,20 +66,31 @@ public class ElementPlayer extends ElementImageOffset {
 
         super.tick(window);
 
-        if(left)
+        if(left) {
             this.walkLeft();
-        if(right)
+        }
+        if(right) {
             this.walkRight();
-        if(up)
+        }
+        if(up) {
             this.walkUp();
-        if(down)
+        }
+        if(down) {
             this.walkDown();
+        }
+        if(slow) {
+            this.speed = this.speedSlow;
+        } else if(run) {
+            this.speed = this.speedQuick;
+        } else {
+            this.speed = this.speedBackup;
+        }
 
         this.checkIfOutField(window.getScreenIn().getField());
 
     }
 
-    public void checkIfOutField(Rect field) {
+    public void checkIfOutField(Rectangle field) {
 
         if(x < field.getX()) {
             this.locate(field.getX(), y);
@@ -118,10 +133,13 @@ public class ElementPlayer extends ElementImageOffset {
                         break;
                     case KeyEvent.VK_SPACE:
                         shoot = true;
+                        window.getScreenIn().pause();
                         break;
                     case KeyEvent.VK_SHIFT:
-                        speed = speedSlow;
-                        shift = true;
+                        slow = true;
+                        break;
+                    case KeyEvent.VK_CONTROL:
+                        run = true;
                         break;
 
                 }
@@ -149,8 +167,10 @@ public class ElementPlayer extends ElementImageOffset {
                         shoot = false;
                         break;
                     case KeyEvent.VK_SHIFT:
-                        speed = speedQuick;
-                        shift = false;
+                        slow = false;
+                        break;
+                    case KeyEvent.VK_CONTROL:
+                        run = false;
                         break;
 
                 }
@@ -197,7 +217,7 @@ public class ElementPlayer extends ElementImageOffset {
     @Override
     public Circle getCircle() {
 
-        return new Circle(MathData.toInt(x), MathData.toInt(y), MathData.toInt(width / 8));
+        return new Circle(MathData.round(x), MathData.round(y), MathData.round(width / 8.0));
 
     }
 

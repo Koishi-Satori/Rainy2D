@@ -1,14 +1,9 @@
 package rainy2D.shape;
 
-public class Rect {
-
-    int x;
-    int y;
-    int width;
-    int height;
-
-    public Rect(int x, int y, int width, int height) {
-
+public class Rectangle extends Shape {
+    
+    public Rectangle(int x, int y, int width, int height) {
+        
         this.x = x;
         this.y = y;
         this.width = width;
@@ -16,7 +11,7 @@ public class Rect {
 
     }
 
-    public boolean intersects(Rect rect) {
+    public boolean intersects(Rectangle rect) {
 
         int width1 = this.width;
         int height1 = this.height;
@@ -36,42 +31,6 @@ public class Rect {
                 && (height2 < y2 || height2 > y1)
                 && (width1 < x1 || width1 > x2)
                 && (height1 < y1 || height1 > y2));
-
-    }
-
-    public int getX() {
-
-        return x;
-
-    }
-
-    public int getY() {
-
-        return y;
-
-    }
-
-    public int getWidth() {
-
-        return width;
-
-    }
-
-    public int getHeight() {
-
-        return height;
-
-    }
-
-    public int getX2() {
-
-        return width - x;
-
-    }
-
-    public int getY2() {
-
-        return height - y;
 
     }
 

@@ -1,6 +1,6 @@
 package rainy2D.vector;
 
-public class EntityGravity {
+public class R2DGravity {
 
     public static double gravityFall(int overLandTime) {
 
