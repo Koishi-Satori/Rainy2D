@@ -3,7 +3,7 @@ package rainy2D.render.element;
 import rainy2D.render.helper.RenderHelper;
 import rainy2D.shape.Circle;
 import rainy2D.render.desktop.Window;
-import rainy2D.resource.ImageLocation;
+import rainy2D.resource.location.ImageLocation;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
 
@@ -67,6 +67,21 @@ public class Element {
         int mouseY = event.getY();
 
         return mouseX >= x && mouseY >= y && mouseX <= x + width && mouseY <= y + height;
+
+    }
+
+    public void checkOutWindow(Window window) {
+
+        Rectangle field = window.getScreenIn().getField();
+
+        if(x + width < field.getX() ||
+                x > field.getX() + field.getWidth() ||
+                y + height < field.getY() ||
+                y > field.getY() + field.getHeight()) {
+            this.setOutWindow(true);
+        } else {
+            this.setOutWindow(false);
+        }
 
     }
 
@@ -167,6 +182,10 @@ public class Element {
 
     }
 
+    /**
+     * 用于子弹判定
+     * @return 返回判定半径为：1/6 width的圆形
+     */
     public Circle getCircle() {
 
         return new Circle(MathData.round(x), MathData.round(y), MathData.round(width / 6));

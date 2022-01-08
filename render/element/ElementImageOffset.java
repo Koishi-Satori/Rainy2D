@@ -1,6 +1,6 @@
 package rainy2D.render.element;
 
-import rainy2D.resource.ImageLocation;
+import rainy2D.resource.location.ImageLocation;
 
 /**
  * 构造器：offset

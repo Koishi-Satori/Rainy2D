@@ -1,7 +1,7 @@
 package rainy2D.render.helper;
 
 import rainy2D.render.element.Element;
-import rainy2D.resource.ImageLocation;
+import rainy2D.resource.location.ImageLocation;
 import rainy2D.util.MathData;
 
 import java.awt.*;

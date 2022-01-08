@@ -2,7 +2,7 @@ package rainy2D.render.element;
 
 import rainy2D.render.helper.RenderHelper;
 import rainy2D.render.desktop.Window;
-import rainy2D.resource.ImageLocation;
+import rainy2D.resource.location.ImageLocation;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
@@ -86,11 +86,11 @@ public class ElementPlayer extends ElementImageOffset {
             this.speed = this.speedBackup;
         }
 
-        this.checkIfOutField(window.getScreenIn().getField());
+        this.checkOutField(window.getScreenIn().getField());
 
     }
 
-    public void checkIfOutField(Rectangle field) {
+    public void checkOutField(Rectangle field) {
 
         if(x < field.getX()) {
             this.locate(field.getX(), y);
@@ -213,11 +213,13 @@ public class ElementPlayer extends ElementImageOffset {
 
     }
 
-    //返回判定点的circle
+    /**
+     * @return 判定点 返回判定半径为：1/10 width的圆形
+     */
     @Override
     public Circle getCircle() {
 
-        return new Circle(MathData.round(x), MathData.round(y), MathData.round(width / 8.0));
+        return new Circle(MathData.round(x), MathData.round(y), MathData.round(width / 10.0));
 
     }
 

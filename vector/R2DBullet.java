@@ -1,6 +1,6 @@
 package rainy2D.vector;
 
-import rainy2D.resource.ImageLocation;
+import rainy2D.resource.location.ImageLocation;
 
 public class R2DBullet {
 

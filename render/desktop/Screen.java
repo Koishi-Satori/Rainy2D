@@ -1,5 +1,6 @@
 package rainy2D.render.desktop;
 
+import rainy2D.render.element.ElementEnemy;
 import rainy2D.render.helper.RenderHelper;
 import rainy2D.render.helper.ShapeHelper;
 import rainy2D.util.BulletCacheList;
@@ -53,13 +54,16 @@ public class Screen extends JPanel implements Runnable {
     boolean init;
 
     Window window;
+
     Rectangle field;
+
     Image iBuffer;
     Graphics gBuffer;
-    Color gBufferColor;
+    Color overFieldColor;
 
     public ArrayList<Element> imageBottom = new ArrayList<>();
     public ArrayList<ElementBullet> bullets = new ArrayList<>();
+    public ArrayList<ElementEnemy> enemies = new ArrayList<>();
     public ArrayList<Element> imageFront = new ArrayList<>();
 
     public BulletCacheList bulletCache;
@@ -127,7 +131,7 @@ public class Screen extends JPanel implements Runnable {
 
     public void setColorOverField(Color c) {
 
-        this.gBufferColor = c;
+        this.overFieldColor = c;
 
     }
 
@@ -202,9 +206,10 @@ public class Screen extends JPanel implements Runnable {
         this.renderBottomImage(gBuffer);//包装完毕方法
         this.renderFrontImage(gBuffer);//包装完毕方法
         this.bulletTick(gBuffer);//包装完毕方法
+        this.enemyTick(gBuffer);//包装完毕方法
 
         this.renderInField(gBuffer);//自定义方法
-        this.renderOverField(gBuffer);//自定义方法
+        this.renderOverField(gBuffer);//包装完毕方法
         this.renderStrings(gBuffer);//自定义方法
         this.renderAboveField(gBuffer);//自定义方法
 
@@ -286,22 +291,37 @@ public class Screen extends JPanel implements Runnable {
         int right = this.field.getX2();
         int bottom = this.field.getY2();
 
-        g.setColor(gBufferColor);
+        g.setColor(overFieldColor);
 
         ShapeHelper.renderRect(0, 0, left, WI_HEIGHT, g);
         ShapeHelper.renderRect(0, 0, WI_WIDTH, top, g);
         ShapeHelper.renderRect(right, top, WI_WIDTH - right, WI_HEIGHT - top, g);
         ShapeHelper.renderRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom, g);
 
+        g.setColor(new Color(125, 125, 125));
+        ShapeHelper.renderFrame(left - 5, top - 5, right + 5, bottom + 5, 5, g);
+
     }
 
     public void bulletTick(Graphics g) {
 
         ElementBullet e;
-        new BulletRemover().start();
+        new Remover().start();
 
         for (int i = 0; i < bullets.size(); i++) {
             e = bullets.get(i);
+            e.tick(window);
+            e.render(g);
+        }
+
+    }
+
+    public void enemyTick(Graphics g) {
+
+        ElementEnemy e;
+
+        for (int i = 0; i < enemies.size(); i++) {
+            e = enemies.get(i);
             e.tick(window);
             e.render(g);
         }
@@ -424,7 +444,7 @@ public class Screen extends JPanel implements Runnable {
             //绘制、FPS调控
             while(true) {
 
-                long fpsTime = MathData.toLong(1000.0 / fps * 1000000.0);
+                long fpsTime = (long) (1000.0 / fps * 1000000.0);
                 long beforeNano = System.nanoTime();
 
                 if(!isPause) {
@@ -453,27 +473,28 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    private class BulletRemover extends Thread {
+    private class Remover extends Thread {
 
         @Override
         public void run() {
 
             ElementBullet e;
             int length = bullets.size();
+            int iterator = 0;
 
             for (int i = 0; i < length; i++) {
-                e = bullets.get(i);
-
-                if(e == null) {
-                    continue;
-                }
-
-                if(e.isOutWindow()) {
-                    bullets.remove(e);
-                    bulletCache.reuse(e);
-                    length--;
+                if(bullets.get(i) != null) {
+                    e = bullets.get(i);
+                    iterator++;
+                    if(e.isOutWindow()) {
+                        bullets.remove(e);
+                        bulletCache.reuse(e);
+                        length--;
+                    }
                 }
             }
+
+            window.setTitle("RL01 ~ White Buildings in Youkaity [ Bullets : " + iterator + " ]");
 
         }
 

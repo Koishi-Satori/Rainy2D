@@ -1,4 +1,4 @@
-package rainy2D.resource;
+package rainy2D.resource.location;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

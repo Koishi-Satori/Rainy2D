@@ -1,5 +1,7 @@
 package rainy2D.shape;
 
+import rainy2D.util.MathData;
+
 public class Rectangle extends Shape {
     
     public Rectangle(int x, int y, int width, int height) {
@@ -31,6 +33,18 @@ public class Rectangle extends Shape {
                 && (height2 < y2 || height2 > y1)
                 && (width1 < x1 || width1 > x2)
                 && (height1 < y1 || height1 > y2));
+
+    }
+
+    public int getXWith(double percent) {
+
+        return MathData.round(x + width * percent);
+
+    }
+
+    public int getYWith(double percent) {
+
+        return MathData.round(y + height * percent);
 
     }
 

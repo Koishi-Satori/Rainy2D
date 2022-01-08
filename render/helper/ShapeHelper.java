@@ -1,12 +1,35 @@
 package rainy2D.render.helper;
 
+import rainy2D.shape.Rectangle;
+
 import java.awt.*;
 
 public class ShapeHelper {
 
+    /**
+     * 设置画笔颜色
+     * @param c 颜色
+     * @param g 画笔
+     * @return 画笔以前的颜色
+     */
+    public static Color setColor(Color c, Graphics g) {
+        
+        Color oldC = g.getColor();
+        g.setColor(c);
+        
+        return oldC;
+        
+    }
+    
     public static void renderRect2D(int x1, int y1, int x2, int y2, Graphics g) {
 
         renderRect(x1, y1, x2 - x1, y2 - y1, g);
+
+    }
+
+    public static void renderRect(Rectangle rect, Graphics g) {
+
+        renderRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), g);
 
     }
 
@@ -16,9 +39,11 @@ public class ShapeHelper {
 
     }
 
-    public static void renderFrame(int x1, int y1, int x2, int y2, Graphics g) {
+    public static void renderFrame(int x1, int y1, int x2, int y2, int width, Graphics g) {
 
-        g.drawRoundRect(x1, y1, x2 - x1, y2 - y1, 50, 50);
+        for(int i = 0; i < width; i++) {
+            g.drawRoundRect(x1 + i, y1 + i, x2 - x1 - i * 2, y2 - y1 - i * 2, 0, 50);
+        }
 
     }
 
@@ -36,14 +61,10 @@ public class ShapeHelper {
 
     }
 
-    public static void renderString(int x, int y, Font f, Color c, String str, Graphics g) {
+    public static void renderString(int x, int y, Font f, String str, Graphics g) {
 
-        Color oldC = g.getColor();
-
-        g.setColor(c);
         g.setFont(f);
         g.drawString(str, x, y);
-        g.setColor(oldC);
 
     }
 
