@@ -1,7 +1,7 @@
 package rainy2D.render.element;
 
 import rainy2D.render.desktop.Window;
-import rainy2D.resource.location.ImageLocation;
+import rainy2D.resource.ImageLocation;
 
 public class ElementGoods extends ElementImageInset {
 

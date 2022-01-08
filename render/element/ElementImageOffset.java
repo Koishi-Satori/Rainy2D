@@ -1,6 +1,8 @@
 package rainy2D.render.element;
 
-import rainy2D.resource.location.ImageLocation;
+import rainy2D.resource.ImageLocation;
+
+import java.awt.image.BufferedImage;
 
 /**
  * 构造器：offset
@@ -8,15 +10,15 @@ import rainy2D.resource.location.ImageLocation;
  */
 public class ElementImageOffset extends Element {
 
-    public ElementImageOffset(double offsetX, double offsetY, int width, int height, ImageLocation iml) {
+    public ElementImageOffset(double offsetX, double offsetY, int width, int height, BufferedImage img) {
 
-        super(offsetX, offsetY, width, height, iml);
+        super(offsetX, offsetY, width, height, img);
 
     }
 
-    public ElementImageOffset(double offsetX, double offsetY, ImageLocation iml) {
+    public ElementImageOffset(double offsetX, double offsetY, int width, int height, ImageLocation iml) {
 
-        super(offsetX, offsetY, iml.getWidth(), iml.getHeight(), iml);
+        super(offsetX, offsetY, width, height, iml);
 
     }
 

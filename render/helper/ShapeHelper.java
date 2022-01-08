@@ -20,7 +20,10 @@ public class ShapeHelper {
         return oldC;
         
     }
-    
+
+    /**
+     * 三种绘制矩形的方法
+     */
     public static void renderRect2D(int x1, int y1, int x2, int y2, Graphics g) {
 
         renderRect(x1, y1, x2 - x1, y2 - y1, g);
@@ -39,6 +42,9 @@ public class ShapeHelper {
 
     }
 
+    /**
+     * 绘制方框的方法
+     */
     public static void renderFrame(int x1, int y1, int x2, int y2, int width, Graphics g) {
 
         for(int i = 0; i < width; i++) {
@@ -47,12 +53,18 @@ public class ShapeHelper {
 
     }
 
+    /**
+     * 绘制圆形的方法
+     */
     public static void renderCircle(int x, int y, int r, Graphics g) {
 
         g.fillOval(x - r, y - r, r * 2, r * 2);
 
     }
 
+    /**
+     * 绘制环形的方法
+     */
     public static void renderRing(int x, int y, int r, int width, Graphics g) {
 
         for(int i = 0; i < width; i++) {
@@ -61,6 +73,9 @@ public class ShapeHelper {
 
     }
 
+    /**
+     * 绘制文本的方法
+     */
     public static void renderString(int x, int y, Font f, String str, Graphics g) {
 
         g.setFont(f);

@@ -1,12 +1,8 @@
 package rainy2D.render.element;
 
-import rainy2D.render.desktop.Screen;
 import rainy2D.render.desktop.Window;
-import rainy2D.resource.info.VectorInfo;
-import rainy2D.resource.location.ImageLocation;
-import rainy2D.util.BulletCacheList;
+import rainy2D.resource.ImageLocation;
 import rainy2D.util.MathData;
-import rainy2D.vector.R2DBullet;
 import rainy2D.vector.R2DVector;
 
 public class ElementEnemy extends ElementImageInset {

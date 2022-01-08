@@ -2,7 +2,7 @@ package rainy2D.render.element;
 
 import rainy2D.render.helper.RenderHelper;
 import rainy2D.render.desktop.Window;
-import rainy2D.resource.location.ImageLocation;
+import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
@@ -34,9 +34,9 @@ public class ElementPlayer extends ElementImageOffset {
     boolean slow;
     boolean run;
 
-    public ElementPlayer(double x, double y, ImageLocation iml) {
+    public ElementPlayer(double x, double y, int width, int height, ImageLocation iml) {
 
-        super(x, y, 32, 48, iml);
+        super(x, y, width, height, iml);
 
         this.speed = 3.5;
         this.speedQuick = 6;
@@ -56,7 +56,7 @@ public class ElementPlayer extends ElementImageOffset {
         super.render(g);
 
         if(slow) {
-            RenderHelper.renderIn(MathData.round(x), MathData.round(y), 12, 12, new ImageLocation("plp.png"), g);
+            RenderHelper.renderIn(MathData.round(x), MathData.round(y), 14, 14, new ImageLocation("plp.png"), g);
         }
 
     }

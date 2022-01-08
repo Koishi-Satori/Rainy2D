@@ -1,7 +1,7 @@
 package rainy2D.render.helper;
 
 import rainy2D.render.element.Element;
-import rainy2D.resource.location.ImageLocation;
+import rainy2D.resource.ImageLocation;
 import rainy2D.util.MathData;
 
 import java.awt.*;
@@ -28,13 +28,13 @@ public class RenderHelper {
      * @param iml 图片路径
      * @param g 画笔
      */
-    public static void renderIn(double x, double y, int width, int height, ImageLocation iml, Graphics g) {
+    public static void renderIn(double x, double y, double width, double height, ImageLocation iml, Graphics g) {
 
         render(x - width / 2, y - height / 2, width, height, iml, g);
 
     }
 
-    public static void renderIn(double x, double y, int width, int height, Image img, Graphics g) {
+        public static void renderIn(double x, double y, double width, double height, Image img, Graphics g) {
 
         render(x - width / 2, y - height / 2, width, height, img, g);
 
@@ -49,15 +49,15 @@ public class RenderHelper {
      * @param iml 图片路径
      * @param g 画笔
      */
-    public static void render(double offsetX, double offsetY, int width, int height, ImageLocation iml, Graphics g) {
+    public static void render(double offsetX, double offsetY, double width, double height, ImageLocation iml, Graphics g) {
 
         render(offsetX, offsetY, width, height, iml.get(), g);
 
     }
 
-    public static void render(double offsetX, double offsetY, int width, int height, Image img, Graphics g) {
+    public static void render(double offsetX, double offsetY, double width, double height, Image img, Graphics g) {
 
-        g.drawImage(img, MathData.round(offsetX), MathData.round(offsetY), width, height, null);
+        g.drawImage(img, MathData.round(offsetX), MathData.round(offsetY), MathData.round(width), MathData.round(height), null);
 
     }
 

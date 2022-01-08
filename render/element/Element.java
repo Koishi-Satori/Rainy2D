@@ -3,7 +3,7 @@ package rainy2D.render.element;
 import rainy2D.render.helper.RenderHelper;
 import rainy2D.shape.Circle;
 import rainy2D.render.desktop.Window;
-import rainy2D.resource.location.ImageLocation;
+import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
 
@@ -17,6 +17,9 @@ import java.awt.image.BufferedImage;
  */
 public class Element {
 
+    @Deprecated
+    public static double MAGNIFY;
+
     double x;
     double y;
     double offsetX;
@@ -25,10 +28,15 @@ public class Element {
     int height;
     boolean outWindow;
 
-    ImageLocation iml;
     BufferedImage img;
 
     public Element(double offsetX, double offsetY, int width, int height, ImageLocation iml) {
+
+        this(offsetX, offsetY, width, height, iml.get());
+
+    }
+
+    public Element(double offsetX, double offsetY, int width, int height, BufferedImage img) {
 
         this.offsetX = offsetX;
         this.offsetY = offsetY;
@@ -36,8 +44,7 @@ public class Element {
         this.y = offsetY + width / 2;
         this.width = width;
         this.height = height;
-        this.iml = iml;
-        this.callImageChange();
+        this.img = img;
 
     }
 
@@ -48,17 +55,6 @@ public class Element {
     }
 
     public void tick(Window window) {
-    }
-
-    /**
-     * 当imageLocation改变时调用
-     */
-    public void callImageChange() {
-
-        if(iml != null) {
-            this.img = iml.get();
-        }
-
     }
 
     public boolean isMouseHanging(MouseEvent event) {
@@ -76,7 +72,7 @@ public class Element {
 
         if(x + width < field.getX() ||
                 x > field.getX() + field.getWidth() ||
-                y + height < field.getY() ||
+                y + height + 200 < field.getY() ||
                 y > field.getY() + field.getHeight()) {
             this.setOutWindow(true);
         } else {
@@ -122,8 +118,7 @@ public class Element {
 
     public void setImageLocation(ImageLocation iml) {
 
-        this.iml = iml;
-        this.callImageChange();
+        this.img = iml.get();
 
     }
 

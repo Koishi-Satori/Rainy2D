@@ -27,19 +27,20 @@ public class Screen extends JPanel implements Runnable {
 
     /**
      * 一些内部变量，如果你不非常了解，请不要乱动！
-     * wBuffer:缓冲图像宽
-     * hBuffer:缓冲图像高
+     * bufferWidth:缓冲图像宽
+     * bufferHeight:缓冲图像高
      * totalWidth:实际显示宽度（保持比例）
      * totalHeight：实际显示高度
      */
-    private int wBuffer;
-    private int hBuffer;
+    protected int bufferWidth;
+    protected int bufferHeight;
     private double overPercent;
     private int totalWidth;
     private int totalHeight;
 
     int fps;
     public double nowFps;
+
     /**
      * time根据fps递增
      * cycle在[0-1]以0.01的速度循环
@@ -88,13 +89,13 @@ public class Screen extends JPanel implements Runnable {
      * 设置分辨率（默认900x600）
      * 一旦设置就不要更改了哦
      * 分辨率必须与window的大小相同，否则会出现奇奇怪怪的bug
-     * 分辨率必须小于屏幕长宽
+     * 分辨率必须小于屏幕长宽一些
      */
     public void setDefaultSize(int width, int height) {
 
-        this.wBuffer = width;
-        this.hBuffer = height;
-        this.overPercent =  MathData.toDouble(WI_HEIGHT) / hBuffer;
+        this.bufferWidth = width;
+        this.bufferHeight = height;
+        this.overPercent =  MathData.toDouble(WI_HEIGHT) / bufferHeight;
         this.totalHeight = MathData.round(height * overPercent);
         this.totalWidth = MathData.round(width * overPercent);
 
@@ -178,7 +179,7 @@ public class Screen extends JPanel implements Runnable {
      * 原理：
      * 先在底层的window上设置相同大小的screen，然后创建缓冲图片，在图片上绘制画面，并按比例缩放到window上。
      * 所以严格来说只有一个image组件的样子（笑）
-     * 需要注意的是，添加组件时是绘制在缓冲图上，所以请不要使用SC系列的变量了。范围为[0, 0] ~ [wBuffer, hBuffer]
+     * 需要注意的是，添加组件时是绘制在缓冲图上，所以请不要使用SC系列的变量了。范围为[0, 0] ~ [bufferWidth, bufferHeight]
      * @param g 没什么可说的？
      */
     @Override
@@ -230,14 +231,18 @@ public class Screen extends JPanel implements Runnable {
         if(time == Integer.MAX_VALUE) {
             this.time = 0;
         }
+
         if(cycle >= 1) {
             this.cycleState = false;
-        } else if(cycle <= 0 ) {
+        }
+        else if(cycle <= 0 ) {
             this.cycleState = true;
         }
+
         if(cycleState) {
             this.cycle += 0.01;
-        } else {
+        }
+        else {
             this.cycle -= 0.01;
         }
 
@@ -248,7 +253,7 @@ public class Screen extends JPanel implements Runnable {
      */
     public void callChangeSize() {
 
-        this.iBuffer = this.createImage(wBuffer, hBuffer);
+        this.iBuffer = this.createImage(bufferWidth, bufferHeight);
 
     }
 
@@ -306,13 +311,14 @@ public class Screen extends JPanel implements Runnable {
     public void bulletTick(Graphics g) {
 
         ElementBullet e;
-        new Remover().start();
 
         for (int i = 0; i < bullets.size(); i++) {
             e = bullets.get(i);
             e.tick(window);
             e.render(g);
         }
+
+        new Remover().start();
 
     }
 
@@ -385,6 +391,12 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
+    public Image getImageBuffer() {
+
+        return iBuffer;
+
+    }
+
     public void pause() {
 
         this.isPause = !isPause;
@@ -444,27 +456,20 @@ public class Screen extends JPanel implements Runnable {
             //绘制、FPS调控
             while(true) {
 
-                long fpsTime = (long) (1000.0 / fps * 1000000.0);
-                long beforeNano = System.nanoTime();
+                double fpsTime = 1000.0 / fps;
+                double updateTime;
+                double sleepTime;
+                long beforeTime = System.nanoTime();
 
-                if(!isPause) {
-                    this.repaint();
-                    this.window.setScreenIn(this);
-                }
+                this.window.setScreenIn(this);
+                this.repaint();
 
-                long totalNano = System.nanoTime() - beforeNano;
+                updateTime = ((System.nanoTime() - beforeTime) / 1000000.0);
+                sleepTime = Math.max(2, fpsTime - updateTime);
 
-                if(totalNano > fpsTime) {
-                    continue;
-                }
+                this.nowFps = 1000.0 / (updateTime + sleepTime);
 
-                Thread.sleep((fpsTime - (System.nanoTime() - beforeNano)) / 1000000);
-
-                while((System.nanoTime()) - beforeNano < fpsTime) {
-
-                    System.nanoTime();
-
-                }
+                Thread.sleep(MathData.round(sleepTime));
 
             }
         } catch(InterruptedException e) {
@@ -479,18 +484,18 @@ public class Screen extends JPanel implements Runnable {
         public void run() {
 
             ElementBullet e;
-            int length = bullets.size();
             int iterator = 0;
 
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < bullets.size(); i++) {
                 if(bullets.get(i) != null) {
                     e = bullets.get(i);
-                    iterator++;
+
                     if(e.isOutWindow()) {
                         bullets.remove(e);
                         bulletCache.reuse(e);
-                        length--;
                     }
+
+                    iterator++;
                 }
             }
 

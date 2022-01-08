@@ -1,4 +1,4 @@
-package rainy2D.resource.location;
+package rainy2D.resource;
 
 import javax.sound.sampled.*;
 import java.io.IOException;

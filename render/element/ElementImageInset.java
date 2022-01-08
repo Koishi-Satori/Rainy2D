@@ -1,6 +1,8 @@
 package rainy2D.render.element;
 
-import rainy2D.resource.location.ImageLocation;
+import rainy2D.resource.ImageLocation;
+
+import java.awt.image.BufferedImage;
 
 /**
  * 构造器：inset
@@ -10,15 +12,15 @@ import rainy2D.resource.location.ImageLocation;
  */
 public class ElementImageInset extends ElementImageOffset {
 
-    public ElementImageInset(double x, double y, int width, int height, ImageLocation iml) {
+    public ElementImageInset(double x, double y, int width, int height, BufferedImage img) {
 
-        super(x - width / 2, y - height / 2, width, height, iml);
+        super(x - width / 2, y - height / 2, width, height, img);
 
     }
 
-    public ElementImageInset(double x, double y, ImageLocation iml) {
+    public ElementImageInset(double x, double y, int width, int height, ImageLocation iml) {
 
-        super(x - iml.getWidth() / 2, y - iml.getHeight() / 2, iml.getWidth(), iml.getHeight(), iml);
+        super(x - width / 2, y - height / 2, width, height, iml);
 
     }
 

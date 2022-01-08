@@ -1,4 +1,4 @@
-package rainy2D.resource.info;
+package rainy2D.section.conversation;
 
 import java.awt.*;
 

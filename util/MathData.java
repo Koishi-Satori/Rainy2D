@@ -2,6 +2,12 @@ package rainy2D.util;
 
 public class MathData {
 
+    public static int abs(int value) {
+
+        return value >= 0 ? value : -value;
+
+    }
+
     public static int round(double value) {
 
         return (int) (value);
@@ -11,12 +17,6 @@ public class MathData {
     public static double toDouble(int value) {
 
         return Double.valueOf(value);
-
-    }
-
-    public static long toLong(double value) {
-
-        return (long) (value);
 
     }
 
