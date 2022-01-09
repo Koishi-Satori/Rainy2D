@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class BulletCacheList {
 
     int cacheListSize;
+    int lastTakeIndex;
 
     ArrayList<ElementBullet> elements = new ArrayList<>();
 
@@ -40,23 +41,21 @@ public class BulletCacheList {
 
     }
 
+    /**
+     * 原理：直接返回下一位，当达到size极限时，第一个应已经补位完毕，所以可以一直循环使用
+     * @return 设置好的子弹对象
+     */
     public ElementBullet get(double x, double y, int width, int height, double speed, double angle, BufferedImage img) {
 
-        ElementBullet e;
-        int length = this.elements.size();
+        ElementBullet e = elements.get(lastTakeIndex);
+        e.setProperties(x, y, width, height, speed, angle, img);
 
-        for(int i = 0; i < cacheListSize; i++) {
-            if(!(length == 0)) {
-                e = elements.get(i);
-                e.setProperties(x, y, width, height, speed, angle, img);
-                this.elements.remove(i);
-                return e;
-            } else {
-                break;
-            }
+        this.lastTakeIndex++;
+        if(lastTakeIndex == cacheListSize) {
+            this.lastTakeIndex = 0;
         }
 
-        return new ElementBullet(x, y, width, height, speed, angle, img);
+        return e;
 
     }
 

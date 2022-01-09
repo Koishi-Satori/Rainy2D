@@ -55,6 +55,7 @@ public class Screen extends JPanel implements Runnable {
     boolean init;
 
     Window window;
+    String titleName;
 
     Rectangle field;
 
@@ -118,6 +119,12 @@ public class Screen extends JPanel implements Runnable {
     public void setDefaultFps(int fps) {
 
         this.fps = fps;
+
+    }
+
+    public void setTitle(String title) {
+
+        this.titleName = title;
 
     }
 
@@ -456,16 +463,16 @@ public class Screen extends JPanel implements Runnable {
             //绘制、FPS调控
             while(true) {
 
-                double fpsTime = 1000.0 / fps;
-                double updateTime;
-                double sleepTime;
+                long fpsTime = MathData.round(1000.0 / fps);
+                long updateTime;
+                long sleepTime;
                 long beforeTime = System.nanoTime();
 
                 this.window.setScreenIn(this);
                 this.repaint();
 
-                updateTime = ((System.nanoTime() - beforeTime) / 1000000.0);
-                sleepTime = Math.max(2, fpsTime - updateTime);
+                updateTime = ((System.nanoTime() - beforeTime) / 1000000);
+                sleepTime = Math.max(5, fpsTime - updateTime);
 
                 this.nowFps = 1000.0 / (updateTime + sleepTime);
 
@@ -499,7 +506,7 @@ public class Screen extends JPanel implements Runnable {
                 }
             }
 
-            window.setTitle("RL01 ~ White Buildings in Youkaity [ Bullets : " + iterator + " ]");
+            window.setTitle(titleName + " [ Bullets : " + iterator + " ]" + " [ Fps : " + nowFps + " ]");
 
         }
 
