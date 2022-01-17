@@ -36,15 +36,27 @@ public class Rectangle extends Shape {
 
     }
 
-    public int getXWith(double percent) {
+    public int getPX(double percent) {
 
         return MathData.round(x + width * percent);
 
     }
 
-    public int getYWith(double percent) {
+    public int getPY(double percent) {
 
         return MathData.round(y + height * percent);
+
+    }
+
+    public int getPWidth(double percent) {
+
+        return MathData.round(width * percent);
+
+    }
+
+    public int getPHeight(double percent) {
+
+        return MathData.round(height * percent);
 
     }
 

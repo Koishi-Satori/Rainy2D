@@ -41,6 +41,12 @@ public class BulletCacheList {
 
     }
 
+    public ElementBullet getClone(ElementBullet b) {
+
+        return get(b.getX(), b.getY(), b.getWidth(), b.getHeight(), b.getSpeed(), b.getAngle(), b.getImage());
+
+    }
+
     /**
      * 原理：直接返回下一位，当达到size极限时，第一个应已经补位完毕，所以可以一直循环使用
      * @return 设置好的子弹对象
@@ -48,7 +54,13 @@ public class BulletCacheList {
     public ElementBullet get(double x, double y, int width, int height, double speed, double angle, BufferedImage img) {
 
         ElementBullet e = elements.get(lastTakeIndex);
-        e.setProperties(x, y, width, height, speed, angle, img);
+
+        e.locate(x, y);
+        e.setSize(width, height);
+        e.setAngle(angle);
+        e.setSpeed(speed);
+        e.setImage(img);
+        e.resetEffect();
 
         this.lastTakeIndex++;
         if(lastTakeIndex == cacheListSize) {

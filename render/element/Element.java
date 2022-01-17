@@ -116,9 +116,9 @@ public class Element {
 
     }
 
-    public void setImageLocation(ImageLocation iml) {
+    public void setImage(BufferedImage img) {
 
-        this.img = iml.get();
+        this.img = img;
 
     }
 
@@ -190,6 +190,12 @@ public class Element {
     public Rectangle getRect() {
 
         return new Rectangle(MathData.round(offsetX), MathData.round(offsetY), width, height);
+
+    }
+
+    public Element getClone() {
+
+        return new Element(x, y, width, height, img);
 
     }
 

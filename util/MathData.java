@@ -2,6 +2,8 @@ package rainy2D.util;
 
 public class MathData {
 
+    public static final double PI = 3.1415926535;
+
     public static int abs(int value) {
 
         return value >= 0 ? value : -value;
@@ -20,21 +22,21 @@ public class MathData {
 
     }
 
-    public static double random(int min, int max) {
+    public static double random(double min, double max) {
 
-        return round(Math.random() * (max - min) + min);
+        return Math.random() * (max - min) + min;
 
     }
 
     public static double toRadians(double angle) {
 
-        return angle / (3.1415926535 / 180);
+        return angle / (180 / PI);
 
     }
 
     public static double toAngle(double theta) {
 
-        return theta * (3.1415926535 / 180);
+        return theta * (180 / PI);
 
     }
 

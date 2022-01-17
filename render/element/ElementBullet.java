@@ -2,7 +2,6 @@ package rainy2D.render.element;
 
 import rainy2D.render.desktop.Window;
 import rainy2D.render.helper.RenderHelper;
-import rainy2D.resource.ImageLocation;
 import rainy2D.vector.R2DVector;
 
 import java.awt.*;
@@ -14,21 +13,23 @@ import java.awt.image.BufferedImage;
  */
 public class ElementBullet extends ElementImageInset {
 
+    public static int EFFECT_DOWN_VALUE = 5;
+
+    public static final int HIT_PLAYER = 0;
+    public static final int HIT_ENEMY = 1;
+    public int state;
+
     double speed;
     double angle;
+
+    int effectWidth;
 
     /**
      * BulletCacheList用构造器
      */
     public ElementBullet() {
 
-        super(0, 0, 0, 0, (BufferedImage) null);
-
-    }
-
-    public ElementBullet(double x, double y, int width, int height, double speed, double angle, ImageLocation iml) {
-
-        this(x, y, width, height, speed, angle, iml.get());
+        this(0, 0, 0, 0, 0, 0, null);
 
     }
 
@@ -42,33 +43,15 @@ public class ElementBullet extends ElementImageInset {
         this.speed = speed;
         this.angle = angle;
 
-        this.effectWidth = width * 2;
-
-    }
-
-    /**
-     * 从池中取出时调用设置属性
-     * 用图片是为了节约性能，高度复用
-     */
-    public void setProperties(double x, double y, int width, int height, double speed, double angle, BufferedImage img) {
-
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.effectWidth = width * 2;
-        this.height = height;
-        this.speed = speed;
-        this.angle = angle;
-        this.img = img;
+        this.resetEffect();
+        this.setState(0);
 
     }
 
     @Override
     public void tick(Window window) {
 
-        super.tick(window);
-
-        this.appearEffect(5);
+        this.appearEffect(EFFECT_DOWN_VALUE);
 
         this.locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
         this.checkOutWindow(window);
@@ -78,15 +61,20 @@ public class ElementBullet extends ElementImageInset {
     @Override
     public void render(Graphics g) {
 
-        super.render(g);
-
-        if(effectWidth > width) {
+        if(effectWidth == width) {
+            super.render(g);
+        }
+        else {
             RenderHelper.renderIn(x, y, effectWidth, effectWidth, img, g);
         }
 
     }
 
-    int effectWidth;
+    public void resetEffect() {
+
+        this.effectWidth = width * 2;
+
+    }
 
     /**
      * 子弹出现时的效果
@@ -94,11 +82,10 @@ public class ElementBullet extends ElementImageInset {
      */
     public void appearEffect(int downValue) {
 
-        if(effectWidth - downValue > 0) {
-            this.effectWidth -= downValue;
-        }
-        else {
-            this.effectWidth = 0;
+        this.effectWidth -= downValue;
+
+        if(effectWidth < width) {
+            this.effectWidth = width;
         }
 
     }
@@ -124,6 +111,19 @@ public class ElementBullet extends ElementImageInset {
     public double getAngle() {
 
         return angle;
+
+    }
+
+    public void setState(int state) {
+
+        this.state = state;
+
+    }
+
+    @Override
+    public ElementBullet getClone() {
+
+        return new ElementBullet(x, y, width, height, speed, angle, img);
 
     }
 

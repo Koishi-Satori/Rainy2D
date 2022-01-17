@@ -1,7 +1,7 @@
 package rainy2D.render.element;
 
-import rainy2D.render.helper.RenderHelper;
 import rainy2D.render.desktop.Window;
+import rainy2D.render.helper.RenderHelper;
 import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
@@ -10,6 +10,7 @@ import rainy2D.util.MathData;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 /**
  * 构造器：inset
@@ -21,10 +22,6 @@ public class ElementPlayer extends ElementImageOffset {
     double speedBackup;
     double speedQuick;
     double speedSlow;
-    int health;
-    int defence;
-    int magicLevel;
-    int bomb;
 
     boolean left;
     boolean right;
@@ -34,19 +31,16 @@ public class ElementPlayer extends ElementImageOffset {
     boolean slow;
     boolean run;
 
+    private final BufferedImage playerPoint = new ImageLocation("plp.png").get();
+
     public ElementPlayer(double x, double y, int width, int height, ImageLocation iml) {
 
         super(x, y, width, height, iml);
 
-        this.speed = 3.5;
-        this.speedQuick = 6;
-        this.speedSlow = 1;
+        this.speed = 2;
+        this.speedQuick = 3.2;
+        this.speedSlow = 0.7;
         this.speedBackup = this.speed;
-
-        this.health = 3;
-        this.defence = 0;
-        this.magicLevel = 1500;
-        this.bomb = 2;
 
     }
 
@@ -56,7 +50,7 @@ public class ElementPlayer extends ElementImageOffset {
         super.render(g);
 
         if(slow) {
-            RenderHelper.renderIn(MathData.round(x), MathData.round(y), 14, 14, new ImageLocation("plp.png"), g);
+            RenderHelper.renderIn(x, y, 14, 14, playerPoint, g);
         }
 
     }
@@ -64,25 +58,18 @@ public class ElementPlayer extends ElementImageOffset {
     @Override
     public void tick(Window window) {
 
-        super.tick(window);
+        this.walkLeft();
+        this.walkRight();
+        this.walkUp();
+        this.walkDown();
 
-        if(left) {
-            this.walkLeft();
-        }
-        if(right) {
-            this.walkRight();
-        }
-        if(up) {
-            this.walkUp();
-        }
-        if(down) {
-            this.walkDown();
-        }
         if(slow) {
             this.speed = this.speedSlow;
-        } else if(run) {
+        }
+        else if(run) {
             this.speed = this.speedQuick;
-        } else {
+        }
+        else {
             this.speed = this.speedBackup;
         }
 
@@ -133,7 +120,6 @@ public class ElementPlayer extends ElementImageOffset {
                         break;
                     case KeyEvent.VK_SPACE:
                         shoot = true;
-                        window.getScreenIn().pause();
                         break;
                     case KeyEvent.VK_SHIFT:
                         slow = true;
@@ -185,25 +171,33 @@ public class ElementPlayer extends ElementImageOffset {
 
     public void walkLeft() {
 
-        this.locate(x - speed, y);
+        if(left) {
+            this.locate(x - speed, y);
+        }
 
     }
 
     public void walkRight() {
 
-        this.locate(x + speed, y);
+        if(right) {
+            this.locate(x + speed, y);
+        }
 
     }
 
     public void walkUp() {
 
-        this.locate(x, y - speed);
+        if(up) {
+            this.locate(x, y - speed);
+        }
 
     }
 
     public void walkDown() {
 
-        this.locate(x, y + speed);
+        if(down) {
+            this.locate(x, y + speed);
+        }
 
     }
 

@@ -255,6 +255,12 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
+    public boolean forTick(int tick) {
+
+        return getTimer() % tick == 0;
+
+    }
+
     /**
      * 当设置分辨率时调用
      */
@@ -337,6 +343,10 @@ public class Screen extends JPanel implements Runnable {
             e = enemies.get(i);
             e.tick(window);
             e.render(g);
+
+            if(e.isOutWindow()) {
+                enemies.remove(e);
+            }
         }
 
     }
@@ -434,8 +444,8 @@ public class Screen extends JPanel implements Runnable {
      */
     public void earthQuake(int force) {
 
-        this.SC_LEFT = MathData.round(leftBuffer + MathData.random(- force, force));
-        this.SC_TOP = MathData.round(topBuffer + MathData.random(- force, force));
+        this.SC_LEFT = MathData.round(leftBuffer + MathData.random(-force, force));
+        this.SC_TOP = MathData.round(topBuffer + MathData.random(-force, force));
 
     }
 
@@ -451,7 +461,7 @@ public class Screen extends JPanel implements Runnable {
 
     public void clear() {
 
-        this.time = 0;
+        this.enemies.clear();
         this.bullets.clear();
 
     }
@@ -459,24 +469,37 @@ public class Screen extends JPanel implements Runnable {
     @Override
     public void run() {
 
+        int frame = 0;
+        long timer = System.currentTimeMillis();
+        long fpsTime = MathData.round(1000.0 / fps);
+        long updateTime;
+        long beforeTime;
+        long nowTime;
+
         try {
             //绘制、FPS调控
             while(true) {
 
-                long fpsTime = MathData.round(1000.0 / fps);
-                long updateTime;
-                long sleepTime;
-                long beforeTime = System.nanoTime();
+                beforeTime = System.nanoTime();
 
-                this.window.setScreenIn(this);
-                this.repaint();
+                //如果没有暂停，则进行游戏主逻辑
+                if(!isPause) {
+                    this.window.setScreenIn(this);
+                    this.repaint();
+                }
+                frame++;
 
-                updateTime = ((System.nanoTime() - beforeTime) / 1000000);
-                sleepTime = Math.max(5, fpsTime - updateTime);
+                nowTime = System.nanoTime();
+                updateTime = (nowTime - beforeTime) / 1000000;
 
-                this.nowFps = 1000.0 / (updateTime + sleepTime);
+                Thread.sleep(Math.max(fpsTime - updateTime, 16));
 
-                Thread.sleep(MathData.round(sleepTime));
+                //每秒得到fps
+                if(System.currentTimeMillis() - timer > 1000) {
+                    timer += 1000;
+                    this.nowFps = frame + updateTime;
+                    frame = 0;
+                }
 
             }
         } catch(InterruptedException e) {
@@ -491,7 +514,6 @@ public class Screen extends JPanel implements Runnable {
         public void run() {
 
             ElementBullet e;
-            int iterator = 0;
 
             for (int i = 0; i < bullets.size(); i++) {
                 if(bullets.get(i) != null) {
@@ -500,13 +522,11 @@ public class Screen extends JPanel implements Runnable {
                     if(e.isOutWindow()) {
                         bullets.remove(e);
                         bulletCache.reuse(e);
+                        i--;
                     }
 
-                    iterator++;
                 }
             }
-
-            window.setTitle(titleName + " [ Bullets : " + iterator + " ]" + " [ Fps : " + nowFps + " ]");
 
         }
 

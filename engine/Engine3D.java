@@ -15,7 +15,7 @@ public class Engine3D {
     public static void locate3D(Element e, double speed, double percent, int startY) {
 
         e.locate(e.getX(), e.getY() + speed / 100 * e.getY());
-        e.setSize(MathData.round(e.getY() / percent - startY / percent), MathData.round(e.getY() / percent / 1.5 - startY / percent / 1.5));
+        e.setSize(MathData.round(e.getY() / percent - startY / percent), MathData.round(e.getY() / percent / 2 - startY / percent / 2));
 
     }
 
