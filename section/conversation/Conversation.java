@@ -1,9 +1,9 @@
 package rainy2D.section.conversation;
 
 import rainy2D.render.desktop.Screen;
-import rainy2D.render.element.ElementImageInset;
-import rainy2D.render.helper.RenderHelper;
-import rainy2D.render.helper.ShapeHelper;
+import rainy2D.element.ElementImageInset;
+import rainy2D.render.graphic.Graphic2D;
+import rainy2D.render.graphic.Graphic;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
 
@@ -12,6 +12,7 @@ import java.awt.*;
 public class Conversation {
 
     public static Color DEFAULT_COLOR = new Color(221, 221, 221);
+    public static Color DEFAULT_BG_COLOR = new Color(0, 0, 0, 120);
     public static Font DEFAULT_FONT = new Font("微软雅黑", Font.BOLD, 30);
 
     Screen screen;
@@ -24,14 +25,12 @@ public class Conversation {
     String str3;
 
     ElementImageInset character;
-    int width;
-    int height;
 
     public Conversation(Screen screen) {
 
         this.screen = screen;
         this.field = screen.getField();
-        this.textIn = new Rectangle(field.getPX(0.1), field.getPY(0.7), field.getPWidth(0.8), field.getPHeight(0.2)) ;
+        this.textIn = new Rectangle(field.getX(0.1), field.getY(0.7), field.getWidth(0.8), field.getHeight(0.2)) ;
 
     }
 
@@ -42,12 +41,12 @@ public class Conversation {
     public void createConversation(ElementImageInset character) {
 
         this.character = character;
-        this.character.locate(field.getPX(0.15), field.getPY(0.7));
+        this.character.locate(field.getX(0.15), field.getY(0.7));
         this.sizeOption(character.getImage().getHeight());
 
     }
 
-    public void sizeOption(double heightImage) {
+    private void sizeOption(double heightImage) {
 
         double percent = this.character.getHeight() / heightImage;
         this.character.setSize(MathData.round(character.getImage().getWidth() * percent), character.getHeight());
@@ -68,17 +67,22 @@ public class Conversation {
 
     }
 
+    /**
+     * 渲染对话，每刻调用
+     * @param g 画笔
+     */
     public void speak(Graphics g) {
 
-        RenderHelper.render(character, g);
+        Graphic.render(character, g);
 
-        ShapeHelper.setColor(new Color(0, 0, 0, 120), g);
-        ShapeHelper.renderRect(textIn, g);
+        Graphic2D.setColor(DEFAULT_BG_COLOR, g);
+        Graphic2D.renderRect(textIn, g);
 
-        ShapeHelper.setColor(DEFAULT_COLOR, g);
-        ShapeHelper.renderString(textIn.getPX(0.05), textIn.getPY(0.25), DEFAULT_FONT, str1, g);
-        ShapeHelper.renderString(textIn.getPX(0.05), textIn.getPY(0.5), DEFAULT_FONT, str2, g);
-        ShapeHelper.renderString(textIn.getPX(0.05), textIn.getPY(0.75), DEFAULT_FONT, str3, g);
+        Graphic2D.setColor(DEFAULT_COLOR, g);
+        Graphic2D.setFont(DEFAULT_FONT, g);
+        Graphic2D.renderString(textIn.getX(0.05), textIn.getY(0.25), str1, g);
+        Graphic2D.renderString(textIn.getX(0.05), textIn.getY(0.5), str2, g);
+        Graphic2D.renderString(textIn.getX(0.05), textIn.getY(0.75), str3, g);
 
     }
 

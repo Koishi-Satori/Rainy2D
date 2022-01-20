@@ -1,12 +1,12 @@
 package rainy2D.render.desktop;
 
-import rainy2D.render.element.ElementEnemy;
-import rainy2D.render.helper.RenderHelper;
-import rainy2D.render.helper.ShapeHelper;
-import rainy2D.util.BulletCacheList;
-import rainy2D.render.element.Element;
-import rainy2D.render.element.ElementBullet;
+import rainy2D.element.Element;
+import rainy2D.element.ElementBullet;
+import rainy2D.element.ElementEnemy;
+import rainy2D.render.graphic.Graphic;
+import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Rectangle;
+import rainy2D.util.BulletCacheList;
 import rainy2D.util.MathData;
 
 import javax.swing.*;
@@ -22,6 +22,9 @@ public class Screen extends JPanel implements Runnable {
     public int WI_WIDTH;
     public int WI_HEIGHT;
 
+    /**
+     * 缓存SC变量
+     */
     int leftBuffer;
     int topBuffer;
 
@@ -29,8 +32,8 @@ public class Screen extends JPanel implements Runnable {
      * 一些内部变量，如果你不非常了解，请不要乱动！
      * bufferWidth:缓冲图像宽
      * bufferHeight:缓冲图像高
-     * totalWidth:实际显示宽度（保持比例）
-     * totalHeight：实际显示高度
+     * totalWidth:实际显示宽度（保持比例）= SC_WIDTH
+     * totalHeight：实际显示高度 = SC_HEIGHT
      */
     protected int bufferWidth;
     protected int bufferHeight;
@@ -38,7 +41,7 @@ public class Screen extends JPanel implements Runnable {
     private int totalWidth;
     private int totalHeight;
 
-    int fps;
+    private int fps;
     public double nowFps;
 
     /**
@@ -59,12 +62,16 @@ public class Screen extends JPanel implements Runnable {
 
     Rectangle field;
 
-    Image iBuffer;
-    Graphics gBuffer;
+    Image imageBuffer;
+    Graphics graphicsBuffer;
     Color overFieldColor;
 
     public ArrayList<Element> imageBottom = new ArrayList<>();
     public ArrayList<ElementBullet> bullets = new ArrayList<>();
+    /**
+     * 由于bullets的size非常大，每次计算会耗费性能，所以用这个遍历就可以了
+     */
+    public int bulletsLengthNow;
     public ArrayList<ElementEnemy> enemies = new ArrayList<>();
     public ArrayList<Element> imageFront = new ArrayList<>();
 
@@ -185,7 +192,7 @@ public class Screen extends JPanel implements Runnable {
      * 放置组件都要在这个范围内进行，然后按比例绘制到屏幕上。
      * 原理：
      * 先在底层的window上设置相同大小的screen，然后创建缓冲图片，在图片上绘制画面，并按比例缩放到window上。
-     * 所以严格来说只有一个image组件的样子（笑）
+     * 所以严格来说只有一个image组件
      * 需要注意的是，添加组件时是绘制在缓冲图上，所以请不要使用SC系列的变量了。范围为[0, 0] ~ [bufferWidth, bufferHeight]
      * @param g 没什么可说的？
      */
@@ -193,13 +200,13 @@ public class Screen extends JPanel implements Runnable {
     public void paint(Graphics g) {
 
         //双缓冲
-        if(iBuffer == null) {
+        if(imageBuffer == null) {
             this.callChangeSize();
-            this.gBuffer = this.iBuffer.getGraphics();
-            this.gBuffer.setColor(getBackground());
+            this.graphicsBuffer = this.imageBuffer.getGraphics();
+            this.graphicsBuffer.setColor(getBackground());
         }
-        ShapeHelper.renderRect(0, 0, WI_WIDTH, WI_HEIGHT, gBuffer);
-        super.paint(gBuffer);
+        Graphic2D.renderRect(0, 0, WI_WIDTH, WI_HEIGHT, graphicsBuffer);
+        super.paint(graphicsBuffer);
 
         //初始化
         if (!init) {
@@ -211,21 +218,21 @@ public class Screen extends JPanel implements Runnable {
         this.tick();
 
         //遍历调刻和渲染(越后调用，图层处于越高层）
-        this.renderBottomImage(gBuffer);//包装完毕方法
-        this.renderFrontImage(gBuffer);//包装完毕方法
-        this.bulletTick(gBuffer);//包装完毕方法
-        this.enemyTick(gBuffer);//包装完毕方法
+        this.renderBottomImage(graphicsBuffer);//包装完毕方法
+        this.renderFrontImage(graphicsBuffer);//包装完毕方法
+        this.bulletTick(graphicsBuffer);//包装完毕方法
+        this.enemyTick(graphicsBuffer);//包装完毕方法
 
-        this.renderInField(gBuffer);//自定义方法
-        this.renderOverField(gBuffer);//包装完毕方法
-        this.renderStrings(gBuffer);//自定义方法
-        this.renderAboveField(gBuffer);//自定义方法
+        this.renderInField(graphicsBuffer);//自定义方法
+        this.renderOverField(graphicsBuffer);//包装完毕方法
+        this.renderStrings(graphicsBuffer);//自定义方法
+        this.renderAboveField(graphicsBuffer);//自定义方法
 
         //将缓冲图片绘制到screen上
-        RenderHelper.render(SC_LEFT, SC_TOP, SC_WIDTH, SC_HEIGHT, iBuffer, g);
+        Graphic.render(SC_LEFT, SC_TOP, SC_WIDTH, SC_HEIGHT, imageBuffer, g);
         //当屏幕比例不对时，在两边绘制黑色方框
-        ShapeHelper.renderRect2D(0, 0, SC_LEFT, WI_HEIGHT, g);
-        ShapeHelper.renderRect2D(SC_WIDTH + SC_LEFT, 0, WI_WIDTH, WI_HEIGHT, g);
+        Graphic2D.renderRect2D(0, 0, SC_LEFT, WI_HEIGHT, g);
+        Graphic2D.renderRect2D(SC_WIDTH + SC_LEFT, 0, WI_WIDTH, WI_HEIGHT, g);
 
     }
 
@@ -266,14 +273,14 @@ public class Screen extends JPanel implements Runnable {
      */
     public void callChangeSize() {
 
-        this.iBuffer = this.createImage(bufferWidth, bufferHeight);
+        this.imageBuffer = this.createImage(bufferWidth, bufferHeight);
 
     }
 
     /**
      * 请复写这个方法，调用ShapeHelper绘制文字。
      * 为什么不将string视为一个element？因为有bug...
-     * @param g gBuffer
+     * @param g graphicsBuffer
      * @layer top
      */
     public void renderStrings(Graphics g) {
@@ -311,13 +318,13 @@ public class Screen extends JPanel implements Runnable {
 
         g.setColor(overFieldColor);
 
-        ShapeHelper.renderRect(0, 0, left, WI_HEIGHT, g);
-        ShapeHelper.renderRect(0, 0, WI_WIDTH, top, g);
-        ShapeHelper.renderRect(right, top, WI_WIDTH - right, WI_HEIGHT - top, g);
-        ShapeHelper.renderRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom, g);
+        Graphic2D.renderRect(0, 0, left, WI_HEIGHT, g);
+        Graphic2D.renderRect(0, 0, WI_WIDTH, top, g);
+        Graphic2D.renderRect(right, top, WI_WIDTH - right, WI_HEIGHT - top, g);
+        Graphic2D.renderRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom, g);
 
         g.setColor(new Color(125, 125, 125));
-        ShapeHelper.renderFrame(left - 5, top - 5, right + 5, bottom + 5, 5, g);
+        Graphic2D.renderFrame(left - 5, top - 5, right + 5, bottom + 5, 5, g);
 
     }
 
@@ -326,9 +333,11 @@ public class Screen extends JPanel implements Runnable {
         ElementBullet e;
 
         for (int i = 0; i < bullets.size(); i++) {
-            e = bullets.get(i);
-            e.tick(window);
-            e.render(g);
+            if(bullets.get(i) != null) {
+                e = bullets.get(i);
+                e.tick(window);
+                e.render(g);
+            }
         }
 
         new Remover().start();
@@ -345,7 +354,7 @@ public class Screen extends JPanel implements Runnable {
             e.render(g);
 
             if(e.isOutWindow()) {
-                enemies.remove(e);
+                enemies.remove(i);
             }
         }
 
@@ -402,15 +411,9 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    public double getPercent() {
-
-        return overPercent;
-
-    }
-
     public Image getImageBuffer() {
 
-        return iBuffer;
+        return imageBuffer;
 
     }
 
@@ -426,7 +429,7 @@ public class Screen extends JPanel implements Runnable {
      */
     public Graphics getGraphicsBuffer() {
 
-        return gBuffer;
+        return graphicsBuffer;
 
     }
 
@@ -492,6 +495,10 @@ public class Screen extends JPanel implements Runnable {
                 nowTime = System.nanoTime();
                 updateTime = (nowTime - beforeTime) / 1000000;
 
+                if(updateTime >= fpsTime) {
+                    continue;
+                }
+
                 Thread.sleep(Math.max(fpsTime - updateTime, 16));
 
                 //每秒得到fps
@@ -520,11 +527,9 @@ public class Screen extends JPanel implements Runnable {
                     e = bullets.get(i);
 
                     if(e.isOutWindow()) {
-                        bullets.remove(e);
+                        bullets.remove(i);
                         bulletCache.reuse(e);
-                        i--;
                     }
-
                 }
             }
 

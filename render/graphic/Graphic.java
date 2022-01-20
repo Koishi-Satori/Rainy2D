@@ -1,12 +1,12 @@
-package rainy2D.render.helper;
+package rainy2D.render.graphic;
 
-import rainy2D.render.element.Element;
+import rainy2D.element.Element;
 import rainy2D.resource.ImageLocation;
 import rainy2D.util.MathData;
 
 import java.awt.*;
 
-public class RenderHelper {
+public class Graphic {
 
     /**
      * 传入element自动渲染

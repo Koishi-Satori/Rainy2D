@@ -1,10 +1,10 @@
-package rainy2D.render.helper;
+package rainy2D.render.graphic;
 
 import rainy2D.shape.Rectangle;
 
 import java.awt.*;
 
-public class ShapeHelper {
+public class Graphic2D {
 
     /**
      * 设置画笔颜色
@@ -19,6 +19,15 @@ public class ShapeHelper {
         
         return oldC;
         
+    }
+
+    public static Font setFont(Font f, Graphics g) {
+
+        Font oldF = g.getFont();
+        g.setFont(f);
+
+        return oldF;
+
     }
 
     /**
@@ -76,9 +85,8 @@ public class ShapeHelper {
     /**
      * 绘制文本的方法
      */
-    public static void renderString(int x, int y, Font f, String str, Graphics g) {
+    public static void renderString(int x, int y, String str, Graphics g) {
 
-        g.setFont(f);
         g.drawString(str, x, y);
 
     }

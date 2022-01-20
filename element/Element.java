@@ -1,6 +1,6 @@
-package rainy2D.render.element;
+package rainy2D.element;
 
-import rainy2D.render.helper.RenderHelper;
+import rainy2D.render.graphic.Graphic;
 import rainy2D.shape.Circle;
 import rainy2D.render.desktop.Window;
 import rainy2D.resource.ImageLocation;
@@ -50,7 +50,7 @@ public class Element {
 
     public void render(Graphics g) {
 
-        RenderHelper.render(this, g);
+        Graphic.render(this, g);
 
     }
 

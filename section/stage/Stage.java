@@ -1,11 +1,9 @@
 package rainy2D.section.stage;
 
-import rainy2D.engine.Engine3D;
 import rainy2D.render.desktop.Screen;
-import rainy2D.render.element.Element;
-import rainy2D.render.element.ElementBullet;
-import rainy2D.render.element.ElementEnemy;
-import rainy2D.render.element.ElementPlayer;
+import rainy2D.element.ElementBullet;
+import rainy2D.element.ElementEnemy;
+import rainy2D.element.ElementPlayer;
 import rainy2D.shape.Direction;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
@@ -25,21 +23,28 @@ public class Stage {
 
     }
 
+    /**
+     * 添加一个敌人
+     * @param e 敌人模板
+     * @param appearPercent 出现位置在field一条边上的百分比
+     * @param direction 出现方向
+     * @return 生成的新敌人
+     */
     public ElementEnemy addEnemy(ElementEnemy e, double appearPercent, int direction) {
 
         ElementEnemy enemy = e.getClone();
 
         if(direction == Direction.LEFT) {
             enemy.setAngle(e.getAngle());
-            enemy.locate(field.getX(), field.getPY(appearPercent));
+            enemy.locate(field.getX(), field.getY(appearPercent));
         }
         else if(direction == Direction.RIGHT){
             enemy.setAngle(180 - e.getAngle());
-            enemy.locate(field.getX2(), field.getPY(appearPercent));
+            enemy.locate(field.getX2(), field.getY(appearPercent));
         }
         else if(direction == Direction.UP || direction == Direction.DOWN) {
             enemy.setAngle(e.getAngle());
-            enemy.locate(field.getPX(appearPercent), field.getY());
+            enemy.locate(field.getX(appearPercent), field.getY());
         }
 
         this.screen.add(enemy, screen.enemies);
@@ -57,13 +62,21 @@ public class Stage {
      */
     public ElementBullet enemyShoot(ElementEnemy e, ElementBullet b, double angle) {
 
+        //复制一份子弹并设置信息
         ElementBullet bullet = this.screen.bulletCache.getClone(b);
         bullet.locate(e.getX(), e.getY());
         bullet.setAngle(angle);
 
+        //添加
         this.screen.add(bullet, screen.bullets);
 
         return bullet;
+
+    }
+
+    public boolean isEnemyReady(ElementEnemy e) {
+
+        return screen.enemies.contains(e);
 
     }
 
@@ -77,33 +90,11 @@ public class Stage {
 
         ElementBullet bullet = screen.bulletCache.getClone(b);
         bullet.locate(e.getX(), e.getY());
-        bullet.setAngle(-90 + MathData.random(-5, 5));
+        bullet.setAngle(-90 + MathData.random(-5, 5));//略微散开的子弹
 
         this.screen.add(bullet, screen.bullets);
 
         return bullet;
-
-    }
-
-    public void backgroundImage3DRender(Element e, double speed, double percent, int startY) {
-
-        Element bgImage;
-
-        if(screen.imageBottom.size() < 500) {
-            bgImage = e.getClone();
-            this.screen.add(bgImage, screen.imageBottom);
-            bgImage.locate(screen.randomPoint().x, startY);
-        }
-
-        for(int i = 0; i < screen.imageBottom.size(); i++) {
-            bgImage = screen.imageBottom.get(i);
-
-            Engine3D.locate3D(bgImage, speed, percent, startY);
-
-            if(!bgImage.getRect().intersects(screen.getField()) && bgImage.getY() > 200) {
-                this.screen.imageBottom.remove(bgImage);
-            }
-        }
 
     }
 

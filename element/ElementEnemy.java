@@ -1,11 +1,11 @@
-package rainy2D.render.element;
+package rainy2D.element;
 
 import rainy2D.render.desktop.Window;
 import rainy2D.vector.R2DVector;
 
 import java.awt.image.BufferedImage;
 
-public class ElementEnemy extends ElementBullet {
+public class ElementEnemy extends ElementVector {
 
     public ElementEnemy(double x, double y, int width, int height, double speed, double angle, BufferedImage img) {
 

@@ -1,11 +1,6 @@
 package rainy2D.vector;
 
-import rainy2D.resource.ImageLocation;
-
 public class R2DBullet {
-
-    public static final ImageLocation BL_LIGHT1 = new ImageLocation("bl01.png");
-    public static final ImageLocation BL_LIGHT2 = new ImageLocation("bl02.png");
 
     /**
      * 不可旋转子弹，不会改变方向

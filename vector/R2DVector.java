@@ -1,6 +1,6 @@
 package rainy2D.vector;
 
-import rainy2D.render.element.Element;
+import rainy2D.element.Element;
 import rainy2D.util.MathData;
 
 import java.awt.*;

@@ -1,7 +1,7 @@
-package rainy2D.render.element;
+package rainy2D.element;
 
 import rainy2D.render.desktop.Window;
-import rainy2D.render.helper.RenderHelper;
+import rainy2D.render.graphic.Graphic;
 import rainy2D.vector.R2DVector;
 
 import java.awt.*;
@@ -11,16 +11,13 @@ import java.awt.image.BufferedImage;
  * 构造器：inset
  * 超类：inset
  */
-public class ElementBullet extends ElementImageInset {
+public class ElementBullet extends ElementVector {
 
     public static int EFFECT_DOWN_VALUE = 5;
 
     public static final int HIT_PLAYER = 0;
     public static final int HIT_ENEMY = 1;
     public int state;
-
-    double speed;
-    double angle;
 
     int effectWidth;
 
@@ -38,10 +35,7 @@ public class ElementBullet extends ElementImageInset {
      */
     public ElementBullet(double x, double y, int width, int height, double speed, double angle, BufferedImage img) {
 
-        super(x, y, width, height, img);
-
-        this.speed = speed;
-        this.angle = angle;
+        super(x, y, width, height, speed, angle, img);
 
         this.resetEffect();
         this.setState(0);
@@ -53,8 +47,8 @@ public class ElementBullet extends ElementImageInset {
 
         this.appearEffect(EFFECT_DOWN_VALUE);
 
-        this.locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
         this.checkOutWindow(window);
+        this.locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
 
     }
 
@@ -65,7 +59,7 @@ public class ElementBullet extends ElementImageInset {
             super.render(g);
         }
         else {
-            RenderHelper.renderIn(x, y, effectWidth, effectWidth, img, g);
+            Graphic.renderIn(x, y, effectWidth, effectWidth, img, g);
         }
 
     }
@@ -87,30 +81,6 @@ public class ElementBullet extends ElementImageInset {
         if(effectWidth < width) {
             this.effectWidth = width;
         }
-
-    }
-
-    public void setSpeed(double speed) {
-
-        this.speed = speed;
-
-    }
-
-    public void setAngle(double angle) {
-
-        this.angle = angle;
-
-    }
-
-    public double getSpeed() {
-
-        return speed;
-
-    }
-
-    public double getAngle() {
-
-        return angle;
 
     }
 

@@ -1,11 +1,12 @@
-package rainy2D.render.element;
+package rainy2D.element;
 
 import rainy2D.render.desktop.Window;
-import rainy2D.render.helper.RenderHelper;
+import rainy2D.render.graphic.Graphic;
 import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
+import rainy2D.vector.R2DVector;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -16,9 +17,8 @@ import java.awt.image.BufferedImage;
  * 构造器：inset
  * 超类：inset
  */
-public class ElementPlayer extends ElementImageOffset {
-
-    double speed;
+public class ElementPlayer extends ElementVector {
+    
     double speedBackup;
     double speedQuick;
     double speedSlow;
@@ -33,14 +33,13 @@ public class ElementPlayer extends ElementImageOffset {
 
     private final BufferedImage playerPoint = new ImageLocation("plp.png").get();
 
-    public ElementPlayer(double x, double y, int width, int height, ImageLocation iml) {
+    public ElementPlayer(double x, double y, int width, int height, BufferedImage img) {
 
-        super(x, y, width, height, iml);
-
-        this.speed = 2;
-        this.speedQuick = 3.2;
-        this.speedSlow = 0.7;
-        this.speedBackup = this.speed;
+        super(x, y, width, height, 1.5, 0, img);
+        
+        this.speedQuick = 2.5;
+        this.speedSlow = 0.5;
+        this.speedBackup = speed;
 
     }
 
@@ -50,7 +49,7 @@ public class ElementPlayer extends ElementImageOffset {
         super.render(g);
 
         if(slow) {
-            RenderHelper.renderIn(x, y, 14, 14, playerPoint, g);
+            Graphic.renderIn(x, y, 14, 14, playerPoint, g);
         }
 
     }
@@ -58,10 +57,10 @@ public class ElementPlayer extends ElementImageOffset {
     @Override
     public void tick(Window window) {
 
-        this.walkLeft();
-        this.walkRight();
-        this.walkUp();
-        this.walkDown();
+        this.checkAngle();
+        if(up || left || down || right) {
+            this.locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
+        }
 
         if(slow) {
             this.speed = this.speedSlow;
@@ -95,6 +94,35 @@ public class ElementPlayer extends ElementImageOffset {
             this.locate(x, field.getY2());
         }
 
+    }
+    
+    public void checkAngle() {
+        
+        if(up && right) {
+            setAngle(315);
+        }
+        else if(up && left) {
+            setAngle(225);
+        }
+        else if(down && left) {
+            setAngle(135);
+        }
+        else if(down && right) {
+            setAngle(45);
+        }
+        else if(up) {
+            setAngle(270);
+        }
+        else if(left) {
+            setAngle(180);
+        }
+        else if(down) {
+            setAngle(90);
+        }
+        else if(right) {
+            setAngle(0);
+        }
+        
     }
 
     public void playerControl(Window window) {
@@ -166,38 +194,6 @@ public class ElementPlayer extends ElementImageOffset {
         };
 
         window.addKeyListener(k);
-
-    }
-
-    public void walkLeft() {
-
-        if(left) {
-            this.locate(x - speed, y);
-        }
-
-    }
-
-    public void walkRight() {
-
-        if(right) {
-            this.locate(x + speed, y);
-        }
-
-    }
-
-    public void walkUp() {
-
-        if(up) {
-            this.locate(x, y - speed);
-        }
-
-    }
-
-    public void walkDown() {
-
-        if(down) {
-            this.locate(x, y + speed);
-        }
 
     }
 
