@@ -1,6 +1,7 @@
 package rainy2D.element;
 
 import rainy2D.resource.ImageLocation;
+import rainy2D.shape.Rectangle;
 
 import java.awt.image.BufferedImage;
 
@@ -16,9 +17,21 @@ public class ElementImageOffset extends Element {
 
     }
 
+    public ElementImageOffset(Rectangle rect, BufferedImage img) {
+
+        super(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), img);
+
+    }
+
     public ElementImageOffset(double offsetX, double offsetY, int width, int height, ImageLocation iml) {
 
         super(offsetX, offsetY, width, height, iml);
+
+    }
+
+    public ElementImageOffset(Rectangle rect, ImageLocation iml) {
+
+        super(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), iml);
 
     }
 

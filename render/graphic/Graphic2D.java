@@ -1,8 +1,10 @@
 package rainy2D.render.graphic;
 
 import rainy2D.shape.Rectangle;
+import rainy2D.util.MathData;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Graphic2D {
 
@@ -88,6 +90,21 @@ public class Graphic2D {
     public static void renderString(int x, int y, String str, Graphics g) {
 
         g.drawString(str, x, y);
+
+    }
+
+    public static BufferedImage rotate(BufferedImage img, double angle) {
+
+        int width = img.getWidth();
+        int height = img.getHeight();
+
+        BufferedImage imgRotated = new BufferedImage(width, height, img.getTransparency());
+        Graphics2D g = (Graphics2D) imgRotated.getGraphics();
+        g.rotate(MathData.toRadians(angle), width / 2, height / 2);
+        Graphic.render(0, 0, img, g);
+        g.dispose();
+
+        return imgRotated;
 
     }
 

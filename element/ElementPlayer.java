@@ -2,6 +2,7 @@ package rainy2D.element;
 
 import rainy2D.render.desktop.Window;
 import rainy2D.render.graphic.Graphic;
+import rainy2D.render.graphic.Graphic2D;
 import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
@@ -23,22 +24,27 @@ public class ElementPlayer extends ElementVector {
     double speedQuick;
     double speedSlow;
 
-    boolean left;
-    boolean right;
-    boolean up;
-    boolean down;
+    public boolean left;
+    public boolean right;
+    public boolean up;
+    public boolean down;
+
     boolean shoot;
     boolean slow;
     boolean run;
 
-    private final BufferedImage playerPoint = new ImageLocation("plp.png").get();
+    private BufferedImage playerPoint = new ImageLocation("plp.png").get();
+
+    private int BIGGEST_POINT_SIZE = 16;
+    private int pointSize;
+    private double pointAngle;
 
     public ElementPlayer(double x, double y, int width, int height, BufferedImage img) {
 
-        super(x, y, width, height, 1.5, 0, img);
+        super(x, y, width, height, 3.5, 0, img);
         
-        this.speedQuick = 2.5;
-        this.speedSlow = 0.5;
+        this.speedQuick = 4.8;
+        this.speedSlow = 0.8;
         this.speedBackup = speed;
 
     }
@@ -48,8 +54,16 @@ public class ElementPlayer extends ElementVector {
 
         super.render(g);
 
-        if(slow) {
-            Graphic.renderIn(x, y, 14, 14, playerPoint, g);
+        //改变pointAngle并渲染point
+        this.pointAngle += 0.5;
+        Graphic.renderIn(x, y, pointSize, pointSize, Graphic2D.rotate(playerPoint, pointAngle), g);
+
+        //改变pointSize
+        if(slow && pointSize < BIGGEST_POINT_SIZE) {
+            this.pointSize++;
+        }
+        else if(pointSize > 0){
+            this.pointSize--;
         }
 
     }

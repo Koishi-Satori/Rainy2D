@@ -14,12 +14,11 @@ import java.awt.image.BufferedImage;
 public class ElementBullet extends ElementVector {
 
     public static int EFFECT_DOWN_VALUE = 5;
-
     public static final int HIT_PLAYER = 0;
     public static final int HIT_ENEMY = 1;
-    public int state;
 
-    int effectWidth;
+    private int state;
+    private int effectWidth;
 
     /**
      * BulletCacheList用构造器
@@ -74,7 +73,7 @@ public class ElementBullet extends ElementVector {
      * 子弹出现时的效果
      * @param downValue 缩小速度值
      */
-    public void appearEffect(int downValue) {
+    private void appearEffect(int downValue) {
 
         this.effectWidth -= downValue;
 
@@ -90,10 +89,9 @@ public class ElementBullet extends ElementVector {
 
     }
 
-    @Override
-    public ElementBullet getClone() {
+    public int getState() {
 
-        return new ElementBullet(x, y, width, height, speed, angle, img);
+        return state;
 
     }
 

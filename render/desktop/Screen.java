@@ -1,17 +1,14 @@
 package rainy2D.render.desktop;
 
 import rainy2D.element.Element;
-import rainy2D.element.ElementBullet;
-import rainy2D.element.ElementEnemy;
 import rainy2D.render.graphic.Graphic;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Rectangle;
-import rainy2D.util.BulletCacheList;
+import rainy2D.util.Array;
 import rainy2D.util.MathData;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class Screen extends JPanel implements Runnable {
 
@@ -41,7 +38,7 @@ public class Screen extends JPanel implements Runnable {
     private int totalWidth;
     private int totalHeight;
 
-    private int fps;
+    public int fps;
     public double nowFps;
 
     /**
@@ -57,25 +54,17 @@ public class Screen extends JPanel implements Runnable {
      */
     boolean init;
 
-    Window window;
     String titleName;
-
     Rectangle field;
-
     Image imageBuffer;
     Graphics graphicsBuffer;
     Color overFieldColor;
 
-    public ArrayList<Element> imageBottom = new ArrayList<>();
-    public ArrayList<ElementBullet> bullets = new ArrayList<>();
-    /**
-     * 由于bullets的size非常大，每次计算会耗费性能，所以用这个遍历就可以了
-     */
-    public int bulletsLengthNow;
-    public ArrayList<ElementEnemy> enemies = new ArrayList<>();
-    public ArrayList<Element> imageFront = new ArrayList<>();
+    public Window window;
 
-    public BulletCacheList bulletCache;
+    public Array<Element> imageBottom = new Array<>();
+    public Array<Element> imageMiddle = new Array<>();
+    public Array<Element> imageFront = new Array<>();
 
     boolean isPause;
 
@@ -181,23 +170,13 @@ public class Screen extends JPanel implements Runnable {
      * @param e 所有render.element包中的类
      * @param list 参考类的几个数组，imageBottom为背景，bullets为子弹，imageFront为UI
      */
-    public void add(Element e, ArrayList list) {
+    public void add(Element e, Array list) {
 
         list.add(e);
 
     }
 
-    /**
-     * 默认生成的是一个900x600的图像
-     * 放置组件都要在这个范围内进行，然后按比例绘制到屏幕上。
-     * 原理：
-     * 先在底层的window上设置相同大小的screen，然后创建缓冲图片，在图片上绘制画面，并按比例缩放到window上。
-     * 所以严格来说只有一个image组件
-     * 需要注意的是，添加组件时是绘制在缓冲图上，所以请不要使用SC系列的变量了。范围为[0, 0] ~ [bufferWidth, bufferHeight]
-     * @param g 没什么可说的？
-     */
-    @Override
-    public void paint(Graphics g) {
+    public void bufferTick() {
 
         //双缓冲
         if(imageBuffer == null) {
@@ -217,22 +196,39 @@ public class Screen extends JPanel implements Runnable {
         this.cycleTime();
         this.tick();
 
-        //遍历调刻和渲染(越后调用，图层处于越高层）
-        this.renderBottomImage(graphicsBuffer);//包装完毕方法
-        this.renderFrontImage(graphicsBuffer);//包装完毕方法
-        this.bulletTick(graphicsBuffer);//包装完毕方法
-        this.enemyTick(graphicsBuffer);//包装完毕方法
+    }
 
-        this.renderInField(graphicsBuffer);//自定义方法
-        this.renderOverField(graphicsBuffer);//包装完毕方法
-        this.renderStrings(graphicsBuffer);//自定义方法
-        this.renderAboveField(graphicsBuffer);//自定义方法
+    public void bufferPaint(Graphics g) {
 
         //将缓冲图片绘制到screen上
         Graphic.render(SC_LEFT, SC_TOP, SC_WIDTH, SC_HEIGHT, imageBuffer, g);
         //当屏幕比例不对时，在两边绘制黑色方框
         Graphic2D.renderRect2D(0, 0, SC_LEFT, WI_HEIGHT, g);
         Graphic2D.renderRect2D(SC_WIDTH + SC_LEFT, 0, WI_WIDTH, WI_HEIGHT, g);
+
+    }
+
+    /**
+     * 默认生成的是一个900x600的图像
+     * 放置组件都要在这个范围内进行，然后按比例绘制到屏幕上。
+     * 原理：
+     * 先在底层的window上设置相同大小的screen，然后创建缓冲图片，在图片上绘制画面，并按比例缩放到window上。
+     * 所以严格来说只有一个image组件
+     * 需要注意的是，添加组件时是绘制在缓冲图上，所以请不要使用SC系列的变量了。范围为[0, 0] ~ [bufferWidth, bufferHeight]
+     * @param g 没什么可说的？
+     */
+    @Override
+    public void paint(Graphics g) {
+
+        this.bufferTick();
+
+        //遍历调刻和渲染(越后调用，图层处于越高层）
+        //此处可以继承本类并修改
+        this.renderBottomImage(graphicsBuffer);
+        this.renderMiddleImage(graphicsBuffer);
+        this.renderFrontImage(graphicsBuffer);
+
+        this.bufferPaint(g);
 
     }
 
@@ -262,9 +258,26 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
+    /**
+     * 每x刻进行一次操作
+     * @param tick 间隔
+     * @return 可操作时返回true
+     */
     public boolean forTick(int tick) {
 
         return getTimer() % tick == 0;
+
+    }
+
+    /**
+     * 每x刻进行一次操作
+     * @param tick 间隔
+     * @param period 持续时间
+     * @return 可操作时返回true
+     */
+    public boolean forTick(int tick, int period) {
+
+        return getTimer() % tick < period;
 
     }
 
@@ -277,95 +290,24 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    /**
-     * 请复写这个方法，调用ShapeHelper绘制文字。
-     * 为什么不将string视为一个element？因为有bug...
-     * @param g graphicsBuffer
-     * @layer top
-     */
-    public void renderStrings(Graphics g) {
-    }
-
-    /**
-     * 在field范围内高自由度地绘制
-     */
-    public void renderInField(Graphics g) {
-    }
-
-    /**
-     * 在最顶层自由绘制
-     */
-    public void renderAboveField(Graphics g) {
-    }
-
-    @Override
-    public void update(Graphics g) {
-
-        this.paint(g);
-
-    }
-
-    /**
-     * 填充除field以外的部分
-     * @param g 画笔
-     */
-    public void renderOverField(Graphics g) {
-
-        int left = this.field.getX();
-        int top = this.field.getY();
-        int right = this.field.getX2();
-        int bottom = this.field.getY2();
-
-        g.setColor(overFieldColor);
-
-        Graphic2D.renderRect(0, 0, left, WI_HEIGHT, g);
-        Graphic2D.renderRect(0, 0, WI_WIDTH, top, g);
-        Graphic2D.renderRect(right, top, WI_WIDTH - right, WI_HEIGHT - top, g);
-        Graphic2D.renderRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom, g);
-
-        g.setColor(new Color(125, 125, 125));
-        Graphic2D.renderFrame(left - 5, top - 5, right + 5, bottom + 5, 5, g);
-
-    }
-
-    public void bulletTick(Graphics g) {
-
-        ElementBullet e;
-
-        for (int i = 0; i < bullets.size(); i++) {
-            if(bullets.get(i) != null) {
-                e = bullets.get(i);
-                e.tick(window);
-                e.render(g);
-            }
-        }
-
-        new Remover().start();
-
-    }
-
-    public void enemyTick(Graphics g) {
-
-        ElementEnemy e;
-
-        for (int i = 0; i < enemies.size(); i++) {
-            e = enemies.get(i);
-            e.tick(window);
-            e.render(g);
-
-            if(e.isOutWindow()) {
-                enemies.remove(i);
-            }
-        }
-
-    }
-
     public void renderBottomImage(Graphics g) {
 
         Element e;
 
         for(int i = 0; i < imageBottom.size(); i++) {
             e = imageBottom.get(i);
+            e.tick(window);
+            e.render(g);
+        }
+
+    }
+
+    public void renderMiddleImage(Graphics g) {
+
+        Element e;
+
+        for(int i = 0; i < imageMiddle.size(); i++) {
+            e = imageMiddle.get(i);
             e.tick(window);
             e.render(g);
         }
@@ -462,13 +404,6 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    public void clear() {
-
-        this.enemies.clear();
-        this.bullets.clear();
-
-    }
-
     @Override
     public void run() {
 
@@ -511,28 +446,6 @@ public class Screen extends JPanel implements Runnable {
             }
         } catch(InterruptedException e) {
             e.printStackTrace();
-        }
-
-    }
-
-    private class Remover extends Thread {
-
-        @Override
-        public void run() {
-
-            ElementBullet e;
-
-            for (int i = 0; i < bullets.size(); i++) {
-                if(bullets.get(i) != null) {
-                    e = bullets.get(i);
-
-                    if(e.isOutWindow()) {
-                        bullets.remove(i);
-                        bulletCache.reuse(e);
-                    }
-                }
-            }
-
         }
 
     }

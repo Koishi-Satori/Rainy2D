@@ -17,9 +17,6 @@ import java.awt.image.BufferedImage;
  */
 public class Element {
 
-    @Deprecated
-    public static double MAGNIFY;
-
     double x;
     double y;
     double offsetX;
@@ -128,7 +125,6 @@ public class Element {
 
     }
 
-    //获取器方法
     public double getX() {
 
         return x;
@@ -190,12 +186,6 @@ public class Element {
     public Rectangle getRect() {
 
         return new Rectangle(MathData.round(offsetX), MathData.round(offsetY), width, height);
-
-    }
-
-    public Element getClone() {
-
-        return new Element(x, y, width, height, img);
 
     }
 

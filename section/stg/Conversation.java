@@ -1,4 +1,4 @@
-package rainy2D.section.conversation;
+package rainy2D.section.stg;
 
 import rainy2D.render.desktop.Screen;
 import rainy2D.element.ElementImageInset;

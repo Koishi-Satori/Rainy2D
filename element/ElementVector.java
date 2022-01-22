@@ -2,6 +2,10 @@ package rainy2D.element;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * 构造器：inset
+ * 超类：inset
+ */
 public class ElementVector extends ElementImageInset {
 
     double speed;

@@ -1,21 +1,20 @@
 package rainy2D.util;
 
-import rainy2D.element.Element;
 import rainy2D.element.ElementBullet;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 public class BulletCacheList {
 
     int cacheListSize;
     int lastTakeIndex;
 
-    ArrayList<ElementBullet> elements = new ArrayList<>();
+    Array<ElementBullet> elements;
 
     public BulletCacheList(int size) {
 
         this.cacheListSize = size;
+        this.elements = new Array<>(size);
 
         for(int i = 0; i < size; i++) {
             this.elements.add(new ElementBullet());
@@ -27,17 +26,6 @@ public class BulletCacheList {
 
         e.setOutWindow(false);
         this.elements.add(e);
-
-    }
-
-    /**
-     * 四个取出子弹的方法
-     * @param shooter 子弹发射者对象
-     * @return 返回一个带有参数的子弹
-     */
-    public ElementBullet get(Element shooter, int width, int height, double speed, double angle, BufferedImage img) {
-
-        return get(shooter.getX(), shooter.getY(), width, height, speed, angle, img);
 
     }
 

@@ -1,9 +1,9 @@
-package rainy2D.section.stage;
+package rainy2D.section.stg;
 
-import rainy2D.render.desktop.Screen;
 import rainy2D.element.ElementBullet;
 import rainy2D.element.ElementEnemy;
 import rainy2D.element.ElementPlayer;
+import rainy2D.render.desktop.ScreenSTG;
 import rainy2D.shape.Direction;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
@@ -13,10 +13,10 @@ import rainy2D.util.MathData;
  */
 public class Stage {
 
-    Screen screen;
+    ScreenSTG screen;
     Rectangle field;
 
-    public Stage(Screen screen) {
+    public Stage(ScreenSTG screen) {
 
         this.screen = screen;
         this.field = screen.getField();
@@ -32,7 +32,7 @@ public class Stage {
      */
     public ElementEnemy addEnemy(ElementEnemy e, double appearPercent, int direction) {
 
-        ElementEnemy enemy = e.getClone();
+        ElementEnemy enemy = new ElementEnemy(0, 0, e.getWidth(), e.getHeight(), e.getSpeed(), 0, e.getImage());
 
         if(direction == Direction.LEFT) {
             enemy.setAngle(e.getAngle());
@@ -64,8 +64,10 @@ public class Stage {
 
         //复制一份子弹并设置信息
         ElementBullet bullet = this.screen.bulletCache.getClone(b);
+
         bullet.locate(e.getX(), e.getY());
         bullet.setAngle(angle);
+        bullet.setState(ElementBullet.HIT_PLAYER);
 
         //添加
         this.screen.add(bullet, screen.bullets);
@@ -74,6 +76,19 @@ public class Stage {
 
     }
 
+    public void enemyRingShoot(ElementEnemy e, ElementBullet b, int value) {
+
+        for(int i = 0; i < value; i++) {
+            this.enemyShoot(e, b, 360.0 / value * i);
+        }
+
+    }
+
+    /**
+     * 检测一个敌人是否已经准备发射子弹
+     * @param e 敌人模板（一般用于boss）
+     * @return 是否已经存在集合里
+     */
     public boolean isEnemyReady(ElementEnemy e) {
 
         return screen.enemies.contains(e);
@@ -89,8 +104,10 @@ public class Stage {
     public ElementBullet shoot(ElementPlayer e, ElementBullet b) {
 
         ElementBullet bullet = screen.bulletCache.getClone(b);
-        bullet.locate(e.getX(), e.getY());
+
+        bullet.locate(e.getX(), e.getY() - 12);
         bullet.setAngle(-90 + MathData.random(-5, 5));//略微散开的子弹
+        bullet.setState(ElementBullet.HIT_ENEMY);
 
         this.screen.add(bullet, screen.bullets);
 

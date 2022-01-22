@@ -1,4 +1,4 @@
-package rainy2D.engine;
+package rainy2D.vector;
 
 import rainy2D.element.Element;
 import rainy2D.util.MathData;

@@ -21,11 +21,4 @@ public class ElementEnemy extends ElementVector {
 
     }
 
-    @Override
-    public ElementEnemy getClone() {
-
-        return new ElementEnemy(x, y, width, height, speed, angle, img);
-
-    }
-
 }

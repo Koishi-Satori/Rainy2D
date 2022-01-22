@@ -37,16 +37,20 @@ public class R2DVector {
      */
     public static int distanceBetweenAB(Point p1, Point p2) {
 
-        int xDistance = MathData.abs(p1.x - p2.x);
-        int yDistance = MathData.abs(p1.y - p2.y);
-        return MathData.round(Math.sqrt(xDistance * xDistance + yDistance * yDistance));
+        return distanceBetweenAB(p1.x, p1.y, p2.x, p2.y);
 
     }
 
-    public static int distanceBetweenAB(int x1, int y1, int x2, int y2) {
+    public static int distanceBetweenAB(Element e1, Element e2) {
 
-        int xDistance = MathData.abs(x1 - x2);
-        int yDistance = MathData.abs(y1 - y2);
+        return distanceBetweenAB(e1.getX(), e1.getY(), e2.getX(), e2.getY());
+
+    }
+
+    public static int distanceBetweenAB(double x1, double y1, double x2, double y2) {
+
+        int xDistance = MathData.abs(MathData.round(x1 - x2));
+        int yDistance = MathData.abs(MathData.round(y1 - y2));
         return MathData.round(Math.sqrt(xDistance * xDistance + yDistance * yDistance));
 
     }

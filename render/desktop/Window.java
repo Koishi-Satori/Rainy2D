@@ -3,15 +3,15 @@ package rainy2D.render.desktop;
 import javax.swing.*;
 import java.awt.*;
 
-import static test.GameTest.xSize;
-import static test.GameTest.ySize;
-
 public class Window extends JFrame {
 
     int x;
     int y;
     int width;
     int height;
+
+    int xSize;
+    int ySize;
 
     Toolkit kit;
     Screen screenIn;
@@ -22,8 +22,8 @@ public class Window extends JFrame {
     public Window(String title, Image icon, int width, int height) {
 
         this.kit = Toolkit.getDefaultToolkit();
-        int xSize = kit.getScreenSize().width;
-        int ySize = kit.getScreenSize().height;
+        this.xSize = kit.getScreenSize().width;
+        this.ySize = kit.getScreenSize().height;
         this.x = getX();
         this.y = getY();
         this.width = width;
