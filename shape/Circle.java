@@ -4,45 +4,35 @@ import rainy2D.vector.R2DVector;
 
 public class Circle extends Shape {
 
-    int radius;
+    public Circle(int x, int y, int radius) {
 
-    public Circle(int x, int y, int r) {
+        width = radius * 2;
+        height = radius * 2;
+        offsetX = x - radius;
+        offsetY = y - radius;
 
-        this.x = x - r;
-        this.y = y - r;
-        this.radius = r;
+        this.x = x;
+        this.y = y;
 
     }
 
     public boolean intersects(Circle circle) {
 
-        double length = Math.sqrt(Math.pow(x - circle.getCenterX(), 2) + Math.pow(y - circle.getCenterY(), 2));
+        double length = Math.sqrt(Math.pow(x - circle.getX(), 2) + Math.pow(y - circle.getY(), 2));
 
-        return length < radius + circle.getRadius();
+        return length < getRadius() + circle.getRadius();
 
     }
 
     public boolean isPointIn(int x, int y) {
 
-        return R2DVector.distanceBetweenAB(x, y, getCenterX(), getCenterY()) < getRadius();
-
-    }
-
-    public int getCenterX() {
-
-        return x + width;
-
-    }
-
-    public int getCenterY() {
-
-        return y + width;
+        return R2DVector.distanceBetweenAB(x, y, getX(), getY()) < getRadius();
 
     }
 
     public int getRadius() {
 
-        return radius;
+        return width / 2;
 
     }
 

@@ -4,7 +4,8 @@ import rainy2D.element.ElementBullet;
 import rainy2D.element.ElementEnemy;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.util.Array;
-import rainy2D.util.BulletCacheList;
+import rainy2D.util.list.BulletCacheList;
+import rainy2D.util.list.Task;
 
 import java.awt.*;
 
@@ -24,16 +25,19 @@ public class ScreenSTG extends Screen implements Runnable {
     @Override
     public void paint(Graphics g) {
 
-        this.bufferTick();
+        bufferTick();
 
-        this.renderBottomImage(graphicsBuffer);
-        this.renderMiddleImage(graphicsBuffer);
-        this.renderFrontImage(graphicsBuffer);
-        this.bulletTick(graphicsBuffer);
-        this.enemyTick(graphicsBuffer);
-        this.renderOverField(graphicsBuffer);
+        renderBottomImage(graphicsBuffer);
+        renderMiddleImage(graphicsBuffer);
+        tick();
+        renderFrontImage(graphicsBuffer);
 
-        this.bufferPaint(g);
+        bulletTick(graphicsBuffer);
+        enemyTick(graphicsBuffer);
+
+        renderOverField(graphicsBuffer);
+
+        bufferPaint(g);
 
     }
 
@@ -43,10 +47,10 @@ public class ScreenSTG extends Screen implements Runnable {
      */
     public void renderOverField(Graphics g) {
 
-        int left = this.field.getX();
-        int top = this.field.getY();
-        int right = this.field.getX2();
-        int bottom = this.field.getY2();
+        int left = field.getOffsetX();
+        int top = field.getOffsetY();
+        int right = field.getX2();
+        int bottom = field.getY2();
 
         g.setColor(overFieldColor);
 
@@ -92,16 +96,8 @@ public class ScreenSTG extends Screen implements Runnable {
 
     }
 
-    public void clear() {
+    private class Remover extends Task {
 
-        this.enemies.clear();
-        this.bullets.clear();
-
-    }
-
-    private class Remover extends Thread {
-
-        @Override
         public void run() {
 
             ElementBullet e;

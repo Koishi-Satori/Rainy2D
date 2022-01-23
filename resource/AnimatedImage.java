@@ -7,7 +7,6 @@ public class AnimatedImage {
 
     int imgViewTimer;
     int time;
-
     int indexOfArray;
 
     public ArrayList<BufferedImage> imgArray = new ArrayList<>();
@@ -20,19 +19,19 @@ public class AnimatedImage {
 
     public void addImage(BufferedImage img) {
 
-        this.imgArray.add(img);
+        imgArray.add(img);
 
     }
 
     public void tick() {
 
-        this.time++;
+        time++;
 
         if(time % imgViewTimer == 0) {
-            this.indexOfArray++;
+            indexOfArray++;
 
             if(indexOfArray == imgArray.size()) {
-                this.indexOfArray = 0;
+                reset();
             }
         }
 
@@ -40,7 +39,7 @@ public class AnimatedImage {
 
     public void reset() {
 
-        this.indexOfArray = 0;
+        indexOfArray = 0;
 
     }
 
@@ -53,6 +52,12 @@ public class AnimatedImage {
     public int getNowIndex() {
 
         return indexOfArray;
+
+    }
+
+    public boolean isLastImage() {
+
+        return indexOfArray == indexSize();
 
     }
 

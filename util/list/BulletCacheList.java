@@ -1,6 +1,7 @@
-package rainy2D.util;
+package rainy2D.util.list;
 
 import rainy2D.element.ElementBullet;
+import rainy2D.util.Array;
 
 import java.awt.image.BufferedImage;
 
@@ -13,11 +14,11 @@ public class BulletCacheList {
 
     public BulletCacheList(int size) {
 
-        this.cacheListSize = size;
-        this.elements = new Array<>(size);
+        cacheListSize = size;
+        elements = new Array<>(size);
 
         for(int i = 0; i < size; i++) {
-            this.elements.add(new ElementBullet());
+            elements.add(new ElementBullet());
         }
 
     }
@@ -25,7 +26,7 @@ public class BulletCacheList {
     public void reuse(ElementBullet e) {
 
         e.setOutWindow(false);
-        this.elements.add(e);
+        elements.add(e);
 
     }
 
@@ -50,9 +51,9 @@ public class BulletCacheList {
         e.setImage(img);
         e.resetEffect();
 
-        this.lastTakeIndex++;
+        lastTakeIndex++;
         if(lastTakeIndex == cacheListSize) {
-            this.lastTakeIndex = 0;
+            lastTakeIndex = 0;
         }
 
         return e;

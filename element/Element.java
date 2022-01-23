@@ -35,10 +35,11 @@ public class Element {
 
     public Element(double offsetX, double offsetY, int width, int height, BufferedImage img) {
 
+        x = offsetX + width / 2;
+        y = offsetY + height / 2;
+
         this.offsetX = offsetX;
         this.offsetY = offsetY;
-        this.x = offsetX + width / 2;
-        this.y = offsetY + width / 2;
         this.width = width;
         this.height = height;
         this.img = img;
@@ -67,13 +68,13 @@ public class Element {
 
         Rectangle field = window.getScreenIn().getField();
 
-        if(x + width < field.getX() ||
-                x > field.getX() + field.getWidth() ||
-                y + height + 200 < field.getY() ||
-                y > field.getY() + field.getHeight()) {
-            this.setOutWindow(true);
+        if(x + width + 100 < field.getOffsetX() ||
+                x - 100 > field.getOffsetX() + field.getWidth() ||
+                y + height + 100 < field.getOffsetY() ||
+                y - 100 > field.getOffsetY() + field.getHeight()) {
+            setOutWindow(true);
         } else {
-            this.setOutWindow(false);
+            setOutWindow(false);
         }
 
     }
@@ -87,8 +88,8 @@ public class Element {
 
         this.x = x;
         this.y = y;
-        this.offsetX = x - width / 2;
-        this.offsetY = y - height / 2;
+        offsetX = x - width / 2;
+        offsetY = y - height / 2;
 
     }
 
@@ -99,8 +100,8 @@ public class Element {
      */
     public void locateOffset(double offsetX, double offsetY) {
 
-        this.x = offsetX + width / 2;
-        this.y = offsetY + height / 2;
+        x = offsetX + width / 2;
+        y = offsetY + height / 2;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
 
@@ -179,7 +180,7 @@ public class Element {
      */
     public Circle getCircle() {
 
-        return new Circle(MathData.round(x), MathData.round(y), MathData.round(width / 6));
+        return new Circle(MathData.round(x), MathData.round(y), width / 2);
 
     }
 

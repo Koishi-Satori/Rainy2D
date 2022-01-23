@@ -21,20 +21,20 @@ public class Window extends JFrame {
 
     public Window(String title, Image icon, int width, int height) {
 
-        this.kit = Toolkit.getDefaultToolkit();
-        this.xSize = kit.getScreenSize().width;
-        this.ySize = kit.getScreenSize().height;
-        this.x = getX();
-        this.y = getY();
+        kit = Toolkit.getDefaultToolkit();
+        xSize = kit.getScreenSize().width;
+        ySize = kit.getScreenSize().height;
+        x = getX();
+        y = getY();
         this.width = width;
         this.height = height;
 
-        this.setSize(width, height);
-        this.setLocation((xSize - width) / 2, (ySize - height) / 2);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setTitle(title);
-        this.setIconImage(icon);
-        this.setResizable(false);
+        setSize(width, height);
+        setLocation((xSize - width) / 2, (ySize - height) / 2);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle(title);
+        setIconImage(icon);
+        setResizable(false);
 
     }
 
@@ -47,9 +47,9 @@ public class Window extends JFrame {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         gd.setFullScreenWindow(this);
-        this.isFull = true;
-        this.width = xSize;
-        this.height = ySize;
+        isFull = true;
+        width = xSize;
+        height = ySize;
 
     }
 
@@ -58,8 +58,8 @@ public class Window extends JFrame {
      */
     public void deleteFrame() {
 
-        this.setUndecorated(true);
-        this.isNoFrame = true;
+        setUndecorated(true);
+        isNoFrame = true;
 
     }
 

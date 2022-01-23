@@ -39,13 +39,13 @@ public class ElementPlayer extends ElementVector {
     private int pointSize;
     private double pointAngle;
 
-    public ElementPlayer(double x, double y, int width, int height, BufferedImage img) {
+    public ElementPlayer(double x, double y, int width, int height, double speed, BufferedImage img) {
 
-        super(x, y, width, height, 3.5, 0, img);
+        super(x, y, width, height, speed, 0, img);
         
-        this.speedQuick = 4.8;
-        this.speedSlow = 0.8;
-        this.speedBackup = speed;
+        speedQuick = speed * 1.6;
+        speedSlow = speed * 0.45;
+        speedBackup = speed;
 
     }
 
@@ -55,15 +55,15 @@ public class ElementPlayer extends ElementVector {
         super.render(g);
 
         //改变pointAngle并渲染point
-        this.pointAngle += 0.5;
+        pointAngle += 0.5;
         Graphic.renderIn(x, y, pointSize, pointSize, Graphic2D.rotate(playerPoint, pointAngle), g);
 
         //改变pointSize
         if(slow && pointSize < BIGGEST_POINT_SIZE) {
-            this.pointSize++;
+            pointSize++;
         }
         else if(pointSize > 0){
-            this.pointSize--;
+            pointSize--;
         }
 
     }
@@ -73,39 +73,39 @@ public class ElementPlayer extends ElementVector {
 
         this.checkAngle();
         if(up || left || down || right) {
-            this.locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
+            locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
         }
 
         if(slow) {
-            this.speed = this.speedSlow;
+            speed = speedSlow;
         }
         else if(run) {
-            this.speed = this.speedQuick;
+            speed = speedQuick;
         }
         else {
-            this.speed = this.speedBackup;
+            speed = speedBackup;
         }
 
-        this.checkOutField(window.getScreenIn().getField());
+        checkOutField(window.getScreenIn().getField());
 
     }
 
     public void checkOutField(Rectangle field) {
 
-        if(x < field.getX()) {
-            this.locate(field.getX(), y);
+        if(x < field.getOffsetX()) {
+            locate(field.getOffsetX(), y);
         }
 
-        if(y < field.getY()) {
-            this.locate(x, field.getY());
+        if(y < field.getOffsetY()) {
+            locate(x, field.getOffsetY());
         }
 
         if(x > field.getX2()) {
-            this.locate(field.getX2(), y);
+            locate(field.getX2(), y);
         }
 
         if(y > field.getY2()) {
-            this.locate(x, field.getY2());
+            locate(x, field.getY2());
         }
 
     }
@@ -223,7 +223,7 @@ public class ElementPlayer extends ElementVector {
     @Override
     public Circle getCircle() {
 
-        return new Circle(MathData.round(x), MathData.round(y), MathData.round(width / 10.0));
+        return new Circle(MathData.round(x), MathData.round(y), width / 20);
 
     }
 

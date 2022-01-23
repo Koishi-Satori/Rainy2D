@@ -71,12 +71,12 @@ public class Screen extends JPanel implements Runnable {
     public Screen(Window window) {
 
         this.window = window;
-        this.WI_WIDTH = window.getWidth();
-        this.WI_HEIGHT = window.getHeight();
+        WI_WIDTH = window.getWidth();
+        WI_HEIGHT = window.getHeight();
 
-        this.field = new Rectangle(0, 0, WI_WIDTH, WI_HEIGHT);
-        this.setDefaultSize(900, 600);
-        this.setDefaultFps(60);
+        field = new Rectangle(0, 0, WI_WIDTH, WI_HEIGHT);
+        setDefaultSize(900, 600);
+        setDefaultFps(60);
 
         new Thread(this).start();
 
@@ -90,21 +90,21 @@ public class Screen extends JPanel implements Runnable {
      */
     public void setDefaultSize(int width, int height) {
 
-        this.bufferWidth = width;
-        this.bufferHeight = height;
-        this.overPercent =  MathData.toDouble(WI_HEIGHT) / bufferHeight;
-        this.totalHeight = MathData.round(height * overPercent);
-        this.totalWidth = MathData.round(width * overPercent);
+        bufferWidth = width;
+        bufferHeight = height;
+        overPercent =  MathData.toDouble(WI_HEIGHT) / bufferHeight;
+        totalHeight = MathData.round(height * overPercent);
+        totalWidth = MathData.round(width * overPercent);
 
-        this.SC_WIDTH = totalWidth;
-        this.SC_HEIGHT = totalHeight;
-        this.SC_LEFT = (WI_WIDTH - SC_WIDTH) / 2;
-        this.SC_TOP = (WI_HEIGHT - SC_HEIGHT) / 2;
+        SC_WIDTH = totalWidth;
+        SC_HEIGHT = totalHeight;
+        SC_LEFT = (WI_WIDTH - SC_WIDTH) / 2;
+        SC_TOP = (WI_HEIGHT - SC_HEIGHT) / 2;
 
-        this.leftBuffer = this.SC_LEFT;
-        this.topBuffer = this.SC_TOP;
+        leftBuffer = SC_LEFT;
+        topBuffer = SC_TOP;
 
-        this.callChangeSize();
+        callChangeSize();
 
     }
 
@@ -129,13 +129,13 @@ public class Screen extends JPanel implements Runnable {
      */
     public void setColor(Color c) {
 
-        this.setBackground(c);
+        setBackground(c);
 
     }
 
     public void setColorOverField(Color c) {
 
-        this.overFieldColor = c;
+        overFieldColor = c;
 
     }
 
@@ -145,7 +145,7 @@ public class Screen extends JPanel implements Runnable {
      */
     public void init() {
 
-        this.init = true;
+        init = true;
 
     }
 
@@ -180,21 +180,20 @@ public class Screen extends JPanel implements Runnable {
 
         //双缓冲
         if(imageBuffer == null) {
-            this.callChangeSize();
-            this.graphicsBuffer = this.imageBuffer.getGraphics();
-            this.graphicsBuffer.setColor(getBackground());
+            callChangeSize();
+            graphicsBuffer = imageBuffer.getGraphics();
+            graphicsBuffer.setColor(getBackground());
         }
         Graphic2D.renderRect(0, 0, WI_WIDTH, WI_HEIGHT, graphicsBuffer);
         super.paint(graphicsBuffer);
 
         //初始化
         if (!init) {
-            this.init();
+            init();
         }
 
-        //计时调刻
-        this.cycleTime();
-        this.tick();
+        //计时
+        cycleTime();
 
     }
 
@@ -220,15 +219,16 @@ public class Screen extends JPanel implements Runnable {
     @Override
     public void paint(Graphics g) {
 
-        this.bufferTick();
+        bufferTick();
 
         //遍历调刻和渲染(越后调用，图层处于越高层）
         //此处可以继承本类并修改
-        this.renderBottomImage(graphicsBuffer);
-        this.renderMiddleImage(graphicsBuffer);
-        this.renderFrontImage(graphicsBuffer);
+        renderBottomImage(graphicsBuffer);
+        renderMiddleImage(graphicsBuffer);
+        tick();
+        renderFrontImage(graphicsBuffer);
 
-        this.bufferPaint(g);
+        bufferPaint(g);
 
     }
 
@@ -237,23 +237,23 @@ public class Screen extends JPanel implements Runnable {
      */
     public void cycleTime() {
 
-        this.time ++;
+        time ++;
         if(time == Integer.MAX_VALUE) {
-            this.time = 0;
+            time = 0;
         }
 
         if(cycle >= 1) {
-            this.cycleState = false;
+            cycleState = false;
         }
         else if(cycle <= 0 ) {
-            this.cycleState = true;
+            cycleState = true;
         }
 
         if(cycleState) {
-            this.cycle += 0.01;
+            cycle += 0.01;
         }
         else {
-            this.cycle -= 0.01;
+            cycle -= 0.01;
         }
 
     }
@@ -286,7 +286,7 @@ public class Screen extends JPanel implements Runnable {
      */
     public void callChangeSize() {
 
-        this.imageBuffer = this.createImage(bufferWidth, bufferHeight);
+        imageBuffer = createImage(bufferWidth, bufferHeight);
 
     }
 
@@ -361,7 +361,7 @@ public class Screen extends JPanel implements Runnable {
 
     public void pause() {
 
-        this.isPause = !isPause;
+        isPause = !isPause;
 
     }
 
@@ -377,8 +377,8 @@ public class Screen extends JPanel implements Runnable {
 
     public Point randomPoint() {
 
-        int x = MathData.round(MathData.random(field.getX(), field.getX2()));
-        int y = MathData.round(MathData.random(field.getY(), field.getY2()));
+        int x = MathData.round(MathData.random(field.getOffsetX(), field.getX2()));
+        int y = MathData.round(MathData.random(field.getOffsetY(), field.getY2()));
         return new Point(x, y);
 
     }
@@ -389,8 +389,8 @@ public class Screen extends JPanel implements Runnable {
      */
     public void earthQuake(int force) {
 
-        this.SC_LEFT = MathData.round(leftBuffer + MathData.random(-force, force));
-        this.SC_TOP = MathData.round(topBuffer + MathData.random(-force, force));
+        SC_LEFT = MathData.round(leftBuffer + MathData.random(-force, force));
+        SC_TOP = MathData.round(topBuffer + MathData.random(-force, force));
 
     }
 
@@ -399,8 +399,8 @@ public class Screen extends JPanel implements Runnable {
      */
     public void resetLocation() {
 
-        this.SC_LEFT = this.leftBuffer;
-        this.SC_TOP = this.topBuffer;
+        SC_LEFT = leftBuffer;
+        SC_TOP = topBuffer;
 
     }
 
@@ -422,8 +422,8 @@ public class Screen extends JPanel implements Runnable {
 
                 //如果没有暂停，则进行游戏主逻辑
                 if(!isPause) {
-                    this.window.setScreenIn(this);
-                    this.repaint();
+                    window.setScreenIn(this);
+                    repaint();
                 }
                 frame++;
 
@@ -439,7 +439,7 @@ public class Screen extends JPanel implements Runnable {
                 //每秒得到fps
                 if(System.currentTimeMillis() - timer > 1000) {
                     timer += 1000;
-                    this.nowFps = frame + updateTime;
+                    nowFps = frame + updateTime;
                     frame = 0;
                 }
 

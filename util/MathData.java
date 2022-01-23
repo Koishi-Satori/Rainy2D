@@ -16,6 +16,19 @@ public class MathData {
 
     }
 
+    public static boolean inEqual(double value1, double value2, double maxField) {
+
+        if(value1 > value2) {
+            return value1 - value2 < maxField;
+        }
+        else if(value1 < value2) {
+            return value2 - value1 < maxField;
+        }
+
+        return true;
+
+    }
+
     public static double toDouble(int value) {
 
         return Double.valueOf(value);

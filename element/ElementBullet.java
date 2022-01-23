@@ -2,6 +2,7 @@ package rainy2D.element;
 
 import rainy2D.render.desktop.Window;
 import rainy2D.render.graphic.Graphic;
+import rainy2D.render.graphic.Graphic2D;
 import rainy2D.vector.R2DVector;
 
 import java.awt.*;
@@ -14,11 +15,18 @@ import java.awt.image.BufferedImage;
 public class ElementBullet extends ElementVector {
 
     public static int EFFECT_DOWN_VALUE = 5;
+
+    /**
+     * 两种状态，可用于判定玩家子弹和敌方子弹
+     */
     public static final int HIT_PLAYER = 0;
     public static final int HIT_ENEMY = 1;
 
     private int state;
     private int effectWidth;
+    private boolean canBeRotated;
+
+    BufferedImage imageBefore;
 
     /**
      * BulletCacheList用构造器
@@ -36,18 +44,20 @@ public class ElementBullet extends ElementVector {
 
         super(x, y, width, height, speed, angle, img);
 
-        this.resetEffect();
-        this.setState(0);
+        imageBefore = img;
+
+        resetEffect();
+        updateImage();
 
     }
 
     @Override
     public void tick(Window window) {
 
-        this.appearEffect(EFFECT_DOWN_VALUE);
+        appearEffect(EFFECT_DOWN_VALUE);
 
-        this.checkOutWindow(window);
-        this.locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
+        checkOutWindow(window);
+        locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
 
     }
 
@@ -65,7 +75,7 @@ public class ElementBullet extends ElementVector {
 
     public void resetEffect() {
 
-        this.effectWidth = width * 2;
+        effectWidth = width * 2;
 
     }
 
@@ -75,11 +85,45 @@ public class ElementBullet extends ElementVector {
      */
     private void appearEffect(int downValue) {
 
-        this.effectWidth -= downValue;
+        effectWidth -= downValue;
 
         if(effectWidth < width) {
-            this.effectWidth = width;
+            effectWidth = width;
         }
+
+    }
+
+    public void updateImage() {
+
+        if(canBeRotated && imageBefore != null) {
+            img = Graphic2D.rotate(imageBefore, angle);
+        }
+
+    }
+
+    public void rotateState(boolean canBeRotated, boolean updateImage) {
+
+        this.canBeRotated = canBeRotated;
+        if(updateImage) {
+            updateImage();
+        }
+
+    }
+
+    @Override
+    public void setAngle(double angle) {
+
+        this.angle = angle;
+        updateImage();
+
+    }
+
+    @Override
+    public void setImage(BufferedImage img) {
+
+        this.img = img;
+        imageBefore = img;
+        updateImage();
 
     }
 

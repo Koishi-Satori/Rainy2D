@@ -1,17 +1,18 @@
 package rainy2D.section.stg;
 
+import rainy2D.element.Element;
 import rainy2D.element.ElementBullet;
 import rainy2D.element.ElementEnemy;
-import rainy2D.element.ElementPlayer;
 import rainy2D.render.desktop.ScreenSTG;
 import rainy2D.shape.Direction;
 import rainy2D.shape.Rectangle;
-import rainy2D.util.MathData;
+import rainy2D.util.list.Task;
 
 /**
  * 游戏大部分的操作包装在这个类中
+ * 只是一个功能类哦
  */
-public class Stage {
+public class Stage extends Task {
 
     ScreenSTG screen;
     Rectangle field;
@@ -19,7 +20,7 @@ public class Stage {
     public Stage(ScreenSTG screen) {
 
         this.screen = screen;
-        this.field = screen.getField();
+        field = screen.getField();
 
     }
 
@@ -32,24 +33,37 @@ public class Stage {
      */
     public ElementEnemy addEnemy(ElementEnemy e, double appearPercent, int direction) {
 
-        ElementEnemy enemy = new ElementEnemy(0, 0, e.getWidth(), e.getHeight(), e.getSpeed(), 0, e.getImage());
+        ElementEnemy enemy = new ElementEnemy(e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getSpeed(), e.getAngle(), e.getImage());
+        enemy.setStartHealth(e.getHealth());
 
         if(direction == Direction.LEFT) {
-            enemy.setAngle(e.getAngle());
-            enemy.locate(field.getX(), field.getY(appearPercent));
+            enemy.setAngle(0);
+            enemy.locate(field.getOffsetX(), field.getY(appearPercent));
         }
-        else if(direction == Direction.RIGHT){
-            enemy.setAngle(180 - e.getAngle());
+        else if(direction == Direction.RIGHT) {
+            enemy.setAngle(180);
             enemy.locate(field.getX2(), field.getY(appearPercent));
         }
-        else if(direction == Direction.UP || direction == Direction.DOWN) {
-            enemy.setAngle(e.getAngle());
-            enemy.locate(field.getX(appearPercent), field.getY());
+        else if(direction == Direction.UP) {
+            enemy.setAngle(90);
+            enemy.locate(field.getX(appearPercent), field.getOffsetY());
+        }
+        else if(direction == Direction.DOWN) {
+            enemy.setAngle(270);
+            enemy.locate(field.getX(appearPercent), field.getY2());
         }
 
-        this.screen.add(enemy, screen.enemies);
+        screen.add(enemy, screen.enemies);
 
         return enemy;
+
+    }
+
+    public void addEnemies(ElementEnemy e, double appearPercent, double percentIncrease, int direction, int number) {
+
+        for(int i = 0; i < number; i++) {
+            addEnemy(e, appearPercent + percentIncrease * i, direction);
+        }
 
     }
 
@@ -58,28 +72,30 @@ public class Stage {
      * @param e 遍历得到一个敌人
      * @param b 子弹模板（切记要使用模板而不是new对象，否则会极大影响性能）
      * @param angle 初始角度
+     * @param canBeRotated 是否允许子弹的图片旋转
      * @return 返回发射出去的子弹，可以进一步操控
      */
-    public ElementBullet enemyShoot(ElementEnemy e, ElementBullet b, double angle) {
+    public ElementBullet enemyShoot(Element e, ElementBullet b, double angle, boolean canBeRotated) {
 
         //复制一份子弹并设置信息
-        ElementBullet bullet = this.screen.bulletCache.getClone(b);
+        ElementBullet bullet = screen.bulletCache.getClone(b);
 
+        bullet.rotateState(canBeRotated, false);
         bullet.locate(e.getX(), e.getY());
         bullet.setAngle(angle);
         bullet.setState(ElementBullet.HIT_PLAYER);
 
         //添加
-        this.screen.add(bullet, screen.bullets);
+        screen.add(bullet, screen.bullets);
 
         return bullet;
 
     }
 
-    public void enemyRingShoot(ElementEnemy e, ElementBullet b, int value) {
+    public void enemyRingShoot(Element e, ElementBullet b, int value, boolean canBeRotated) {
 
         for(int i = 0; i < value; i++) {
-            this.enemyShoot(e, b, 360.0 / value * i);
+            enemyShoot(e, b, 360.0 / value * i, canBeRotated);
         }
 
     }
@@ -97,22 +113,49 @@ public class Stage {
 
     /**
      * 玩家攻击
-     * @param e 玩家
+     * @param e 发射对象
      * @param b 子弹模板（切记要使用模板而不是new对象，否则会极大影响性能）
+     * @param canBeRotated 是否允许子弹的图片旋转
      * @return 返回发射出去的子弹，可以进一步操控
      */
-    public ElementBullet shoot(ElementPlayer e, ElementBullet b) {
+    public void playerShoot(Element e, ElementBullet b, int line, boolean canBeRotated) {
 
-        ElementBullet bullet = screen.bulletCache.getClone(b);
+        ElementBullet[] bullets = new ElementBullet[line];
 
-        bullet.locate(e.getX(), e.getY() - 12);
-        bullet.setAngle(-90 + MathData.random(-5, 5));//略微散开的子弹
-        bullet.setState(ElementBullet.HIT_ENEMY);
+        for(int i = 0; i < line; i++) {
 
-        this.screen.add(bullet, screen.bullets);
+            bullets[i] = screen.bulletCache.getClone(b);
 
-        return bullet;
+            bullets[i].rotateState(canBeRotated, false);
+            bullets[i].setAngle(-90);
+            bullets[i].setState(ElementBullet.HIT_ENEMY);
 
+            screen.add(bullets[i], screen.bullets);
+        }
+
+        if(line == 1) {
+            bullets[0].locate(e.getX(), e.getOffsetY());
+        }
+        else if(line == 2) {
+            bullets[0].locate(e.getX() - e.getWidth() / 4, e.getOffsetY());
+            bullets[1].locate(e.getX() + e.getWidth() / 4, e.getOffsetY());
+        }
+        else if(line == 3) {
+            bullets[0].locate(e.getX(), e.getOffsetY());
+            bullets[1].locate(e.getX() - e.getWidth() / 3, e.getOffsetY());
+            bullets[2].locate(e.getX() + e.getWidth() / 3, e.getOffsetY());
+        }
+        else {
+            bullets[0].locate(e.getX(), e.getOffsetY());
+        }
+
+    }
+
+    /**
+     * 复写，添加任务
+     */
+    @Override
+    public void run() {
     }
 
 }

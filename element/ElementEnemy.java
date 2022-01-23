@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 
 public class ElementEnemy extends ElementVector {
 
+    int health;
+
     public ElementEnemy(double x, double y, int width, int height, double speed, double angle, BufferedImage img) {
 
         super(x, y, width, height, speed, angle, img);
@@ -16,8 +18,32 @@ public class ElementEnemy extends ElementVector {
     @Override
     public void tick(Window window) {
 
-        this.checkOutWindow(window);
-        this.locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
+        checkOutWindow(window);
+        locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
+
+    }
+
+    public final void setStartHealth(int health) {
+
+        this.health = health;
+
+    }
+
+    public int getHealth() {
+
+        return health;
+
+    }
+
+    public void hit(int force) {
+
+        health -= force;
+
+    }
+
+    public boolean isDead() {
+
+        return health <= 0;
 
     }
 

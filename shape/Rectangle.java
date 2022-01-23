@@ -1,11 +1,14 @@
 package rainy2D.shape;
 
 public class Rectangle extends Shape {
-    
-    public Rectangle(int x, int y, int width, int height) {
-        
-        this.x = x;
-        this.y = y;
+
+    public Rectangle(int offsetX, int offsetY, int width, int height) {
+
+        x = offsetX + width / 2;
+        y = offsetY + height / 2;
+
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
         this.width = width;
         this.height = height;
 
@@ -13,14 +16,14 @@ public class Rectangle extends Shape {
 
     public boolean intersects(Rectangle rect) {
 
-        int width1 = this.width;
-        int height1 = this.height;
+        int width1 = width;
+        int height1 = height;
         int width2 = rect.width;
         int height2 = rect.height;
-        int x1 = this.x;
-        int y1 = this.y;
-        int x2 = rect.x;
-        int y2 = rect.y;
+        int x1 = offsetX;
+        int y1 = offsetY;
+        int x2 = rect.offsetX;
+        int y2 = rect.offsetY;
 
         width2 += x2;
         height2 += y2;

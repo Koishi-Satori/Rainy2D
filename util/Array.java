@@ -12,7 +12,7 @@ public class Array<E> {
 
     public Array(int capacity){
 
-        this.objects = new Object[capacity];
+        objects = new Object[capacity];
 
     }
 
@@ -43,7 +43,7 @@ public class Array<E> {
                 Array.arrayCopy(objects, newObjects, index, index + 1, size - index);
             }
 
-            this.objects = newObjects;
+            objects = newObjects;
 
         }
 
@@ -90,12 +90,12 @@ public class Array<E> {
 
     public void add(Object obj){
 
-        this.addCount++;
+        addCount++;
         if(addCount == 1) {
-            this.DEFAULT_NONNULL_OBJ = obj;
+            DEFAULT_NONNULL_OBJ = obj;
         }
-        this.checkRangeNeedIncrease(-1, null);
-        this.objects[size++] = obj;
+        checkRangeNeedIncrease(-1, null);
+        objects[size++] = obj;
 
     }
 
@@ -113,9 +113,8 @@ public class Array<E> {
 
     public void clear(){
 
-        for(int i = 0; i < size; i++){
-            this.objects[i] = null;
-        }
+        objects = new Object[DEFAULT_CAPACITY];
+        size = 0;
 
     }
 
@@ -123,13 +122,13 @@ public class Array<E> {
 
         if(checkIndex(index)) {
             if(index == size){
-                this.objects[index] = null;
+                objects[index] = null;
             }
             else {
                 Array.arrayCopy(objects, objects, index + 1, index, size - index);
             }
 
-            this.size--;
+            size--;
         }
 
     }

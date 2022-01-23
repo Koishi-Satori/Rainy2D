@@ -19,7 +19,7 @@ public class ElementImageOffset extends Element {
 
     public ElementImageOffset(Rectangle rect, BufferedImage img) {
 
-        super(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), img);
+        super(rect.getOffsetX(), rect.getOffsetY(), rect.getWidth(), rect.getHeight(), img);
 
     }
 
@@ -31,7 +31,7 @@ public class ElementImageOffset extends Element {
 
     public ElementImageOffset(Rectangle rect, ImageLocation iml) {
 
-        super(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), iml);
+        super(rect.getOffsetX(), rect.getOffsetY(), rect.getWidth(), rect.getHeight(), iml);
 
     }
 

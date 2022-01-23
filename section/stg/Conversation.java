@@ -29,8 +29,8 @@ public class Conversation {
     public Conversation(Screen screen) {
 
         this.screen = screen;
-        this.field = screen.getField();
-        this.textIn = new Rectangle(field.getX(0.1), field.getY(0.7), field.getWidth(0.8), field.getHeight(0.2)) ;
+        field = screen.getField();
+        textIn = new Rectangle(field.getX(0.1), field.getY(0.7), field.getWidth(0.8), field.getHeight(0.2)) ;
 
     }
 
@@ -41,15 +41,15 @@ public class Conversation {
     public void createConversation(ElementImageInset character) {
 
         this.character = character;
-        this.character.locate(field.getX(0.15), field.getY(0.7));
-        this.sizeOption(character.getImage().getHeight());
+        character.locate(field.getX(0.15), field.getY(0.7));
+        sizeOption(character.getImage().getHeight());
 
     }
 
     private void sizeOption(double heightImage) {
 
-        double percent = this.character.getHeight() / heightImage;
-        this.character.setSize(MathData.round(character.getImage().getWidth() * percent), character.getHeight());
+        double percent = character.getHeight() / heightImage;
+        character.setSize(MathData.round(character.getImage().getWidth() * percent), character.getHeight());
 
     }
 

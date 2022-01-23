@@ -2,27 +2,24 @@ package rainy2D.shape;
 
 import rainy2D.util.MathData;
 
-/**
- * x、y即为element中的offset x、y
- * 如要获取中心，可用百分比，circle可直接获取
- * x2、y2为右下角的坐标
- */
 public class Shape {
 
     int x;
     int y;
+    int offsetX;
+    int offsetY;
     int width;
     int height;
 
-    public int getX() {
+    public int getOffsetX() {
 
-        return x;
+        return offsetX;
 
     }
 
-    public int getY() {
+    public int getOffsetY() {
 
-        return y;
+        return offsetY;
 
     }
 
@@ -45,13 +42,13 @@ public class Shape {
      */
     public int getX(double percent) {
 
-        return MathData.round(x + width * percent);
+        return MathData.round(offsetX + width * percent);
 
     }
 
     public int getY(double percent) {
 
-        return MathData.round(y + height * percent);
+        return MathData.round(offsetY + height * percent);
 
     }
 
@@ -69,13 +66,25 @@ public class Shape {
 
     public int getX2() {
 
-        return width - x;
+        return offsetX + width;
 
     }
 
     public int getY2() {
 
-        return height - y;
+        return offsetY + height;
+
+    }
+
+    public int getX() {
+
+        return x;
+
+    }
+
+    public int getY() {
+
+        return y;
 
     }
 
