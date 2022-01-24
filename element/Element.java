@@ -1,9 +1,9 @@
 package rainy2D.element;
 
-import rainy2D.render.graphic.Graphic;
-import rainy2D.shape.Circle;
 import rainy2D.render.desktop.Window;
+import rainy2D.render.graphic.Graphic;
 import rainy2D.resource.ImageLocation;
+import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
 
@@ -23,9 +23,12 @@ public class Element {
     double offsetY;
     int width;
     int height;
-    boolean outWindow;
+
+    int timer;
 
     BufferedImage img;
+    Circle circle;
+    Rectangle rect;
 
     public Element(double offsetX, double offsetY, int width, int height, ImageLocation iml) {
 
@@ -44,6 +47,9 @@ public class Element {
         this.height = height;
         this.img = img;
 
+        circle = new Circle(0, 0, 0);
+        rect = new Rectangle(0, 0, 0, 0);
+
     }
 
     public void render(Graphics g) {
@@ -52,7 +58,18 @@ public class Element {
 
     }
 
-    public void tick(Window window) {
+    public void tick(Window window) {}
+
+    public void update(Window window, Graphics g) {
+
+        tick(window);
+        render(g);
+
+        timer++;
+        if(timer > 360) {
+            timer = 0;
+        }
+
     }
 
     public boolean isMouseHanging(MouseEvent event) {
@@ -64,18 +81,18 @@ public class Element {
 
     }
 
-    public void checkOutWindow(Window window) {
+    public boolean checkOutWindow(Window window) {
 
         Rectangle field = window.getScreenIn().getField();
 
-        if(x + width + 100 < field.getOffsetX() ||
-                x - 100 > field.getOffsetX() + field.getWidth() ||
-                y + height + 100 < field.getOffsetY() ||
-                y - 100 > field.getOffsetY() + field.getHeight()) {
-            setOutWindow(true);
-        } else {
-            setOutWindow(false);
+        if(x + width + 20 < field.getOffsetX() ||
+                x - 30 > field.getX2() ||
+                y + height + 20 < field.getOffsetY() ||
+                y - 20 > field.getY2()) {
+            return true;
         }
+
+        return false;
 
     }
 
@@ -120,9 +137,9 @@ public class Element {
 
     }
 
-    public void setOutWindow(boolean outWindow) {
+    public void setTimer(int timer) {
 
-        this.outWindow = outWindow;
+        this.timer = timer;
 
     }
 
@@ -168,9 +185,15 @@ public class Element {
 
     }
 
-    public boolean isOutWindow() {
+    public int getTimer() {
 
-        return outWindow;
+        return timer;
+
+    }
+
+    public boolean forTick(int tick) {
+
+        return timer % tick == 0;
 
     }
 
@@ -180,13 +203,26 @@ public class Element {
      */
     public Circle getCircle() {
 
-        return new Circle(MathData.round(x), MathData.round(y), width / 2);
+        circle.locate(MathData.round(x), MathData.round(y));
+        circle.setSize(width / 2, width / 2);
+
+        return circle;
 
     }
 
     public Rectangle getRect() {
 
-        return new Rectangle(MathData.round(offsetX), MathData.round(offsetY), width, height);
+        rect.locateOffset(MathData.round(offsetX), MathData.round(offsetY));
+        rect.setSize(width, height);
+
+        return rect;
+
+    }
+
+    public boolean isSameAs(Element e) {
+
+        return (width == e.getWidth() && height == e.getHeight()
+                && img == e.getImage());
 
     }
 

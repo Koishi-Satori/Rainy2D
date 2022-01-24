@@ -2,7 +2,7 @@ package rainy2D.util;
 
 public class Array<E> {
 
-    private Object[] objects;
+    public Object[] objects;
     private int size;
     private int addCount;
 

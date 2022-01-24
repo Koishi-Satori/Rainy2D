@@ -5,16 +5,17 @@ import rainy2D.element.ElementEnemy;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.util.Array;
 import rainy2D.util.list.BulletCacheList;
-import rainy2D.util.list.Task;
+import rainy2D.util.list.EnemyCacheList;
 
 import java.awt.*;
 
-public class ScreenSTG extends Screen implements Runnable {
+public class ScreenSTG extends Screen {
 
     public Array<ElementBullet> bullets = new Array<>();
     public Array<ElementEnemy> enemies = new Array<>();
 
     public BulletCacheList bulletCache;
+    public EnemyCacheList enemyCache;
 
     public ScreenSTG(Window window) {
 
@@ -71,12 +72,9 @@ public class ScreenSTG extends Screen implements Runnable {
         for (int i = 0; i < bullets.size(); i++) {
             if(bullets.get(i) != null) {
                 e = bullets.get(i);
-                e.tick(window);
-                e.render(g);
+                e.update(window, g);
             }
         }
-
-        new Remover().start();
 
     }
 
@@ -85,30 +83,42 @@ public class ScreenSTG extends Screen implements Runnable {
         ElementEnemy e;
 
         for (int i = 0; i < enemies.size(); i++) {
-            e = enemies.get(i);
-            e.tick(window);
-            e.render(g);
-
-            if(e.isOutWindow()) {
-                enemies.remove(i);
+            if(enemies.get(i) != null) {
+                e = enemies.get(i);
+                e.update(window, g);
             }
         }
 
+        new Remover().start();
+
     }
 
-    private class Remover extends Task {
+    private class Remover extends Thread {
 
+        @Override
         public void run() {
 
-            ElementBullet e;
+            ElementBullet b;
+            ElementEnemy e;
 
             for (int i = 0; i < bullets.size(); i++) {
                 if(bullets.get(i) != null) {
-                    e = bullets.get(i);
+                    b = bullets.get(i);
 
-                    if(e.isOutWindow()) {
+                    if(b.checkOutWindow(window)) {
                         bullets.remove(i);
-                        bulletCache.reuse(e);
+                        bulletCache.reuse(b);
+                    }
+                }
+            }
+
+            for (int i = 0; i < enemies.size(); i++) {
+                if(enemies.get(i) != null) {
+                    e = enemies.get(i);
+
+                    if(e.checkOutWindow(window)) {
+                        enemies.remove(i);
+                        enemyCache.reuse(e);
                     }
                 }
             }

@@ -6,21 +6,36 @@ import rainy2D.element.ElementEnemy;
 import rainy2D.render.desktop.ScreenSTG;
 import rainy2D.shape.Direction;
 import rainy2D.shape.Rectangle;
-import rainy2D.util.list.Task;
+import rainy2D.util.task.Task;
 
 /**
  * 游戏大部分的操作包装在这个类中
- * 只是一个功能类哦
+ * 写的貌似有些难以维护……
+ * 注意！！！：此类一定要在setRepaintField之后实例化
  */
 public class Stage extends Task {
 
     ScreenSTG screen;
     Rectangle field;
 
+    /**
+     * field四边位置
+     */
+    int left;
+    int top;
+    int right;
+    int bottom;
+
     public Stage(ScreenSTG screen) {
 
         this.screen = screen;
+
         field = screen.getField();
+
+        left = field.getOffsetX();
+        top = field.getOffsetY();
+        right = field.getX2();
+        bottom = field.getY2();
 
     }
 
@@ -33,24 +48,23 @@ public class Stage extends Task {
      */
     public ElementEnemy addEnemy(ElementEnemy e, double appearPercent, int direction) {
 
-        ElementEnemy enemy = new ElementEnemy(e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getSpeed(), e.getAngle(), e.getImage());
-        enemy.setStartHealth(e.getHealth());
+        ElementEnemy enemy = screen.enemyCache.getClone(e);
 
         if(direction == Direction.LEFT) {
             enemy.setAngle(0);
-            enemy.locate(field.getOffsetX(), field.getY(appearPercent));
+            enemy.locate(left - enemy.getWidth() / 2, field.getY(appearPercent));
         }
         else if(direction == Direction.RIGHT) {
             enemy.setAngle(180);
-            enemy.locate(field.getX2(), field.getY(appearPercent));
+            enemy.locate(right + enemy.getWidth() / 2, field.getY(appearPercent));
         }
         else if(direction == Direction.UP) {
             enemy.setAngle(90);
-            enemy.locate(field.getX(appearPercent), field.getOffsetY());
+            enemy.locate(field.getX(appearPercent), top - enemy.getHeight() / 2);
         }
         else if(direction == Direction.DOWN) {
             enemy.setAngle(270);
-            enemy.locate(field.getX(appearPercent), field.getY2());
+            enemy.locate(field.getX(appearPercent), bottom + enemy.getHeight() / 2);
         }
 
         screen.add(enemy, screen.enemies);
@@ -62,7 +76,7 @@ public class Stage extends Task {
     public void addEnemies(ElementEnemy e, double appearPercent, double percentIncrease, int direction, int number) {
 
         for(int i = 0; i < number; i++) {
-            addEnemy(e, appearPercent + percentIncrease * i, direction);
+            addEnemy(e,appearPercent + percentIncrease * i, direction);
         }
 
     }
@@ -118,36 +132,16 @@ public class Stage extends Task {
      * @param canBeRotated 是否允许子弹的图片旋转
      * @return 返回发射出去的子弹，可以进一步操控
      */
-    public void playerShoot(Element e, ElementBullet b, int line, boolean canBeRotated) {
+    public void playerShoot(Element e, ElementBullet b, boolean canBeRotated) {
 
-        ElementBullet[] bullets = new ElementBullet[line];
+        ElementBullet bullet = screen.bulletCache.getClone(b);
 
-        for(int i = 0; i < line; i++) {
+        bullet.rotateState(canBeRotated, false);
+        bullet.locate(e.getX(), e.getOffsetY());
+        bullet.setAngle(-90);
+        bullet.setState(ElementBullet.HIT_ENEMY);
 
-            bullets[i] = screen.bulletCache.getClone(b);
-
-            bullets[i].rotateState(canBeRotated, false);
-            bullets[i].setAngle(-90);
-            bullets[i].setState(ElementBullet.HIT_ENEMY);
-
-            screen.add(bullets[i], screen.bullets);
-        }
-
-        if(line == 1) {
-            bullets[0].locate(e.getX(), e.getOffsetY());
-        }
-        else if(line == 2) {
-            bullets[0].locate(e.getX() - e.getWidth() / 4, e.getOffsetY());
-            bullets[1].locate(e.getX() + e.getWidth() / 4, e.getOffsetY());
-        }
-        else if(line == 3) {
-            bullets[0].locate(e.getX(), e.getOffsetY());
-            bullets[1].locate(e.getX() - e.getWidth() / 3, e.getOffsetY());
-            bullets[2].locate(e.getX() + e.getWidth() / 3, e.getOffsetY());
-        }
-        else {
-            bullets[0].locate(e.getX(), e.getOffsetY());
-        }
+        screen.add(bullet, screen.bullets);
 
     }
 

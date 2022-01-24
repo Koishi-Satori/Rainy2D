@@ -11,6 +11,31 @@ public class Shape {
     int width;
     int height;
 
+    public void locate(int x, int y) {
+
+        this.x = x;
+        this.y = y;
+        offsetX = x - width / 2;
+        offsetY = y - height / 2;
+
+    }
+
+    public void locateOffset(int offsetX, int offsetY) {
+
+        x = offsetX + width / 2;
+        y = offsetY + height / 2;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+
+    }
+
+    public void setSize(int width, int height) {
+
+        this.width = width;
+        this.height = height;
+
+    }
+
     public int getOffsetX() {
 
         return offsetX;

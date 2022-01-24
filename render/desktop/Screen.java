@@ -38,14 +38,14 @@ public class Screen extends JPanel implements Runnable {
     private int totalWidth;
     private int totalHeight;
 
-    public int fps;
+    private int fpsTime;
     public double nowFps;
 
     /**
      * time根据fps递增
      * cycle在[0-1]以0.01的速度循环
      */
-    int time;
+    int timer;
     double cycle;
     boolean cycleState;
 
@@ -114,7 +114,7 @@ public class Screen extends JPanel implements Runnable {
      */
     public void setDefaultFps(int fps) {
 
-        this.fps = fps;
+        fpsTime = MathData.round(1000.0 / fps);
 
     }
 
@@ -216,7 +216,6 @@ public class Screen extends JPanel implements Runnable {
      * 需要注意的是，添加组件时是绘制在缓冲图上，所以请不要使用SC系列的变量了。范围为[0, 0] ~ [bufferWidth, bufferHeight]
      * @param g 没什么可说的？
      */
-    @Override
     public void paint(Graphics g) {
 
         bufferTick();
@@ -237,9 +236,9 @@ public class Screen extends JPanel implements Runnable {
      */
     public void cycleTime() {
 
-        time ++;
-        if(time == Integer.MAX_VALUE) {
-            time = 0;
+        timer++;
+        if(timer > 360) {
+            timer = 0;
         }
 
         if(cycle >= 1) {
@@ -259,25 +258,12 @@ public class Screen extends JPanel implements Runnable {
     }
 
     /**
-     * 每x刻进行一次操作
-     * @param tick 间隔
+     * 每360刻进行tick次操作
      * @return 可操作时返回true
      */
     public boolean forTick(int tick) {
 
-        return getTimer() % tick == 0;
-
-    }
-
-    /**
-     * 每x刻进行一次操作
-     * @param tick 间隔
-     * @param period 持续时间
-     * @return 可操作时返回true
-     */
-    public boolean forTick(int tick, int period) {
-
-        return getTimer() % tick < period;
+        return timer % tick == 0;
 
     }
 
@@ -296,8 +282,7 @@ public class Screen extends JPanel implements Runnable {
 
         for(int i = 0; i < imageBottom.size(); i++) {
             e = imageBottom.get(i);
-            e.tick(window);
-            e.render(g);
+            e.update(window, g);
         }
 
     }
@@ -308,8 +293,7 @@ public class Screen extends JPanel implements Runnable {
 
         for(int i = 0; i < imageMiddle.size(); i++) {
             e = imageMiddle.get(i);
-            e.tick(window);
-            e.render(g);
+            e.update(window, g);
         }
 
     }
@@ -320,8 +304,7 @@ public class Screen extends JPanel implements Runnable {
 
         for(int i = 0; i < imageFront.size(); i++) {
             e = imageFront.get(i);
-            e.tick(window);
-            e.render(g);
+            e.update(window, g);
         }
 
     }
@@ -331,7 +314,7 @@ public class Screen extends JPanel implements Runnable {
      */
     public int getTimer() {
 
-        return time;
+        return timer;
 
     }
 
@@ -409,7 +392,6 @@ public class Screen extends JPanel implements Runnable {
 
         int frame = 0;
         long timer = System.currentTimeMillis();
-        long fpsTime = MathData.round(1000.0 / fps);
         long updateTime;
         long beforeTime;
         long nowTime;
@@ -430,11 +412,7 @@ public class Screen extends JPanel implements Runnable {
                 nowTime = System.nanoTime();
                 updateTime = (nowTime - beforeTime) / 1000000;
 
-                if(updateTime >= fpsTime) {
-                    continue;
-                }
-
-                Thread.sleep(Math.max(fpsTime - updateTime, 16));
+                Thread.sleep(Math.max(fpsTime - updateTime, fpsTime));
 
                 //每秒得到fps
                 if(System.currentTimeMillis() - timer > 1000) {

@@ -1,37 +1,37 @@
 package rainy2D.util.list;
 
-import rainy2D.element.ElementBullet;
+import rainy2D.element.ElementEnemy;
 import rainy2D.util.Array;
 
 import java.awt.image.BufferedImage;
 
-public class BulletCacheList {
+public class EnemyCacheList {
 
     int cacheListSize;
     int lastTakeIndex;
 
-    Array<ElementBullet> elements;
+    Array<ElementEnemy> elements;
 
-    public BulletCacheList(int size) {
+    public EnemyCacheList(int size) {
 
         cacheListSize = size;
         elements = new Array<>(size);
 
         for(int i = 0; i < size; i++) {
-            elements.add(new ElementBullet(0, 0, 0, 0, 0, null));
+            elements.add(new ElementEnemy(0, 0, 0, 0, 0, null));
         }
 
     }
 
-    public void reuse(ElementBullet e) {
+    public void reuse(ElementEnemy e) {
 
         elements.add(e);
 
     }
 
-    public ElementBullet getClone(ElementBullet b) {
+    public ElementEnemy getClone(ElementEnemy e) {
 
-        return get(b.getX(), b.getY(), b.getWidth(), b.getHeight(), b.getSpeed(), b.getAngle(), b.getForce(), b.getImage());
+        return get(e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getSpeed(), e.getAngle(), e.getHealth(), e.getImage());
 
     }
 
@@ -39,17 +39,16 @@ public class BulletCacheList {
      * 原理：直接返回下一位，当达到size极限时，第一个应已经补位完毕，所以可以一直循环使用
      * @return 设置好的子弹对象
      */
-    public ElementBullet get(double x, double y, int width, int height, double speed, double angle, int force, BufferedImage img) {
+    public ElementEnemy get(double x, double y, int width, int height, double speed, double angle, int startHealth, BufferedImage img) {
 
-        ElementBullet e = elements.get(lastTakeIndex);
+        ElementEnemy e = elements.get(lastTakeIndex);
 
         e.locate(x, y);
         e.setSize(width, height);
         e.setAngle(angle);
         e.setSpeed(speed);
-        e.setForce(force);
+        e.setStartHealth(startHealth);
         e.setImage(img);
-        e.resetEffect();
         e.setTimer(0);
 
         lastTakeIndex++;

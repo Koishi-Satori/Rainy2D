@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 /**
  * 构造器：inset
  * 超类：inset
+ * 复杂类、重点类之一
  */
 public class ElementBullet extends ElementVector {
 
@@ -28,23 +29,28 @@ public class ElementBullet extends ElementVector {
 
     BufferedImage imageBefore;
 
-    /**
-     * BulletCacheList用构造器
-     */
-    public ElementBullet() {
+    int force;
 
-        this(0, 0, 0, 0, 0, 0, null);
+    /**
+     * 模板构造器
+     */
+    public ElementBullet(int width, int height, double speed, double angle, int hitForce, BufferedImage img) {
+
+        this(0, 0, width, height, speed, angle, hitForce, img);
+
+
 
     }
 
     /**
      * 推荐使用的构造器，虽然比较难看但是优化很好
      */
-    public ElementBullet(double x, double y, int width, int height, double speed, double angle, BufferedImage img) {
+    public ElementBullet(double x, double y, int width, int height, double speed, double angle, int hitForce, BufferedImage img) {
 
         super(x, y, width, height, speed, angle, img);
 
         imageBefore = img;
+        force = hitForce;
 
         resetEffect();
         updateImage();
@@ -56,7 +62,6 @@ public class ElementBullet extends ElementVector {
 
         appearEffect(EFFECT_DOWN_VALUE);
 
-        checkOutWindow(window);
         locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
 
     }
@@ -133,9 +138,21 @@ public class ElementBullet extends ElementVector {
 
     }
 
+    public void setForce(int force) {
+
+        this.force = force;
+
+    }
+
     public int getState() {
 
         return state;
+
+    }
+
+    public int getForce() {
+
+        return force;
 
     }
 
