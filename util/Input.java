@@ -22,9 +22,10 @@ public class Input {
 
     int pressKeyCode;
     int releaseKeyCode;
-    boolean[] keyDown = new boolean[120];
-
-    int mouseCode;
+    int pressMouseCode;
+    int releaseMouseCode;
+    boolean[] keyDown = new boolean[120];//120个keycode
+    boolean[] mouseDown = new boolean[2];//左键1 右键2
 
     public Input(Window window) {
 
@@ -49,13 +50,19 @@ public class Input {
 
             public void mousePressed(MouseEvent e) {
 
-                mouseCode = e.getButton();
+                pressMouseCode = e.getButton();
+
+                if(pressMouseCode <= 2)
+                mouseDown[pressMouseCode] = true;
 
             }
 
             public void mouseReleased(MouseEvent e) {
 
-                mouseCode = -1;
+                releaseMouseCode = e.getButton();
+
+                if(releaseMouseCode <= 2)
+                mouseDown[releaseMouseCode] = false;
 
             }
 
@@ -76,18 +83,6 @@ public class Input {
 
     }
 
-    public int getPressKeyCode() {
-
-        return pressKeyCode;
-
-    }
-
-    public int getReleaseKeyCode() {
-
-        return releaseKeyCode;
-
-    }
-
     public double getMouseX() {
 
         return MouseInfo.getPointerInfo().getLocation().getX() - window.getX();
@@ -100,15 +95,9 @@ public class Input {
 
     }
 
-    public int getMouseCode() {
-
-        return mouseCode;
-
-    }
-
     public boolean isMouseClicking() {
 
-        return mouseCode != -1;
+        return mouseDown[MOUSE_LEFT] == true;
 
     }
 

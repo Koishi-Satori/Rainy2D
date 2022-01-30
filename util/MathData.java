@@ -54,11 +54,30 @@ public class MathData {
 
     public static double downValue(double value, double downIncrease) {
 
-        if(value - downIncrease > 0) {
+        return downValue(value, downIncrease, 0);
+
+    }
+
+    public static double downValue(double value, double downIncrease, double min) {
+
+        if(value - downIncrease > min) {
             return value - downIncrease;
         }
-        else if(value - downIncrease <= 0) {
-            return 0;
+        else if(value - downIncrease <= min) {
+            return min;
+        }
+
+        return value;
+
+    }
+
+    public static double upValue(double value, double increase, double max) {
+
+        if(value + increase < max) {
+            return value + increase;
+        }
+        else if(value + increase >= max) {
+            return max;
         }
 
         return value;

@@ -87,13 +87,13 @@ public class Canvas {
         WI_HEIGHT = window.getHeight();
 
         field = new Rectangle(0, 0, WI_WIDTH, WI_HEIGHT);
-        setDefaultSize(900, 600);
+        setDefaultSize(1000, 700);
         setColorOverField(new Color(42, 42, 42,255));
 
     }
 
     /**
-     * 设置分辨率（默认900x600）
+     * 设置分辨率（默认1000x700）
      * 一旦设置就不要更改了哦
      * 分辨率必须与window的大小相同，否则会出现奇奇怪怪的bug
      * 分辨率必须小于屏幕长宽一些

@@ -3,20 +3,25 @@ package rainy2D.element.action;
 import rainy2D.element.image.ElementImageInset;
 import rainy2D.render.desktop.Screen;
 import rainy2D.render.desktop.Window;
-import rainy2D.util.Action;
+import rainy2D.util.MathData;
 
 import java.awt.image.BufferedImage;
 
 public class ElementButton extends ElementImageInset {
 
-    Action action;
-    BufferedImage imgHanging;
+    int maxWidth;
+    int maxHeight;
+    int minWidth;
+    int minHeight;
 
-    public ElementButton(double x, double y, int width, int height, BufferedImage img, BufferedImage imgHanging) {
+    public ElementButton(double x, double y, int width, int height, BufferedImage img) {
 
         super(x, y, width, height, img);
 
-        this.imgHanging = imgHanging;
+        maxWidth = MathData.round(width * 1.2);
+        maxHeight = MathData.round(height * 1.2);
+        minWidth = width;
+        minHeight = height;
 
     }
 
@@ -24,10 +29,10 @@ public class ElementButton extends ElementImageInset {
     public void tick(Window window) {
 
         if(isMouseHanging(window.getScreenIn())) {
-            setImage(imgHanging);
+            setSize(maxWidth, maxHeight);
         }
         else {
-            setImage(imgBackup);
+            setSize(minWidth, minHeight);
         }
 
     }

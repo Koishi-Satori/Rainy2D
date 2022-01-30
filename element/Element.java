@@ -2,7 +2,6 @@ package rainy2D.element;
 
 import rainy2D.render.desktop.Window;
 import rainy2D.render.graphic.Graphic;
-import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
@@ -30,12 +29,6 @@ public class Element {
 
     protected Circle circle;
     protected Rectangle rect;
-
-    public Element(double offsetX, double offsetY, int width, int height, ImageLocation iml) {
-
-        this(offsetX, offsetY, width, height, iml.get());
-
-    }
 
     public Element(double offsetX, double offsetY, int width, int height, BufferedImage img) {
 
@@ -117,8 +110,13 @@ public class Element {
 
     }
 
+    /**
+     * 已经处理了设置后位置偏移的问题
+     */
     public void setSize(int width, int height) {
 
+        //摆正位置
+        locateOffset(offsetX + (this.width - width) / 2, offsetY + (this.height - height) / 2);
         this.width = width;
         this.height = height;
 
