@@ -1,4 +1,4 @@
-package rainy2D.element;
+package rainy2D.element.vector;
 
 import java.awt.image.BufferedImage;
 
@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 public class ElementEnemy extends ElementVector {
 
     int health;
+    int maxHealth;
 
     /**
      * 模板构造器
@@ -24,18 +25,31 @@ public class ElementEnemy extends ElementVector {
         super(x, y, width, height, speed, angle, img);
 
         health = startHealth;
+        maxHealth = startHealth;
 
     }
 
-    public final void setStartHealth(int startHealth) {
+    public void setHealth(int health) {
 
-        health = startHealth;
+        this.health = health;
+
+    }
+
+    public void reHealth() {
+
+        health = maxHealth;
 
     }
 
     public int getHealth() {
 
         return health;
+
+    }
+
+    public int getMaxHealth() {
+
+        return maxHealth;
 
     }
 

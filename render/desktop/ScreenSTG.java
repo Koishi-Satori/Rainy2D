@@ -1,18 +1,24 @@
 package rainy2D.render.desktop;
 
-import rainy2D.element.ElementBullet;
-import rainy2D.element.ElementEnemy;
+import rainy2D.element.vector.ElementBoss;
+import rainy2D.element.vector.ElementBullet;
+import rainy2D.element.vector.ElementEnemy;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.util.Array;
 import rainy2D.util.list.BulletCacheList;
 import rainy2D.util.list.EnemyCacheList;
 
 import java.awt.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ScreenSTG extends Screen {
 
-    public Array<ElementBullet> bullets = new Array<>();
-    public Array<ElementEnemy> enemies = new Array<>();
+    ExecutorService service = Executors.newCachedThreadPool();
+
+    public Array<ElementBullet> bullets = new Array<>(4000);
+    public Array<ElementEnemy> enemies = new Array<>(200);
+    public Array<ElementBoss> bosses = new Array<>(5);
 
     public BulletCacheList bulletCache;
     public EnemyCacheList enemyCache;
@@ -30,11 +36,11 @@ public class ScreenSTG extends Screen {
 
         renderBottomImage(graphicsBuffer);
         renderMiddleImage(graphicsBuffer);
-        tick();
         renderFrontImage(graphicsBuffer);
-
+        tick();
         bulletTick(graphicsBuffer);
         enemyTick(graphicsBuffer);
+        bossTick(graphicsBuffer);
 
         renderOverField(graphicsBuffer);
 
@@ -60,16 +66,14 @@ public class ScreenSTG extends Screen {
         Graphic2D.renderRect(right, top, WI_WIDTH - right, WI_HEIGHT - top, g);
         Graphic2D.renderRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom, g);
 
-        g.setColor(new Color(125, 125, 125));
-        Graphic2D.renderFrame(left - 5, top - 5, right + 5, bottom + 5, 5, g);
-
     }
 
     public void bulletTick(Graphics g) {
 
         ElementBullet e;
+        int size = bullets.size();
 
-        for (int i = 0; i < bullets.size(); i++) {
+        for (int i = 0; i < size; i++) {
             if(bullets.get(i) != null) {
                 e = bullets.get(i);
                 e.update(window, g);
@@ -81,15 +85,30 @@ public class ScreenSTG extends Screen {
     public void enemyTick(Graphics g) {
 
         ElementEnemy e;
+        int size = enemies.size();
 
-        for (int i = 0; i < enemies.size(); i++) {
+        for (int i = 0; i < size; i++) {
             if(enemies.get(i) != null) {
                 e = enemies.get(i);
                 e.update(window, g);
             }
         }
 
-        new Remover().start();
+        service.submit(new Remover());
+
+    }
+
+    public void bossTick(Graphics g) {
+
+        ElementBoss e;
+        int size = bosses.size();
+
+        for (int i = 0; i < size; i++) {
+            if(bosses.get(i) != null) {
+                e = bosses.get(i);
+                e.update(window, g);
+            }
+        }
 
     }
 
@@ -100,8 +119,9 @@ public class ScreenSTG extends Screen {
 
             ElementBullet b;
             ElementEnemy e;
+            int size = bullets.size();
 
-            for (int i = 0; i < bullets.size(); i++) {
+            for (int i = 0; i < size; i++) {
                 if(bullets.get(i) != null) {
                     b = bullets.get(i);
 
@@ -112,7 +132,9 @@ public class ScreenSTG extends Screen {
                 }
             }
 
-            for (int i = 0; i < enemies.size(); i++) {
+            size = enemies.size();
+
+            for (int i = 0; i < size; i++) {
                 if(enemies.get(i) != null) {
                     e = enemies.get(i);
 

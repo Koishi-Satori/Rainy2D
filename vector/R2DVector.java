@@ -3,8 +3,6 @@ package rainy2D.vector;
 import rainy2D.element.Element;
 import rainy2D.util.MathData;
 
-import java.awt.*;
-
 public class R2DVector {
 
     public static double vectorX(double x, double speed, double angle) {
@@ -30,14 +28,9 @@ public class R2DVector {
 
     }
 
-    /**
-     * @param p1
-     * @param p2
-     * @return 两点之间的距离
-     */
-    public static int distanceBetweenAB(Point p1, Point p2) {
+    public static double angleBetweenAB(double x1, double y1, double x2, double y2) {
 
-        return distanceBetweenAB(p1.x, p1.y, p2.x, p2.y);
+        return MathData.toAngle(Math.atan2(y1 - y2, x1 - x2));
 
     }
 

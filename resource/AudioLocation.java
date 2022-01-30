@@ -3,21 +3,23 @@ package rainy2D.resource;
 import javax.sound.sampled.*;
 import java.io.IOException;
 
-public class AudioLocation {
+public class AudioLocation extends Location {
 
-    String path;
+    Clip clip;
 
-    public AudioLocation(String path) {
+    public AudioLocation(String name) {
 
-        this.path = path;
+        super(name);
+
+        init("bgm", ".wav");
 
     }
 
     public Clip get() {
 
         try {
-            AudioInputStream ais = AudioSystem.getAudioInputStream(AudioLocation.class.getResource("/bgm/" + path));
-            Clip clip = AudioSystem.getClip();
+            AudioInputStream ais = AudioSystem.getAudioInputStream(AudioLocation.class.getResource("/" + folder + "/" + name + format));
+            clip = AudioSystem.getClip();
             clip.open(ais);
             return clip;
         }
@@ -29,9 +31,21 @@ public class AudioLocation {
 
     }
 
-    public void play() {
+    public void singlePlay() {
 
-        get().start();
+        clip.start();
+
+    }
+
+    public void loopPlay(int time) {
+
+        clip.loop(time);
+
+    }
+
+    public void stop() {
+
+        clip.stop();
 
     }
 

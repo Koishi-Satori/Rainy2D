@@ -4,11 +4,10 @@ public class Array<E> {
 
     public Object[] objects;
     private int size;
-    private int addCount;
-
-    private Object DEFAULT_NONNULL_OBJ;
 
     private static int DEFAULT_CAPACITY = 50;
+
+    public static Array EMPTY = new Array();
 
     public Array(int capacity){
 
@@ -71,6 +70,15 @@ public class Array<E> {
 
     }
 
+    /**
+     * @return 数组可存长度，批量添加使用
+     */
+    public int length() {
+
+        return objects.length;
+
+    }
+
     public int indexOf(Object obj) {
 
         if (obj == null) {
@@ -90,12 +98,19 @@ public class Array<E> {
 
     public void add(Object obj){
 
-        addCount++;
-        if(addCount == 1) {
-            DEFAULT_NONNULL_OBJ = obj;
-        }
         checkRangeNeedIncrease(-1, null);
         objects[size++] = obj;
+
+    }
+
+    public void set(int index, Object obj) {
+
+        if(checkIndex(index)) {
+            if(objects[index] == null) {
+                size++;
+            }
+            objects[index] = obj;
+        }
 
     }
 
@@ -107,7 +122,7 @@ public class Array<E> {
             }
         }
 
-        return (E) DEFAULT_NONNULL_OBJ;
+        return null;
 
     }
 
@@ -130,6 +145,12 @@ public class Array<E> {
 
             size--;
         }
+
+    }
+
+    public void remove(E obj){
+
+        remove(indexOf(obj));
 
     }
 

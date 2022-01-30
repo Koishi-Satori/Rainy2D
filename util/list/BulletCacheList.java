@@ -1,6 +1,6 @@
 package rainy2D.util.list;
 
-import rainy2D.element.ElementBullet;
+import rainy2D.element.vector.ElementBullet;
 import rainy2D.util.Array;
 
 import java.awt.image.BufferedImage;

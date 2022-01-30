@@ -1,5 +1,6 @@
-package rainy2D.element;
+package rainy2D.element.image;
 
+import rainy2D.element.Element;
 import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Rectangle;
 

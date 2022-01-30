@@ -10,6 +10,12 @@ public class MathData {
 
     }
 
+    public static double absDouble(double value) {
+
+        return value >= 0 ? value : -value;
+
+    }
+
     public static int round(double value) {
 
         return (int) (value);
@@ -18,14 +24,7 @@ public class MathData {
 
     public static boolean inEqual(double value1, double value2, double maxField) {
 
-        if(value1 > value2) {
-            return value1 - value2 < maxField;
-        }
-        else if(value1 < value2) {
-            return value2 - value1 < maxField;
-        }
-
-        return true;
+        return absDouble(value1 - value2) < maxField;
 
     }
 
@@ -50,6 +49,19 @@ public class MathData {
     public static double toAngle(double theta) {
 
         return theta * (180 / PI);
+
+    }
+
+    public static double downValue(double value, double downIncrease) {
+
+        if(value - downIncrease > 0) {
+            return value - downIncrease;
+        }
+        else if(value - downIncrease <= 0) {
+            return 0;
+        }
+
+        return value;
 
     }
 

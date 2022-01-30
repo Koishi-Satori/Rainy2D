@@ -24,17 +24,25 @@ public class Window extends JFrame {
         kit = Toolkit.getDefaultToolkit();
         xSize = kit.getScreenSize().width;
         ySize = kit.getScreenSize().height;
-        x = getX();
-        y = getY();
+
+        x = (xSize - width) / 2;
+        y = (ySize - height) / 2;
+
         this.width = width;
         this.height = height;
 
         setSize(width, height);
-        setLocation((xSize - width) / 2, (ySize - height) / 2);
+        setLocation(x, y);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle(title);
         setIconImage(icon);
         setResizable(false);
+
+    }
+
+    public void update() {
+
+        setVisible(true);
 
     }
 
@@ -47,9 +55,13 @@ public class Window extends JFrame {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         gd.setFullScreenWindow(this);
+
         isFull = true;
+
         width = xSize;
         height = ySize;
+
+        setVisible(true);
 
     }
 
@@ -60,6 +72,8 @@ public class Window extends JFrame {
 
         setUndecorated(true);
         isNoFrame = true;
+
+        update();
 
     }
 

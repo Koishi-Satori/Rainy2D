@@ -67,13 +67,13 @@ public class Shape {
      */
     public int getX(double percent) {
 
-        return MathData.round(offsetX + width * percent);
+        return offsetX + MathData.round(width * percent);
 
     }
 
     public int getY(double percent) {
 
-        return MathData.round(offsetY + height * percent);
+        return offsetY + MathData.round(height * percent);
 
     }
 

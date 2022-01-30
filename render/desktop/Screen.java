@@ -5,7 +5,9 @@ import rainy2D.render.graphic.Graphic;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.Array;
+import rainy2D.util.Input;
 import rainy2D.util.MathData;
+import rainy2D.util.WaitTimer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,22 +63,29 @@ public class Screen extends JPanel implements Runnable {
     Color overFieldColor;
 
     public Window window;
+    public Input input;
 
-    public Array<Element> imageBottom = new Array<>();
-    public Array<Element> imageMiddle = new Array<>();
-    public Array<Element> imageFront = new Array<>();
+    public Array<Element> imageBottom = new Array<>(50);
+    public Array<Element> imageMiddle = new Array<>(50);
+    public Array<Element> imageFront = new Array<>(50);
+    public Array<WaitTimer> waitRequests = new Array<>(10);
 
     boolean isPause;
 
     public Screen(Window window) {
 
         this.window = window;
+
+        window.setScreenIn(this);
+        input = new Input(window);
+
         WI_WIDTH = window.getWidth();
         WI_HEIGHT = window.getHeight();
 
         field = new Rectangle(0, 0, WI_WIDTH, WI_HEIGHT);
         setDefaultSize(900, 600);
         setDefaultFps(60);
+        setColorOverField(new Color(42, 42, 42,255));
 
         new Thread(this).start();
 
@@ -162,8 +171,7 @@ public class Screen extends JPanel implements Runnable {
     /**
      * 继承并复写，逻辑都在这里进行。
      */
-    public void tick() {
-    }
+    public void tick() {}
 
     /**
      * 添加元素进list，就会被渲染
@@ -224,8 +232,8 @@ public class Screen extends JPanel implements Runnable {
         //此处可以继承本类并修改
         renderBottomImage(graphicsBuffer);
         renderMiddleImage(graphicsBuffer);
-        tick();
         renderFrontImage(graphicsBuffer);
+        tick();
 
         bufferPaint(g);
 
@@ -237,7 +245,7 @@ public class Screen extends JPanel implements Runnable {
     public void cycleTime() {
 
         timer++;
-        if(timer > 360) {
+        if(timer > 36000) {
             timer = 0;
         }
 
@@ -254,6 +262,28 @@ public class Screen extends JPanel implements Runnable {
         else {
             cycle -= 0.01;
         }
+
+        for(int i = 0; i < waitRequests.size(); i++) {
+            waitRequests.get(i).update();
+        }
+
+    }
+
+    /**
+     * 等待一段时间后不断触发isWaitBack方法
+     * if(isWaitBack())
+     * wait(50);
+     * 这样可以做成定时触发
+     */
+    public void wait(int waitTime, int requestNum) {
+
+        waitRequests.get(requestNum).wait(waitTime);
+
+    }
+
+    public boolean isWaitBack(int requestNum) {
+
+        return waitRequests.get(requestNum).isWaitBack();
 
     }
 
@@ -279,8 +309,9 @@ public class Screen extends JPanel implements Runnable {
     public void renderBottomImage(Graphics g) {
 
         Element e;
+        int size = imageBottom.size();
 
-        for(int i = 0; i < imageBottom.size(); i++) {
+        for(int i = 0; i < size; i++) {
             e = imageBottom.get(i);
             e.update(window, g);
         }
@@ -290,8 +321,9 @@ public class Screen extends JPanel implements Runnable {
     public void renderMiddleImage(Graphics g) {
 
         Element e;
+        int size = imageMiddle.size();
 
-        for(int i = 0; i < imageMiddle.size(); i++) {
+        for(int i = 0; i < size; i++) {
             e = imageMiddle.get(i);
             e.update(window, g);
         }
@@ -301,8 +333,9 @@ public class Screen extends JPanel implements Runnable {
     public void renderFrontImage(Graphics g) {
 
         Element e;
+        int size = imageFront.size();
 
-        for(int i = 0; i < imageFront.size(); i++) {
+        for(int i = 0; i < size; i++) {
             e = imageFront.get(i);
             e.update(window, g);
         }
@@ -404,7 +437,6 @@ public class Screen extends JPanel implements Runnable {
 
                 //如果没有暂停，则进行游戏主逻辑
                 if(!isPause) {
-                    window.setScreenIn(this);
                     repaint();
                 }
                 frame++;

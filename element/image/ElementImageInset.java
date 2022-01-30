@@ -1,4 +1,4 @@
-package rainy2D.element;
+package rainy2D.element.image;
 
 import rainy2D.resource.ImageLocation;
 

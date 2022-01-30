@@ -1,22 +1,23 @@
-package rainy2D.section.stg;
+package rainy2D.section;
 
 import rainy2D.element.Element;
-import rainy2D.element.ElementBullet;
-import rainy2D.element.ElementEnemy;
+import rainy2D.element.vector.ElementBoss;
+import rainy2D.element.vector.ElementBullet;
+import rainy2D.element.vector.ElementEnemy;
 import rainy2D.render.desktop.ScreenSTG;
+import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Direction;
 import rainy2D.shape.Rectangle;
-import rainy2D.util.task.Task;
 
 /**
  * 游戏大部分的操作包装在这个类中
  * 写的貌似有些难以维护……
  * 注意！！！：此类一定要在setRepaintField之后实例化
  */
-public class Stage extends Task {
+public class Stage {
 
-    ScreenSTG screen;
-    Rectangle field;
+    public ScreenSTG screen;
+    public Rectangle field;
 
     /**
      * field四边位置
@@ -38,6 +39,8 @@ public class Stage extends Task {
         bottom = field.getY2();
 
     }
+
+    public void tick() {}
 
     /**
      * 添加一个敌人
@@ -125,6 +128,12 @@ public class Stage extends Task {
 
     }
 
+    public boolean isEnemyBoss(ElementEnemy e) {
+
+        return e instanceof ElementBoss;
+
+    }
+
     /**
      * 玩家攻击
      * @param e 发射对象
@@ -145,11 +154,15 @@ public class Stage extends Task {
 
     }
 
-    /**
-     * 复写，添加任务
-     */
-    @Override
-    public void run() {
+    public void renderAttackName(String name) {
+
+        Graphic2D.setColor(Conversation.DEFAULT_BG_COLOR, screen.getGraphicsBuffer());
+        Graphic2D.renderRect(field.getOffsetX(), field.getOffsetY(), field.getX(0.3), field.getY(0.05), screen.getGraphicsBuffer());
+
+        Graphic2D.setColor(Conversation.DEFAULT_COLOR, screen.getGraphicsBuffer());
+        Graphic2D.setFont(Conversation.DEFAULT_FONT, screen.getGraphicsBuffer());
+        Graphic2D.renderString(field.getX(0.05), field.getY(0.05), name, screen.getGraphicsBuffer());
+
     }
 
 }

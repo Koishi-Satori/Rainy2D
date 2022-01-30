@@ -1,4 +1,4 @@
-package rainy2D.element;
+package rainy2D.element.vector;
 
 import rainy2D.render.desktop.Window;
 import rainy2D.render.graphic.Graphic;
@@ -6,11 +6,11 @@ import rainy2D.render.graphic.Graphic2D;
 import rainy2D.resource.ImageLocation;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
+import rainy2D.util.Input;
 import rainy2D.util.MathData;
 import rainy2D.vector.R2DVector;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
@@ -19,8 +19,7 @@ import java.awt.image.BufferedImage;
  * 超类：inset
  */
 public class ElementPlayer extends ElementVector {
-    
-    double speedBackup;
+
     double speedQuick;
     double speedSlow;
 
@@ -32,8 +31,9 @@ public class ElementPlayer extends ElementVector {
     boolean shoot;
     boolean slow;
     boolean run;
+    public int keyCode;
 
-    private BufferedImage playerPoint = new ImageLocation("plp.png").get();
+    private BufferedImage playerPoint = new ImageLocation("plp").get();
 
     private int BIGGEST_POINT_SIZE = 16;
     private int pointSize;
@@ -45,7 +45,6 @@ public class ElementPlayer extends ElementVector {
         
         speedQuick = speed * 1.6;
         speedSlow = speed * 0.45;
-        speedBackup = speed;
 
     }
 
@@ -71,7 +70,9 @@ public class ElementPlayer extends ElementVector {
     @Override
     public void tick(Window window) {
 
-        this.checkAngle();
+        checkAngle();
+        playerControl(window);
+
         if(up || left || down || right) {
             locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
         }
@@ -141,73 +142,15 @@ public class ElementPlayer extends ElementVector {
 
     public void playerControl(Window window) {
 
-        KeyAdapter k = new KeyAdapter() {
+        Input input = window.getScreenIn().input;
 
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-                switch (e.getKeyCode()) {
-
-                    case KeyEvent.VK_A:
-                        left = true;
-                        break;
-                    case KeyEvent.VK_D:
-                        right = true;
-                        break;
-                    case KeyEvent.VK_W:
-                        up = true;
-                        break;
-                    case KeyEvent.VK_S:
-                        down = true;
-                        break;
-                    case KeyEvent.VK_SPACE:
-                        shoot = true;
-                        break;
-                    case KeyEvent.VK_SHIFT:
-                        slow = true;
-                        break;
-                    case KeyEvent.VK_CONTROL:
-                        run = true;
-                        break;
-
-                }
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-                switch (e.getKeyCode()) {
-
-                    case KeyEvent.VK_A:
-                        left = false;
-                        break;
-                    case KeyEvent.VK_D:
-                        right = false;
-                        break;
-                    case KeyEvent.VK_W:
-                        up = false;
-                        break;
-                    case KeyEvent.VK_S:
-                        down = false;
-                        break;
-                    case KeyEvent.VK_SPACE:
-                        shoot = false;
-                        break;
-                    case KeyEvent.VK_SHIFT:
-                        slow = false;
-                        break;
-                    case KeyEvent.VK_CONTROL:
-                        run = false;
-                        break;
-
-                }
-
-            }
-
-        };
-
-        window.addKeyListener(k);
+        left = input.isKeyDown(KeyEvent.VK_A);
+        right = input.isKeyDown(KeyEvent.VK_D);
+        up = input.isKeyDown(KeyEvent.VK_W);
+        down = input.isKeyDown(KeyEvent.VK_S);
+        slow = input.isKeyDown(KeyEvent.VK_SHIFT);
+        shoot = input.isKeyDown(KeyEvent.VK_SPACE);
+        run = input.isKeyDown(KeyEvent.VK_CONTROL);
 
     }
 
@@ -223,7 +166,9 @@ public class ElementPlayer extends ElementVector {
     @Override
     public Circle getCircle() {
 
-        return new Circle(MathData.round(x), MathData.round(y), width / 20);
+        circle.locate(MathData.round(x), MathData.round(y));
+        circle.setSize(5, 5);
+        return circle;
 
     }
 

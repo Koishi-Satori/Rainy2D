@@ -1,6 +1,6 @@
 package rainy2D.util.list;
 
-import rainy2D.element.ElementEnemy;
+import rainy2D.element.vector.ElementEnemy;
 import rainy2D.util.Array;
 
 import java.awt.image.BufferedImage;
@@ -31,7 +31,7 @@ public class EnemyCacheList {
 
     public ElementEnemy getClone(ElementEnemy e) {
 
-        return get(e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getSpeed(), e.getAngle(), e.getHealth(), e.getImage());
+        return get(e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getSpeed(), e.getAngle(), e.getMaxHealth(), e.getImage());
 
     }
 
@@ -47,7 +47,7 @@ public class EnemyCacheList {
         e.setSize(width, height);
         e.setAngle(angle);
         e.setSpeed(speed);
-        e.setStartHealth(startHealth);
+        e.setHealth(startHealth);
         e.setImage(img);
         e.setTimer(0);
 

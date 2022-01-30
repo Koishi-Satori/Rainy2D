@@ -19,4 +19,15 @@ public class Direction {
 
     }
 
+    public static int opposite(int direction) {
+
+        if(direction + 2 > 3) {
+            return direction - 2;
+        }
+        else {
+            return direction + 2;
+        }
+
+    }
+
 }

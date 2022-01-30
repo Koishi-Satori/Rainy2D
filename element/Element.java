@@ -8,7 +8,6 @@ import rainy2D.shape.Rectangle;
 import rainy2D.util.MathData;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 /**
@@ -17,18 +16,20 @@ import java.awt.image.BufferedImage;
  */
 public class Element {
 
-    double x;
-    double y;
-    double offsetX;
-    double offsetY;
-    int width;
-    int height;
+    protected double x;
+    protected double y;
+    protected double offsetX;
+    protected double offsetY;
+    protected int width;
+    protected int height;
 
-    int timer;
+    protected int timer;
 
-    BufferedImage img;
-    Circle circle;
-    Rectangle rect;
+    protected BufferedImage img;
+    protected BufferedImage imgBackup;
+
+    protected Circle circle;
+    protected Rectangle rect;
 
     public Element(double offsetX, double offsetY, int width, int height, ImageLocation iml) {
 
@@ -46,6 +47,7 @@ public class Element {
         this.width = width;
         this.height = height;
         this.img = img;
+        imgBackup = img;
 
         circle = new Circle(0, 0, 0);
         rect = new Rectangle(0, 0, 0, 0);
@@ -69,15 +71,6 @@ public class Element {
         if(timer > 360) {
             timer = 0;
         }
-
-    }
-
-    public boolean isMouseHanging(MouseEvent event) {
-
-        int mouseX = event.getX();
-        int mouseY = event.getY();
-
-        return mouseX >= x && mouseY >= y && mouseX <= x + width && mouseY <= y + height;
 
     }
 
@@ -199,7 +192,7 @@ public class Element {
 
     /**
      * 用于子弹判定
-     * @return 返回判定半径为：1/6 width的圆形
+     * @return 返回判定半径为：1/2 width的圆形
      */
     public Circle getCircle() {
 
@@ -216,13 +209,6 @@ public class Element {
         rect.setSize(width, height);
 
         return rect;
-
-    }
-
-    public boolean isSameAs(Element e) {
-
-        return (width == e.getWidth() && height == e.getHeight()
-                && img == e.getImage());
 
     }
 

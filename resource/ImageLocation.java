@@ -4,20 +4,20 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class ImageLocation {
+public class ImageLocation extends Location {
 
-    String path;
+    public ImageLocation(String name) {
 
-    public ImageLocation(String path) {
+        super(name);
 
-        this.path = path;
+        init("img", ".png");
 
     }
 
     public BufferedImage get() {
 
         try {
-            return ImageIO.read(ImageLocation.class.getResource("/img/" + path));
+            return ImageIO.read(ImageLocation.class.getResource("/" + folder + "/" + name + format));
         }
         catch (IOException e) {
             e.printStackTrace();

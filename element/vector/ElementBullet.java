@@ -1,4 +1,4 @@
-package rainy2D.element;
+package rainy2D.element.vector;
 
 import rainy2D.render.desktop.Window;
 import rainy2D.render.graphic.Graphic;
@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
 /**
  * 构造器：inset
  * 超类：inset
- * 复杂类、重点类之一
  */
 public class ElementBullet extends ElementVector {
 
