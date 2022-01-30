@@ -16,6 +16,8 @@ public class Input {
 
     MouseAdapter mouse;
     KeyAdapter key;
+
+    Window window;
     Screen screen;
 
     int pressKeyCode;
@@ -64,6 +66,8 @@ public class Input {
 
         screen = window.getScreenIn();
 
+        this.window = window;
+
     }
 
     public boolean isKeyDown(int keyCode) {
@@ -86,13 +90,13 @@ public class Input {
 
     public double getMouseX() {
 
-        return MouseInfo.getPointerInfo().getLocation().getX() - screen.window.getX();
+        return MouseInfo.getPointerInfo().getLocation().getX() - window.getX();
 
     }
 
     public double getMouseY() {
 
-        return MouseInfo.getPointerInfo().getLocation().getY() - screen.window.getY();
+        return MouseInfo.getPointerInfo().getLocation().getY() - window.getY();
 
     }
 

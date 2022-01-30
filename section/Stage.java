@@ -4,7 +4,7 @@ import rainy2D.element.Element;
 import rainy2D.element.vector.ElementBoss;
 import rainy2D.element.vector.ElementBullet;
 import rainy2D.element.vector.ElementEnemy;
-import rainy2D.render.desktop.ScreenSTG;
+import rainy2D.render.desktop.Canvas;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Direction;
 import rainy2D.shape.Rectangle;
@@ -16,7 +16,7 @@ import rainy2D.shape.Rectangle;
  */
 public class Stage {
 
-    public ScreenSTG screen;
+    public Canvas canvas;
     public Rectangle field;
 
     /**
@@ -27,11 +27,11 @@ public class Stage {
     int right;
     int bottom;
 
-    public Stage(ScreenSTG screen) {
+    public Stage(Canvas canvas) {
 
-        this.screen = screen;
+        this.canvas = canvas;
 
-        field = screen.getField();
+        field = canvas.getField();
 
         left = field.getOffsetX();
         top = field.getOffsetY();
@@ -51,7 +51,7 @@ public class Stage {
      */
     public ElementEnemy addEnemy(ElementEnemy e, double appearPercent, int direction) {
 
-        ElementEnemy enemy = screen.enemyCache.getClone(e);
+        ElementEnemy enemy = canvas.enemyCache.getClone(e);
 
         if(direction == Direction.LEFT) {
             enemy.setAngle(0);
@@ -70,7 +70,7 @@ public class Stage {
             enemy.locate(field.getX(appearPercent), bottom + enemy.getHeight() / 2);
         }
 
-        screen.add(enemy, screen.enemies);
+        canvas.enemies.add(enemy);
 
         return enemy;
 
@@ -95,7 +95,7 @@ public class Stage {
     public ElementBullet enemyShoot(Element e, ElementBullet b, double angle, boolean canBeRotated) {
 
         //复制一份子弹并设置信息
-        ElementBullet bullet = screen.bulletCache.getClone(b);
+        ElementBullet bullet = canvas.bulletCache.getClone(b);
 
         bullet.rotateState(canBeRotated, false);
         bullet.locate(e.getX(), e.getY());
@@ -103,7 +103,7 @@ public class Stage {
         bullet.setState(ElementBullet.HIT_PLAYER);
 
         //添加
-        screen.add(bullet, screen.bullets);
+        canvas.bullets.add(bullet);
 
         return bullet;
 
@@ -124,7 +124,7 @@ public class Stage {
      */
     public boolean isEnemyReady(ElementEnemy e) {
 
-        return screen.enemies.contains(e);
+        return canvas.enemies.contains(e);
 
     }
 
@@ -143,25 +143,25 @@ public class Stage {
      */
     public void playerShoot(Element e, ElementBullet b, boolean canBeRotated) {
 
-        ElementBullet bullet = screen.bulletCache.getClone(b);
+        ElementBullet bullet = canvas.bulletCache.getClone(b);
 
         bullet.rotateState(canBeRotated, false);
         bullet.locate(e.getX(), e.getOffsetY());
         bullet.setAngle(-90);
         bullet.setState(ElementBullet.HIT_ENEMY);
 
-        screen.add(bullet, screen.bullets);
+        canvas.bullets.add(bullet);
 
     }
 
     public void renderAttackName(String name) {
 
-        Graphic2D.setColor(Conversation.DEFAULT_BG_COLOR, screen.getGraphicsBuffer());
-        Graphic2D.renderRect(field.getOffsetX(), field.getOffsetY(), field.getX(0.3), field.getY(0.05), screen.getGraphicsBuffer());
+        Graphic2D.setColor(Conversation.DEFAULT_BG_COLOR, canvas.getGraphicsBuffer());
+        Graphic2D.renderRect(field.getOffsetX(), field.getOffsetY(), field.getX(0.3), field.getY(0.05), canvas.getGraphicsBuffer());
 
-        Graphic2D.setColor(Conversation.DEFAULT_COLOR, screen.getGraphicsBuffer());
-        Graphic2D.setFont(Conversation.DEFAULT_FONT, screen.getGraphicsBuffer());
-        Graphic2D.renderString(field.getX(0.05), field.getY(0.05), name, screen.getGraphicsBuffer());
+        Graphic2D.setColor(Conversation.DEFAULT_COLOR, canvas.getGraphicsBuffer());
+        Graphic2D.setFont(Conversation.DEFAULT_FONT, canvas.getGraphicsBuffer());
+        Graphic2D.renderString(field.getX(0.05), field.getY(0.05), name, canvas.getGraphicsBuffer());
 
     }
 

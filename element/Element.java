@@ -76,7 +76,7 @@ public class Element {
 
     public boolean checkOutWindow(Window window) {
 
-        Rectangle field = window.getScreenIn().getField();
+        Rectangle field = window.getScreenIn().getCanvas().getField();
 
         if(x + width + 20 < field.getOffsetX() ||
                 x - 30 > field.getX2() ||

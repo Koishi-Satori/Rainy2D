@@ -1,7 +1,7 @@
 package rainy2D.section;
 
 import rainy2D.element.image.ElementImageInset;
-import rainy2D.render.desktop.Screen;
+import rainy2D.render.desktop.Canvas;
 import rainy2D.render.graphic.Graphic;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.resource.StringLocation;
@@ -18,7 +18,7 @@ public class Conversation {
     public static Color DEFAULT_BG_COLOR = new Color(0, 0, 0, 120);
     public static Font DEFAULT_FONT = new Font("Minecraft-FIFTY", 0, 25);
 
-    Screen screen;
+    Canvas canvas;
     Rectangle field;
     Rectangle2D textIn;
 
@@ -30,11 +30,11 @@ public class Conversation {
 
     public Array<String> texts = new Array<>();
 
-    public Conversation(Screen screen) {
+    public Conversation(Canvas canvas) {
 
-        this.screen = screen;
+        this.canvas = canvas;
 
-        field = screen.getField();
+        field = this.canvas.getField();
         textIn = new Rectangle2D(field.getX(0.05), field.getY(0.85), field.getX(0.95), field.getY(0.85)) ;
 
     }

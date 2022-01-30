@@ -70,8 +70,8 @@ public class ElementPlayer extends ElementVector {
     @Override
     public void tick(Window window) {
 
-        checkAngle();
         playerControl(window);
+        checkAngle();
 
         if(up || left || down || right) {
             locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
@@ -87,7 +87,7 @@ public class ElementPlayer extends ElementVector {
             speed = speedBackup;
         }
 
-        checkOutField(window.getScreenIn().getField());
+        checkOutField(window.getScreenIn().getCanvas().getField());
 
     }
 
