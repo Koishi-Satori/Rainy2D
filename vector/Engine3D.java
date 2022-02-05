@@ -12,6 +12,7 @@ public class Engine3D {
      * @param percent 视觉效果比例
      * @param startY 地平线坐标
      */
+    @Deprecated(since = "1.0.6", forRemoval = true)
     public static void locate3D(Element e, double speed, double percent, int startY) {
 
         e.locate(e.getX(), e.getY() + speed / 100 * e.getY());

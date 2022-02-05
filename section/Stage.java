@@ -3,10 +3,14 @@ package rainy2D.section;
 import rainy2D.element.Element;
 import rainy2D.element.vector.ElementBullet;
 import rainy2D.element.vector.ElementEnemy;
+import rainy2D.element.vector.ElementVector;
 import rainy2D.render.desktop.Canvas;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Direction;
 import rainy2D.shape.Rectangle;
+import rainy2D.util.MathData;
+
+import java.awt.image.BufferedImage;
 
 /**
  * 游戏大部分的操作包装在这个类中
@@ -162,6 +166,13 @@ public class Stage {
         bullet.setState(ElementBullet.HIT_ENEMY);
 
         canvas.bullets.add(bullet);
+
+    }
+
+    public void addEffect(double x, double y, double speed, int sizeLeast, BufferedImage img) {
+
+        ElementVector effect = canvas.effectCache.get(x, y, sizeLeast, sizeLeast, speed, MathData.random(0, 360), img);
+        canvas.effects.add(effect);
 
     }
 

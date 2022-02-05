@@ -25,6 +25,7 @@ public class ElementBullet extends ElementVector {
     private int state;
     private int effectWidth;
     private boolean canBeRotated;
+    private boolean isGravity;
 
     BufferedImage imageBefore;
 
@@ -36,8 +37,6 @@ public class ElementBullet extends ElementVector {
     public ElementBullet(int width, int height, double speed, double angle, int hitForce, BufferedImage img) {
 
         this(0, 0, width, height, speed, angle, hitForce, img);
-
-
 
     }
 
@@ -60,7 +59,6 @@ public class ElementBullet extends ElementVector {
     public void tick(Window window) {
 
         appearEffect(EFFECT_DOWN_VALUE);
-
         locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
 
     }
@@ -74,6 +72,12 @@ public class ElementBullet extends ElementVector {
         else {
             Graphic.renderIn(x, y, effectWidth, effectWidth, img, g);
         }
+
+    }
+
+    public void openGravity() {
+
+        isGravity = true;
 
     }
 

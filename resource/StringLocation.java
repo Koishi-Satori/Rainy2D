@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 
 public class StringLocation extends Location {
 
+    public static String UTF8 = "UTF-8";
+
     public StringLocation(String name) {
 
         super(name);

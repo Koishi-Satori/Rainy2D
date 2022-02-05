@@ -7,8 +7,8 @@ import java.awt.image.BufferedImage;
 
 public class BulletCacheList {
 
-    int cacheListSize;
-    int lastTakeIndex;
+    public int cacheListSize;
+    public int lastTakeIndex;
 
     Array<ElementBullet> elements;
 

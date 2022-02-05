@@ -1,15 +1,19 @@
 package rainy2D.render.desktop;
 
 import rainy2D.element.Element;
+import rainy2D.element.image.ElementImageInset;
 import rainy2D.element.vector.ElementBullet;
 import rainy2D.element.vector.ElementEnemy;
+import rainy2D.element.vector.ElementVector;
 import rainy2D.render.graphic.Graphic;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.Array;
 import rainy2D.util.Input;
 import rainy2D.util.MathData;
+import rainy2D.util.WaitTimer;
 import rainy2D.util.list.BulletCacheList;
+import rainy2D.util.list.EffectCacheList;
 import rainy2D.util.list.EnemyCacheList;
 
 import java.awt.*;
@@ -78,20 +82,25 @@ public class Canvas {
 
     public Array<ElementBullet> bullets = new Array<>(4000);
     public Array<ElementEnemy> enemies = new Array<>(200);
+    public Array<ElementBullet> effects = new Array<>(500);
 
-    public BulletCacheList bulletCache;
-    public EnemyCacheList enemyCache;
+    public BulletCacheList bulletCache = new BulletCacheList(10000);
+    public EnemyCacheList enemyCache = new EnemyCacheList(1000);
+    public EffectCacheList effectCache = new EffectCacheList(1000);
 
     ExecutorService service = Executors.newCachedThreadPool();
 
-    public Canvas(Window window) {
+    public Canvas(Window win) {
 
-        this.window = window;//获取所处的窗口和屏幕
+        window = win;//获取所处的窗口和屏幕
         screen = window.getScreenIn();
 
         WI_WIDTH = window.getWidth();
         WI_HEIGHT = window.getHeight();
 
+        for(int i = 0; i < 10; i++) {
+            screen.waitRequests.add(new WaitTimer());
+        }
         field = new Rectangle(0, 0, WI_WIDTH, WI_HEIGHT);
         setDefaultSize(1000, 700);
         setColorFrame(new Color(0, 0, 0, 100));
@@ -239,8 +248,9 @@ public class Canvas {
         renderMiddleImage(graphicsBuffer);
         renderFrontImage(graphicsBuffer);
         tick();
-        bulletTick(graphicsBuffer);
+        effectTick(graphicsBuffer);
         enemyTick(graphicsBuffer);
+        bulletTick(graphicsBuffer);
         renderOverField(graphicsBuffer);
         renderAboveImage(graphicsBuffer);
 
@@ -318,6 +328,20 @@ public class Canvas {
         for (int i = 0; i < size; i++) {
             if(enemies.get(i) != null) {
                 e = enemies.get(i);
+                e.update(window, g);
+            }
+        }
+
+    }
+
+    public void effectTick(Graphics g) {
+
+        ElementImageInset e;
+        int size = effects.size();
+
+        for (int i = 0; i < size; i++) {
+            if(effects.get(i) != null) {
+                e = effects.get(i);
                 e.update(window, g);
             }
         }
@@ -443,6 +467,8 @@ public class Canvas {
 
             ElementBullet b;
             ElementEnemy e;
+            ElementVector v;
+
             int size = bullets.size();
 
             for (int i = 0; i < size; i++) {
@@ -465,6 +491,19 @@ public class Canvas {
                     if(e.checkOutWindow(window)) {
                         enemies.remove(i);
                         enemyCache.reuse(e);
+                    }
+                }
+            }
+
+            size = effects.size();
+
+            for (int i = 0; i < size; i++) {
+                if(effects.get(i) != null) {
+                    v = effects.get(i);
+
+                    if(v.checkOutWindow(window) || v.getWidth() <= 0) {
+                        effects.remove(i);
+                        effectCache.reuse(v);
                     }
                 }
             }

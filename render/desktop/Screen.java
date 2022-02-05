@@ -27,9 +27,9 @@ public class Screen extends JPanel implements Runnable {
 
     public Array<WaitTimer> waitRequests = new Array<>(10);
 
-    public Screen(Window window) {
+    public Screen(Window win) {
 
-        this.window = window;//获取所处的窗口，将自己传给窗口
+        window = win;//获取所处的窗口，将自己传给窗口
         window.setScreenIn(this);
 
         input = new Input(window);

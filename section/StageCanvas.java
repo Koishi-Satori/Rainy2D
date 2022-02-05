@@ -3,10 +3,14 @@ package rainy2D.section;
 import rainy2D.element.vector.ElementBoss;
 import rainy2D.element.vector.ElementBullet;
 import rainy2D.element.vector.ElementEnemy;
+import rainy2D.element.vector.ElementVector;
 import rainy2D.render.desktop.Canvas;
 import rainy2D.render.desktop.Window;
+import rainy2D.resource.AnimatedImage;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Point;
+import rainy2D.vector.R2DGravity;
+import rainy2D.vector.R2DVector;
 
 import java.awt.event.KeyEvent;
 
@@ -18,6 +22,10 @@ public class StageCanvas extends Canvas {
     public Stage stage;
     public Conversation conv;
 
+    boolean clearBullet;
+    boolean withQuake;
+    public AnimatedImage bulletEffect;//继承后加图！
+
     public StageCanvas(Window window) {
 
         super(window);
@@ -26,7 +34,7 @@ public class StageCanvas extends Canvas {
 
     }
 
-    public void tickBulletEnemy() {
+    public void bulletEnemyTick() {
 
         int sizeE = enemies.size();
         int sizeB = bullets.size();
@@ -79,11 +87,14 @@ public class StageCanvas extends Canvas {
 
     public void setConversationNow(Conversation c) {
 
-        conv = c;
+        if(conv != c) {
+            conv = c;
+            clear(false);//如果对话未设置，则清除所有子弹准备开始
+        }
 
     }
 
-    public void tickConversation(int eachWait) {
+    public void conversationTick(int eachWait) {
 
         isConversationShowing = false;
         if(conv != null) {
@@ -102,15 +113,16 @@ public class StageCanvas extends Canvas {
 
     public void inConversationAction() {}
 
-    public void tickBoss(ElementBoss boss, Conversation cb, Conversation ca, Point pb, Point pa) {
+    public void bossTick(ElementBoss boss, Conversation cb, Conversation ca, Point pb, Point pa) {
 
         if(cb.canBeRender()) {
             setConversationNow(cb);
             boss.moveTo(pb.getX(), pb.getY());//对话未完，boss不开始攻击，并且来到pb
         }
         else if(screen.isWaitBack(0)) {//对话播放完毕开始攻击，每一阶段等待75ticks
-            if(boss.getNumberOfAttacks() <= boss.attacks.size() && !ca.isShowing()) {//攻击未完并且ca未开始就继续
+            if(boss.attacks.get(boss.getNumberOfAttacks()) != null && !ca.isShowing()) {//攻击未完并且ca未开始就继续
                 if(boss.isDead()) {//每阶段完毕回血，下一攻击
+                    clear(true);
                     boss.reHealth();
                     screen.wait(75, 0);
                     boss.nextAttack();
@@ -120,6 +132,7 @@ public class StageCanvas extends Canvas {
                 }
             }
             else {//攻击完毕打开ca对话，boss逃跑
+                boss.setHealth(0);
                 setConversationNow(ca);//最后的对话
                 if(!ca.canBeRender()) {
                     boss.moveTo(pa.getX(), pa.getY());//逃跑
@@ -127,6 +140,58 @@ public class StageCanvas extends Canvas {
                 }
             }
 
+        }
+
+    }
+
+    public void clear(boolean quake) {
+
+        clearBullet = true;
+        withQuake = quake;
+
+    }
+
+    public void clearTick() {
+
+        if(clearBullet) {
+            if(withQuake) {
+                earthQuake(5);
+            }
+            bulletEffect.tick();
+
+            for(int q = 0; q < bullets.size(); q++) {
+                bullets.get(q).setImage(bulletEffect.getNowImage());
+            }
+
+            if(bulletEffect.isLastImage()) {
+                clearBullet = false;
+                bulletEffect.reset();
+                bullets.clear();
+                resetLocation();
+            }
+        }
+
+    }
+
+    public void playerDie() {}
+
+    public void effectTick(int sizeDown, double turnSpeed, int weight) {
+
+        ElementVector e;
+        int sizeE = effects.size();
+
+        for(int i = 0; i < sizeE; i++) {
+            if(effects.get(i) != null) {
+                e = effects.get(i);
+                e.setSize(e.getWidth() - sizeDown, e.getHeight() - sizeDown);
+                if(e.getWidth() <= 0) {
+                    effects.remove(i);
+                    sizeE--;
+                }
+                e.setAngle(e.getAngle() + turnSpeed);
+                e.locate(R2DVector.vectorX(e.getX(), e.getSpeed(), e.getAngle()),
+                        R2DVector.vectorY(e.getY(), R2DGravity.gravityJump(e.getTimer(), 100 / weight), R2DGravity.ANGLE_G));
+            }
         }
 
     }
