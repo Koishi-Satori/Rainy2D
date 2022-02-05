@@ -8,8 +8,6 @@ import java.awt.image.BufferedImage;
  */
 public class ElementBoss extends ElementEnemy {
 
-    int numberOfAttacks;
-
     /**
      * 模板构造器
      */
@@ -25,15 +23,9 @@ public class ElementBoss extends ElementEnemy {
 
     }
 
-    public void nextAttack() {
+    public boolean isBoss() {
 
-        numberOfAttacks++;
-
-    }
-
-    public int getNumberOfAttacks() {
-
-        return numberOfAttacks;
+        return true;
 
     }
 

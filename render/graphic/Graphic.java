@@ -5,8 +5,24 @@ import rainy2D.resource.ImageLocation;
 import rainy2D.util.MathData;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Graphic {
+
+    public static BufferedImage cut(double x, double y, double width, double height, BufferedImage img) {
+
+        return img.getSubimage(MathData.round(x), MathData.round(y), MathData.round(width), MathData.round(height));
+
+    }
+
+    /**
+     * 自动切割图片绘制，需要保证图片与画布大小一致
+     */
+    public static void renderCut(double offsetX, double offsetY, double width, double height, BufferedImage img, Graphics g) {
+
+        render(offsetX, offsetY, width, height, cut(offsetX, offsetY, width, height, img), g);
+
+    }
 
     /**
      * 传入element自动渲染

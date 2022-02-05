@@ -60,7 +60,7 @@ public class Graphic2D {
     public static void renderFrame(int x1, int y1, int x2, int y2, int width, Graphics g) {
 
         for(int i = 0; i < width; i++) {
-            g.drawRoundRect(x1 + i, y1 + i, x2 - x1 - i * 2, y2 - y1 - i * 2, 0, 50);
+            g.drawRoundRect(x1 - i, y1 - i, x2 - x1 + i * 2, y2 - y1 + i * 2, 0, 50);
         }
 
     }
@@ -68,15 +68,15 @@ public class Graphic2D {
     /**
      * 绘制圆形的方法
      */
-    public static void renderCircle(int x, int y, int r, Graphics g) {
+    public static void renderCircle(int offsetX, int offsetY, int r, Graphics g) {
 
-        renderCircle(new Circle(x, y, r), g);
+        g.fillOval(offsetX, offsetY, r * 2, r * 2);
 
     }
 
     public static void renderCircle(Circle c, Graphics g) {
 
-        g.fillOval(c.getOffsetX(), c.getOffsetY(), c.getWidth(), c.getHeight());
+        renderCircle(c.getOffsetX(), c.getOffsetY(), c.getRadius(), g);
 
     }
 
@@ -86,7 +86,7 @@ public class Graphic2D {
     public static void renderRing(int x, int y, int r, int width, Graphics g) {
 
         for(int i = 0; i < width; i++) {
-            g.drawOval(x - r + i, y - r + i, r * 2 - i * 2, r * 2 - i * 2);
+            g.drawOval(x - r - i, y - r - i, r * 2 + i * 2, r * 2 + i * 2);
         }
 
     }

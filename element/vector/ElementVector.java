@@ -33,10 +33,10 @@ public class ElementVector extends ElementImageInset {
 
     }
 
-    @Override
     public void tick(Window window) {
 
         locate(R2DVector.vectorX(x, speed, angle), R2DVector.vectorY(y, speed, angle));
+        checkOutWindow(window);
 
     }
 
@@ -45,6 +45,7 @@ public class ElementVector extends ElementImageInset {
         int distance = R2DVector.distanceBetweenAB(px, py, x, y);
         if(distance < speedBackup){
             setSpeed(0);
+            setAngle(0);
         }
         else {
             setSpeed(speedBackup);

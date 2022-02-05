@@ -83,15 +83,27 @@ public class Input {
 
     }
 
-    public double getMouseX() {
+    public int getMouseX() {
 
-        return MouseInfo.getPointerInfo().getLocation().getX() - window.getX();
+        return getFullMouseX() - window.getX() - screen.getCanvas().SC_LEFT;
 
     }
 
-    public double getMouseY() {
+    public int getMouseY() {
 
-        return MouseInfo.getPointerInfo().getLocation().getY() - window.getY();
+        return getFullMouseY() - window.getY() - screen.getCanvas().SC_TOP;
+
+    }
+
+    public int getFullMouseX() {
+
+        return MouseInfo.getPointerInfo().getLocation().x;
+
+    }
+
+    public int getFullMouseY() {
+
+        return MouseInfo.getPointerInfo().getLocation().y;
 
     }
 

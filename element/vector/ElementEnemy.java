@@ -1,5 +1,8 @@
 package rainy2D.element.vector;
 
+import rainy2D.section.Attack;
+import rainy2D.util.Array;
+
 import java.awt.image.BufferedImage;
 
 /**
@@ -10,6 +13,9 @@ public class ElementEnemy extends ElementVector {
 
     int health;
     int maxHealth;
+
+    int numberOfAttacks;
+    public Array<Attack> attacks = new Array<>();
 
     /**
      * 模板构造器
@@ -62,6 +68,24 @@ public class ElementEnemy extends ElementVector {
     public boolean isDead() {
 
         return health <= 0;
+
+    }
+
+    public void nextAttack() {
+
+        numberOfAttacks++;
+
+    }
+
+    public int getNumberOfAttacks() {
+
+        return numberOfAttacks;
+
+    }
+
+    public boolean isBoss() {
+
+        return false;
 
     }
 

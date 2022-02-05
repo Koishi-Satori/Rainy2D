@@ -11,12 +11,13 @@ import rainy2D.shape.Rectangle2D;
 import rainy2D.util.Array;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Conversation {
 
     public static Color DEFAULT_COLOR = new Color(221, 221, 221);
     public static Color DEFAULT_BG_COLOR = new Color(0, 0, 0, 120);
-    public static Font DEFAULT_FONT = new Font("Minecraft-FIFTY", 0, 25);
+    public static Font DEFAULT_FONT = new Font("", 0, 25);
 
     Canvas canvas;
     Rectangle field;
@@ -28,7 +29,9 @@ public class Conversation {
     int directionSpeak;
     int textIndex;
 
-    public Array<String> texts = new Array<>();
+    boolean isShowing;
+
+    public Array<String> texts = new Array<>(100);
 
     public Conversation(Canvas canvas) {
 
@@ -58,6 +61,17 @@ public class Conversation {
 
     }
 
+    public void change(int directionSpeak, BufferedImage img) {
+
+        if(directionSpeak == Direction.LEFT) {
+            characterA.setImage(img);
+        }
+        else if(directionSpeak == Direction.RIGHT) {
+            characterB.setImage(img);
+        }
+
+    }
+
     public void next() {
 
         textIndex++;
@@ -65,18 +79,15 @@ public class Conversation {
 
     }
 
-    public int getIndexOfTexts() {
+    public int getTextIndex() {
 
-        return texts.size() / 2 - 1; //[0~n]（每两个string为一个text）
+        return textIndex;
 
     }
 
-    /**
-     * @return 对话处于最后一个
-     */
-    public boolean isLastText() {
+    public int getIndexOfTexts() {
 
-        return textIndex == getIndexOfTexts();
+        return texts.size() / 2 - 1; //[0~n]（每两个string为一个text）
 
     }
 
@@ -93,6 +104,12 @@ public class Conversation {
     private boolean hasText() {
 
         return textIndex <= getIndexOfTexts();
+
+    }
+
+    public boolean isShowing() {
+
+        return isShowing;
 
     }
 
@@ -120,6 +137,7 @@ public class Conversation {
             }
             else {
                 next();
+                isShowing = false;
             }
         }
 
@@ -131,6 +149,7 @@ public class Conversation {
      */
     public void speak(Graphics g) {
 
+        isShowing = true;
         effectBuffer();
 
         Graphic.render(characterA, g);

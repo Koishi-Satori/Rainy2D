@@ -1,18 +1,19 @@
 package rainy2D.render.desktop;
 
 import rainy2D.element.Element;
-import rainy2D.element.vector.ElementBoss;
 import rainy2D.element.vector.ElementBullet;
 import rainy2D.element.vector.ElementEnemy;
 import rainy2D.render.graphic.Graphic;
 import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Rectangle;
 import rainy2D.util.Array;
+import rainy2D.util.Input;
 import rainy2D.util.MathData;
 import rainy2D.util.list.BulletCacheList;
 import rainy2D.util.list.EnemyCacheList;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,7 +50,12 @@ public class Canvas {
 
     Image imageBuffer;
     Graphics graphicsBuffer;
+
+    BufferedImage overFieldImage;
     Color overFieldColor;
+    Color frameColor;
+    int frameTop;
+    int frameWidth;
 
     public Rectangle field;
     public Window window;
@@ -68,10 +74,10 @@ public class Canvas {
     public Array<Element> imageBottom = new Array<>(50);
     public Array<Element> imageMiddle = new Array<>(50);
     public Array<Element> imageFront = new Array<>(50);
+    public Array<Element> imageAbove = new Array<>(50);
 
     public Array<ElementBullet> bullets = new Array<>(4000);
     public Array<ElementEnemy> enemies = new Array<>(200);
-    public Array<ElementBoss> bosses = new Array<>(5);
 
     public BulletCacheList bulletCache;
     public EnemyCacheList enemyCache;
@@ -88,7 +94,7 @@ public class Canvas {
 
         field = new Rectangle(0, 0, WI_WIDTH, WI_HEIGHT);
         setDefaultSize(1000, 700);
-        setColorOverField(new Color(42, 42, 42,255));
+        setColorFrame(new Color(0, 0, 0, 100));
 
     }
 
@@ -118,15 +124,21 @@ public class Canvas {
 
     }
 
-    public void setRepaintField(Rectangle field) {
+    public void setRepaintField(Rectangle rect) {
 
-            this.field = field;
+        field = rect;
 
     }
 
-    public void setColorOverField(Color c) {
+    public void setImageOverField(BufferedImage img) {
 
-        overFieldColor = c;
+        overFieldImage = img;
+
+    }
+
+    public void setColorFrame(Color c) {
+
+        frameColor = c;
 
     }
 
@@ -192,11 +204,6 @@ public class Canvas {
         }
         Graphic2D.renderRect(0, 0, WI_WIDTH, WI_HEIGHT, graphicsBuffer);
 
-        //初始化
-        if (!init) {
-            init();
-        }
-
     }
 
     public void bufferPaint(Graphics g) {
@@ -220,6 +227,11 @@ public class Canvas {
      */
     public void paint(Graphics g) {
 
+        if (!init) {
+            init();
+        }
+
+        mouseMotionFrame();
         cycleTime();
         bufferTick();
 
@@ -229,8 +241,8 @@ public class Canvas {
         tick();
         bulletTick(graphicsBuffer);
         enemyTick(graphicsBuffer);
-        bossTick(graphicsBuffer);
         renderOverField(graphicsBuffer);
+        renderAboveImage(graphicsBuffer);
 
         bufferPaint(g);
 
@@ -272,6 +284,18 @@ public class Canvas {
 
     }
 
+    public void renderAboveImage(Graphics g) {
+
+        Element e;
+        int size = imageAbove.size();
+
+        for(int i = 0; i < size; i++) {
+            e = imageAbove.get(i);
+            e.update(window, g);
+        }
+
+    }
+
     public void bulletTick(Graphics g) {
 
         ElementBullet e;
@@ -302,20 +326,6 @@ public class Canvas {
 
     }
 
-    public void bossTick(Graphics g) {
-
-        ElementBoss e;
-        int size = bosses.size();
-
-        for (int i = 0; i < size; i++) {
-            if(bosses.get(i) != null) {
-                e = bosses.get(i);
-                e.update(window, g);
-            }
-        }
-
-    }
-
     /**
      * 填充除field以外的部分
      * @param g 画笔
@@ -327,12 +337,36 @@ public class Canvas {
         int right = field.getX2();
         int bottom = field.getY2();
 
-        g.setColor(overFieldColor);
+        if(overFieldImage != null) {
+            Graphic.renderCut(0, 0, left, WI_HEIGHT, overFieldImage, g);
+            Graphic.renderCut(0, 0, WI_WIDTH, top, overFieldImage, g);
+            Graphic.renderCut(right, top, WI_WIDTH - right, WI_HEIGHT - top, overFieldImage, g);
+            Graphic.renderCut(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom, overFieldImage, g);
+        }
 
-        Graphic2D.renderRect(0, 0, left, WI_HEIGHT, g);
-        Graphic2D.renderRect(0, 0, WI_WIDTH, top, g);
-        Graphic2D.renderRect(right, top, WI_WIDTH - right, WI_HEIGHT - top, g);
-        Graphic2D.renderRect(left, bottom, WI_WIDTH - left, WI_HEIGHT - bottom, g);
+        Graphic2D.setColor(frameColor, g);
+        Graphic2D.renderFrame(left, top, right, bottom, 5, g);
+
+        //自定义边框（JFrame边框有误差）
+        //Graphic2D.setColor(frameColor, g);
+        //Graphic2D.renderFrame(0, 0, WI_WIDTH, WI_HEIGHT, frameWidth, g);
+        //Graphic2D.renderRect(0, 0, WI_WIDTH, frameTop, g);
+
+    }
+
+    public void mouseMotionFrame() {
+
+        Input i = screen.input;
+
+        if(i.isMouseClicking() && i.getMouseY() < frameTop) {
+            window.setLocation(i.getFullMouseX(), i.getFullMouseY());
+        }
+
+    }
+
+    public Input getInput() {
+
+        return screen.input;
 
     }
 

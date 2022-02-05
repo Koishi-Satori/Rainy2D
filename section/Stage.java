@@ -1,7 +1,6 @@
 package rainy2D.section;
 
 import rainy2D.element.Element;
-import rainy2D.element.vector.ElementBoss;
 import rainy2D.element.vector.ElementBullet;
 import rainy2D.element.vector.ElementEnemy;
 import rainy2D.render.desktop.Canvas;
@@ -11,17 +10,17 @@ import rainy2D.shape.Rectangle;
 
 /**
  * 游戏大部分的操作包装在这个类中
- * 写的貌似有些难以维护……
  * 注意！！！：此类一定要在setRepaintField之后实例化
  */
 public class Stage {
 
+    double rank = 1;
+    public int nowStage = 1;
+
     public Canvas canvas;
     public Rectangle field;
 
-    /**
-     * field四边位置
-     */
+    //field四边位置
     int left;
     int top;
     int right;
@@ -40,7 +39,24 @@ public class Stage {
 
     }
 
-    public void tick() {}
+    public void nextStage() {
+
+        nowStage++;
+
+    }
+
+    //1 ~ N RANK
+    public void translateRank(double r) {
+
+        rank += r;
+
+    }
+
+    public double getRankedSpeed() {
+
+        return rank / 10 + 1;
+
+    }
 
     /**
      * 添加一个敌人
@@ -97,6 +113,7 @@ public class Stage {
         //复制一份子弹并设置信息
         ElementBullet bullet = canvas.bulletCache.getClone(b);
 
+        bullet.setSpeed(b.getSpeed() * getRankedSpeed());
         bullet.rotateState(canBeRotated, false);
         bullet.locate(e.getX(), e.getY());
         bullet.setAngle(angle);
@@ -109,10 +126,10 @@ public class Stage {
 
     }
 
-    public void enemyRingShoot(Element e, ElementBullet b, int value, boolean canBeRotated) {
+    public void enemyRingShoot(Element e, ElementBullet b, double angle, int value, boolean canBeRotated) {
 
         for(int i = 0; i < value; i++) {
-            enemyShoot(e, b, 360.0 / value * i, canBeRotated);
+            enemyShoot(e, b, 360.0 / value * i + angle, canBeRotated);
         }
 
     }
@@ -128,12 +145,6 @@ public class Stage {
 
     }
 
-    public boolean isEnemyBoss(ElementEnemy e) {
-
-        return e instanceof ElementBoss;
-
-    }
-
     /**
      * 玩家攻击
      * @param e 发射对象
@@ -146,7 +157,7 @@ public class Stage {
         ElementBullet bullet = canvas.bulletCache.getClone(b);
 
         bullet.rotateState(canBeRotated, false);
-        bullet.locate(e.getX(), e.getOffsetY());
+        bullet.locate(e.getX(), e.getY());
         bullet.setAngle(-90);
         bullet.setState(ElementBullet.HIT_ENEMY);
 

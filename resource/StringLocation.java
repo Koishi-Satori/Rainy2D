@@ -28,12 +28,7 @@ public class StringLocation extends Location {
             BufferedReader br = new BufferedReader(isr);
 
             while((temp = br.readLine()) != null) {
-                if(temp.equals("/")) {
-                    texts.add("");
-                }
-                else {
-                    texts.add(temp);
-                }
+                check(texts, temp);
             }
 
             isr.close();
@@ -46,6 +41,17 @@ public class StringLocation extends Location {
         }
 
         return Array.EMPTY;
+
+    }
+
+    public void check(Array<String> texts, String temp) {
+
+        if(temp.equals("/")) {
+            texts.add("");
+        }
+        else {
+            texts.add(temp);
+        }
 
     }
 

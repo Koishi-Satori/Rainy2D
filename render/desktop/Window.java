@@ -52,16 +52,15 @@ public class Window extends JFrame {
      */
     public void fullFrame() {
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gd = ge.getDefaultScreenDevice();
-        gd.setFullScreenWindow(this);
+        setLocation(0, 0);
+        setSize(xSize, ySize);
 
         isFull = true;
 
         width = xSize;
         height = ySize;
 
-        setVisible(true);
+        update();
 
     }
 

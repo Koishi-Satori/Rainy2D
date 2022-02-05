@@ -31,7 +31,6 @@ public class ElementPlayer extends ElementVector {
     boolean shoot;
     boolean slow;
     boolean run;
-    public int keyCode;
 
     private BufferedImage playerPoint = new ImageLocation("plp").get();
 
@@ -70,7 +69,7 @@ public class ElementPlayer extends ElementVector {
     @Override
     public void tick(Window window) {
 
-        playerControl(window);
+        playerControl(window.getScreenIn().input);
         checkAngle();
 
         if(up || left || down || right) {
@@ -140,9 +139,7 @@ public class ElementPlayer extends ElementVector {
         
     }
 
-    public void playerControl(Window window) {
-
-        Input input = window.getScreenIn().input;
+    public void playerControl(Input input) {
 
         left = input.isKeyDown(KeyEvent.VK_A);
         right = input.isKeyDown(KeyEvent.VK_D);
