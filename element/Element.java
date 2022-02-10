@@ -1,10 +1,12 @@
 package rainy2D.element;
 
+import rainy2D.render.desktop.Canvas;
 import rainy2D.render.desktop.Window;
 import rainy2D.render.graphic.Graphic;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
-import rainy2D.util.MathData;
+import rainy2D.util.Maths;
+import rainy2D.util.WaitTimer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -30,6 +32,8 @@ public class Element {
     protected Circle circle;
     protected Rectangle rect;
 
+    protected WaitTimer waiter;
+
     public Element(double offsetX, double offsetY, int width, int height, BufferedImage img) {
 
         x = offsetX + width / 2;
@@ -44,6 +48,16 @@ public class Element {
 
         circle = new Circle(0, 0, 0);
         rect = new Rectangle(0, 0, 0, 0);
+        waiter = new WaitTimer();
+
+    }
+
+    /**
+     * 模板构造器，不传入位置信息，需要后期定位
+     */
+    public Element(int width, int height, BufferedImage img) {
+
+        this(0, 0, width, height, img);
 
     }
 
@@ -53,17 +67,23 @@ public class Element {
 
     }
 
-    public void tick(Window window) {}
+    public void callTimer() {
 
-    public void update(Window window, Graphics g) {
-
-        tick(window);
-        render(g);
+        waiter.update();
 
         timer++;
-        if(timer > 360) {
-            timer = 0;
+
+    }
+
+    public void tick(Canvas canvas) {}
+
+    public void update(Canvas canvas, Graphics g) {
+
+        if(!canvas.isPause) {
+            tick(canvas);
         }
+        render(g);
+        callTimer();
 
     }
 
@@ -72,7 +92,7 @@ public class Element {
         Rectangle field = window.getScreenIn().getCanvas().getField();
 
         if(x + width + 20 < field.getOffsetX() ||
-                x - 30 > field.getX2() ||
+                x - 20 > field.getX2() ||
                 y + height + 20 < field.getOffsetY() ||
                 y - 20 > field.getY2()) {
             return true;
@@ -125,6 +145,7 @@ public class Element {
     public void setImage(BufferedImage img) {
 
         this.img = img;
+        imgBackup = img;
 
     }
 
@@ -194,7 +215,7 @@ public class Element {
      */
     public Circle getCircle() {
 
-        circle.locate(MathData.round(x), MathData.round(y));
+        circle.locate(Maths.round(x), Maths.round(y));
         circle.setSize(width / 2, width / 2);
 
         return circle;
@@ -203,7 +224,7 @@ public class Element {
 
     public Rectangle getRect() {
 
-        rect.locateOffset(MathData.round(offsetX), MathData.round(offsetY));
+        rect.locateOffset(Maths.round(offsetX), Maths.round(offsetY));
         rect.setSize(width, height);
 
         return rect;

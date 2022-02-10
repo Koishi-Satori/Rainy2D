@@ -1,4 +1,4 @@
-package rainy2D.resource;
+package rainy2D.resource.image;
 
 import rainy2D.render.graphic.Graphic2D;
 

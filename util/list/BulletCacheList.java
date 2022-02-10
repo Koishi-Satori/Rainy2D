@@ -49,11 +49,10 @@ public class BulletCacheList {
         e.setSpeed(speed);
         e.setForce(force);
         e.setImage(img);
-        e.resetEffect();
         e.setTimer(0);
 
         lastTakeIndex++;
-        if(lastTakeIndex == cacheListSize) {
+        if(lastTakeIndex >= cacheListSize) {
             lastTakeIndex = 0;
         }
 

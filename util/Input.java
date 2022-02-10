@@ -24,7 +24,7 @@ public class Input {
     int releaseKeyCode;
     int pressMouseCode;
     int releaseMouseCode;
-    boolean[] keyDown = new boolean[120];//120个keycode
+    boolean[] keyDown = new boolean[1000];
     boolean[] mouseDown = new boolean[2];//左键1 右键2
 
     public Input(Window window) {

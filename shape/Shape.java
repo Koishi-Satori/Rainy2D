@@ -1,6 +1,6 @@
 package rainy2D.shape;
 
-import rainy2D.util.MathData;
+import rainy2D.util.Maths;
 
 public class Shape {
 
@@ -67,25 +67,25 @@ public class Shape {
      */
     public int getX(double percent) {
 
-        return offsetX + MathData.round(width * percent);
+        return offsetX + Maths.round(width * percent);
 
     }
 
     public int getY(double percent) {
 
-        return offsetY + MathData.round(height * percent);
+        return offsetY + Maths.round(height * percent);
 
     }
 
     public int getWidth(double percent) {
 
-        return MathData.round(width * percent);
+        return Maths.round(width * percent);
 
     }
 
     public int getHeight(double percent) {
 
-        return MathData.round(height * percent);
+        return Maths.round(height * percent);
 
     }
 

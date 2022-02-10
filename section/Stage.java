@@ -5,10 +5,9 @@ import rainy2D.element.vector.ElementBullet;
 import rainy2D.element.vector.ElementEnemy;
 import rainy2D.element.vector.ElementVector;
 import rainy2D.render.desktop.Canvas;
-import rainy2D.render.graphic.Graphic2D;
 import rainy2D.shape.Direction;
 import rainy2D.shape.Rectangle;
-import rainy2D.util.MathData;
+import rainy2D.util.Maths;
 
 import java.awt.image.BufferedImage;
 
@@ -30,9 +29,9 @@ public class Stage {
     int right;
     int bottom;
 
-    public Stage(Canvas canvas) {
+    public Stage(Canvas c) {
 
-        this.canvas = canvas;
+        canvas = c;
 
         field = canvas.getField();
 
@@ -156,13 +155,13 @@ public class Stage {
      * @param canBeRotated 是否允许子弹的图片旋转
      * @return 返回发射出去的子弹，可以进一步操控
      */
-    public void playerShoot(Element e, ElementBullet b, boolean canBeRotated) {
+    public void playerShoot(Element e, ElementBullet b, double angle, boolean canBeRotated) {
 
         ElementBullet bullet = canvas.bulletCache.getClone(b);
 
         bullet.rotateState(canBeRotated, false);
         bullet.locate(e.getX(), e.getY());
-        bullet.setAngle(-90);
+        bullet.setAngle(angle);
         bullet.setState(ElementBullet.HIT_ENEMY);
 
         canvas.bullets.add(bullet);
@@ -171,19 +170,9 @@ public class Stage {
 
     public void addEffect(double x, double y, double speed, int sizeLeast, BufferedImage img) {
 
-        ElementVector effect = canvas.effectCache.get(x, y, sizeLeast, sizeLeast, speed, MathData.random(0, 360), img);
+        ElementVector effect = canvas.effectCache.get(x, y, sizeLeast, sizeLeast, speed, Maths.random(0, 360), img);
+        effect.rotateState(true, true);
         canvas.effects.add(effect);
-
-    }
-
-    public void renderAttackName(String name) {
-
-        Graphic2D.setColor(Conversation.DEFAULT_BG_COLOR, canvas.getGraphicsBuffer());
-        Graphic2D.renderRect(field.getOffsetX(), field.getOffsetY(), field.getX(0.3), field.getY(0.05), canvas.getGraphicsBuffer());
-
-        Graphic2D.setColor(Conversation.DEFAULT_COLOR, canvas.getGraphicsBuffer());
-        Graphic2D.setFont(Conversation.DEFAULT_FONT, canvas.getGraphicsBuffer());
-        Graphic2D.renderString(field.getX(0.05), field.getY(0.05), name, canvas.getGraphicsBuffer());
 
     }
 

@@ -2,16 +2,17 @@ package rainy2D.render.graphic;
 
 import rainy2D.element.Element;
 import rainy2D.resource.ImageLocation;
-import rainy2D.util.MathData;
+import rainy2D.util.Maths;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+//**USE JAVA SWING**//
 public class Graphic {
 
     public static BufferedImage cut(double x, double y, double width, double height, BufferedImage img) {
 
-        return img.getSubimage(MathData.round(x), MathData.round(y), MathData.round(width), MathData.round(height));
+        return img.getSubimage(Maths.round(x), Maths.round(y), Maths.round(width), Maths.round(height));
 
     }
 
@@ -20,7 +21,16 @@ public class Graphic {
      */
     public static void renderCut(double offsetX, double offsetY, double width, double height, BufferedImage img, Graphics g) {
 
-        render(offsetX, offsetY, width, height, cut(offsetX, offsetY, width, height, img), g);
+        renderCut(offsetX, offsetY, width, height, offsetX, offsetY, width, height, img, g);
+
+    }
+
+    /**
+     * 可变切割渲染
+     */
+    public static void renderCut(double ix, double iy, double iw, double ih, double offsetX, double offsetY, double width, double height, BufferedImage img, Graphics g) {
+
+        render(offsetX, offsetY, width, height, cut(ix, iy, iw, ih, img), g);
 
     }
 
@@ -32,6 +42,12 @@ public class Graphic {
     public static void render(Element e, Graphics g) {
 
         render(e.getOffsetX(), e.getOffsetY(), e.getWidth(), e.getHeight(), e.getImage(), g);
+
+    }
+
+    public static void renderRotate(Element e, double angle, Graphics g) {
+
+        render(e.getOffsetX(), e.getOffsetY(), e.getWidth(), e.getHeight(), Graphic2D.rotate(e.getImage(), angle), g);
 
     }
 
@@ -50,9 +66,18 @@ public class Graphic {
 
     }
 
-        public static void renderIn(double x, double y, double width, double height, Image img, Graphics g) {
+    public static void renderIn(double x, double y, double width, double height, BufferedImage img, Graphics g) {
 
         render(x - width / 2, y - height / 2, width, height, img, g);
+
+    }
+
+    public static void renderIn(double x, double y, BufferedImage img, Graphics g) {
+
+        int w = img.getWidth();
+        int h = img.getHeight();
+
+        render(x - w / 2, y - h / 2, w, h, img, g);
 
     }
 
@@ -73,7 +98,7 @@ public class Graphic {
 
     public static void render(double offsetX, double offsetY, double width, double height, Image img, Graphics g) {
 
-        g.drawImage(img, MathData.round(offsetX), MathData.round(offsetY), MathData.round(width), MathData.round(height), null);
+        g.drawImage(img, Maths.round(offsetX), Maths.round(offsetY), Maths.round(width), Maths.round(height), null);
 
     }
 

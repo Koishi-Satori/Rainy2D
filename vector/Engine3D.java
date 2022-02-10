@@ -1,7 +1,7 @@
 package rainy2D.vector;
 
 import rainy2D.element.Element;
-import rainy2D.util.MathData;
+import rainy2D.util.Maths;
 
 public class Engine3D {
 
@@ -12,11 +12,10 @@ public class Engine3D {
      * @param percent 视觉效果比例
      * @param startY 地平线坐标
      */
-    @Deprecated(since = "1.0.6", forRemoval = true)
     public static void locate3D(Element e, double speed, double percent, int startY) {
 
         e.locate(e.getX(), e.getY() + speed / 100 * e.getY());
-        e.setSize(MathData.round(e.getY() / percent - startY / percent), MathData.round(e.getY() / percent / 2 - startY / percent / 2));
+        e.setSize(Maths.round(e.getY() / percent - startY / percent), Maths.round(e.getY() / percent / 2 - startY / percent / 2));
 
     }
 

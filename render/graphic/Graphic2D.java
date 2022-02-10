@@ -2,12 +2,23 @@ package rainy2D.render.graphic;
 
 import rainy2D.shape.Circle;
 import rainy2D.shape.Rectangle;
-import rainy2D.util.MathData;
+import rainy2D.util.Maths;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+//**USE JAVA SWING && AWT**//
 public class Graphic2D {
+
+    public static Color DEFAULT_COLOR_OUT = new Color(56, 26, 24);
+    public static Color DEFAULT_COLOR_IN = new Color(255, 234, 199);
+    public static Color SHADOW = new Color(0, 0, 0, 100);
+
+    public static Font DEFAULT_FONT = new Font("宋体", 1, 30);
+    public static Font BIG_FONT = new Font("宋体", 1, 45);
+    public static Font MID_FONT = new Font("宋体", 1, 25);
+    public static Font SMALL_FONT = new Font("宋体", 1, 17);
+    public static Font TINY_FONT = new Font("宋体", 1, 12);
 
     /**
      * 设置画笔颜色
@@ -15,21 +26,15 @@ public class Graphic2D {
      * @param g 画笔
      * @return 画笔以前的颜色
      */
-    public static Color setColor(Color c, Graphics g) {
-        
-        Color oldC = g.getColor();
+    public static void setColor(Color c, Graphics g) {
+
         g.setColor(c);
-        
-        return oldC;
         
     }
 
-    public static Font setFont(Font f, Graphics g) {
+    public static void setFont(Font f, Graphics g) {
 
-        Font oldF = g.getFont();
         g.setFont(f);
-
-        return oldF;
 
     }
 
@@ -96,7 +101,42 @@ public class Graphic2D {
      */
     public static void renderString(int x, int y, String str, Graphics g) {
 
+        g.setColor(DEFAULT_COLOR_IN);
+        g.setFont(DEFAULT_FONT);
+
         g.drawString(str, x, y);
+
+    }
+
+    public static void renderString(int x, int y, String str, Color c, Font f, Graphics g) {
+
+        g.setColor(c);
+        g.setFont(f);
+
+        g.drawString(str, x, y);
+
+    }
+
+    public static void renderStringOutLine(int x, int y, String str, Color ci, Color co, Font f, Graphics g) {
+
+        int width = 1;
+
+        renderString(x - width, y - width, str, co, f, g);
+        renderString(x - width, y + width, str, co, f, g);
+        renderString(x - width, y, str, co, f, g);
+        renderString(x + width, y - width, str, co, f, g);
+        renderString(x + width, y + width, str, co, f, g);
+        renderString(x + width, y, str, co, f, g);
+        renderString(x, y - width, str, co, f, g);
+        renderString(x, y + width, str, co, f, g);
+
+        renderString(x, y, str, ci, f, g);
+
+    }
+
+    public static void renderStringOutLine(int x, int y, String str, Font define, Graphics g) {
+
+        renderStringOutLine(x, y, str, DEFAULT_COLOR_IN, DEFAULT_COLOR_OUT, define, g);
 
     }
 
@@ -108,7 +148,7 @@ public class Graphic2D {
         BufferedImage imgRotated = new BufferedImage(width, height, img.getTransparency());
         Graphics2D g = (Graphics2D) imgRotated.getGraphics();
 
-        g.rotate(MathData.toRadians(angle), width / 2, height / 2);
+        g.rotate(Maths.toRadians(angle), width / 2, height / 2);
         Graphic.render(0, 0, img, g);
         g.dispose();
 

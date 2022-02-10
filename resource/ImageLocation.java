@@ -17,7 +17,7 @@ public class ImageLocation extends Location {
     public BufferedImage get() {
 
         try {
-            return ImageIO.read(ImageLocation.class.getResource("/" + folder + "/" + name + format));
+            return ImageIO.read(findLocalPath("/" + folder + "/" + name + format));
         }
         catch (IOException e) {
             e.printStackTrace();

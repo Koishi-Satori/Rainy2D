@@ -52,7 +52,7 @@ public class EnemyCacheList {
         e.setTimer(0);
 
         lastTakeIndex++;
-        if(lastTakeIndex == cacheListSize) {
+        if(lastTakeIndex >= cacheListSize) {
             lastTakeIndex = 0;
         }
 

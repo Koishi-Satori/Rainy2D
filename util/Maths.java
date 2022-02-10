@@ -1,8 +1,20 @@
 package rainy2D.util;
 
-public class MathData {
+public class Maths {
 
     public static final double PI = 3.1415926535;
+
+    public static boolean noNull(Object obj) {
+
+        return obj != null;
+
+    }
+
+    public static double easySlow(double value, double cycleX) {
+
+        return Math.sin(cycleX - Maths.PI / value) / value + 1 / value;
+
+    }
 
     public static int abs(int value) {
 
@@ -36,7 +48,7 @@ public class MathData {
 
     public static double random(double min, double max) {
 
-        return Math.random() * (max - min) + min;
+        return java.lang.Math.random() * (max - min) + min;
 
     }
 

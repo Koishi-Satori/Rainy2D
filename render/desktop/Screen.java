@@ -1,9 +1,7 @@
 package rainy2D.render.desktop;
 
-import rainy2D.util.Array;
 import rainy2D.util.Input;
-import rainy2D.util.MathData;
-import rainy2D.util.WaitTimer;
+import rainy2D.util.Maths;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,10 +20,6 @@ public class Screen extends JPanel implements Runnable {
 
     public Window window;
     public Input input;
-
-    boolean isPause;
-
-    public Array<WaitTimer> waitRequests = new Array<>(10);
 
     public Screen(Window win) {
 
@@ -46,7 +40,7 @@ public class Screen extends JPanel implements Runnable {
      */
     public void setDefaultFps(int fps) {
 
-        fpsTime = MathData.round(1000.0 / fps);
+        fpsTime = Maths.round(1000.0 / fps);
 
     }
 
@@ -65,45 +59,15 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    public void tick() {
+    public void tick() {}
 
-        for(int i = 0; i < waitRequests.size(); i++) {
-            waitRequests.get(i).update();
-        }
+    //**USED FOR LOADING NEW STAGE**//
+    public void loadFromCanvas(Canvas load) {
 
-    }
-
-    public void loadFromCanvas(Canvas canvas) {
-
-        this.canvas = canvas;
-
-    }
-
-    public void paint(Graphics g) {
-
-        tick();
-
-        if(canvas != null) {
-            canvas.paint(g);
-        }
-
-    }
-
-    /**
-     * 等待一段时间后不断触发isWaitBack方法
-     * if(isWaitBack())
-     * wait(50);
-     * 这样可以做成定时触发
-     */
-    public void wait(int waitTime, int requestNum) {
-
-        waitRequests.get(requestNum).wait(waitTime);
-
-    }
-
-    public boolean isWaitBack(int requestNum) {
-
-        return waitRequests.get(requestNum).isWaitBack();
+        canvas = load;//加载画布
+        canvas.setMainLoopMusic(canvas.audio);//播放下一个音乐
+        canvas.unPause();//解除暂停
+        window.update();
 
     }
 
@@ -113,12 +77,17 @@ public class Screen extends JPanel implements Runnable {
 
     }
 
-    public void pause() {
+    //**USE JAVA SWING**//
+    //canvas.paint放进主循环fps就很低，只能放在这里了
+    public void paint(Graphics g) {
 
-        isPause = !isPause;
+        if(Maths.noNull(canvas)) {
+            canvas.paint(g);
+        }
 
     }
 
+    //**USE JAVA SWING && THREAD**//
     public void run() {
 
         int frame = 0;
@@ -134,15 +103,13 @@ public class Screen extends JPanel implements Runnable {
                 beforeTime = System.nanoTime();
 
                 //如果没有暂停，则进行游戏主逻辑
-                if(!isPause) {
-                    repaint();
-                }
+                repaint();
                 frame++;
 
                 nowTime = System.nanoTime();
                 updateTime = (nowTime - beforeTime) / 1000000;
 
-                Thread.sleep(Math.max(fpsTime - updateTime, fpsTime));
+                Thread.sleep(java.lang.Math.max(fpsTime - updateTime, fpsTime));
 
                 //每秒得到fps
                 if(System.currentTimeMillis() - timer > 1000) {

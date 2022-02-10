@@ -6,16 +6,21 @@ import rainy2D.element.vector.ElementEnemy;
 import rainy2D.element.vector.ElementVector;
 import rainy2D.render.desktop.Canvas;
 import rainy2D.render.desktop.Window;
-import rainy2D.resource.AnimatedImage;
+import rainy2D.render.graphic.Graphic;
+import rainy2D.render.graphic.Graphic2D;
+import rainy2D.resource.image.AnimatedImage;
 import rainy2D.shape.Circle;
 import rainy2D.shape.Point;
 import rainy2D.vector.R2DGravity;
 import rainy2D.vector.R2DVector;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 /**
  * Stage和Canvas的集成类
+ * 需要加载什么功能在复写的tick里调
  */
 public class StageCanvas extends Canvas {
 
@@ -49,7 +54,9 @@ public class StageCanvas extends Canvas {
                 e = enemies.get(i);
                 ec = e.getCircle();
                 if(!e.isBoss()) {
-                    enemyShootAction(e);//添加攻击
+                    if(e.attacks.size() == 0) {
+                        enemyShootAction(e);//添加攻击
+                    }
                     if(e.attacks.get(0) != null) {
                         e.attacks.get(0).tick(e);//运行攻击
                     }
@@ -73,13 +80,13 @@ public class StageCanvas extends Canvas {
                         bullets.remove(j);
                     }
                 }
-                tickAction(e, b);//遍历到的结果传入，复写此方法操作即可
+                tick(e, b, ec, bc);//遍历到的结果传入，复写此方法操作即可
             }
         }
 
     }
 
-    public void tickAction(ElementEnemy e, ElementBullet b) {}
+    public void tick(ElementEnemy e, ElementBullet b, Circle ec, Circle bc) {}
 
     public void enemyShootAction(ElementEnemy e) {}
 
@@ -94,16 +101,16 @@ public class StageCanvas extends Canvas {
 
     }
 
-    public void conversationTick(int eachWait) {
+    //**PUT IN RENDER ABOVE**//
+    public void conversationRender(int eachWait) {
 
-        isConversationShowing = false;
         if(conv != null) {
-            if(getInput().isKeyDown(KeyEvent.VK_Z) && screen.isWaitBack(0) && conv.canBeRender()) {
+            isConversationShowing = conv.isShowing;
+            if(getInput().isKeyDown(KeyEvent.VK_Z) && isWaitBack(0) && conv.canBeRender() && !isPause) {
                 conv.next();
-                screen.wait(eachWait, 0);
+                wait(eachWait, 0);
             }
             if(conv.canBeRender()) {
-                isConversationShowing = true;
                 conv.speak(getGraphicsBuffer());
                 inConversationAction();
             }
@@ -119,15 +126,16 @@ public class StageCanvas extends Canvas {
             setConversationNow(cb);
             boss.moveTo(pb.getX(), pb.getY());//对话未完，boss不开始攻击，并且来到pb
         }
-        else if(screen.isWaitBack(0)) {//对话播放完毕开始攻击，每一阶段等待75ticks
-            if(boss.attacks.get(boss.getNumberOfAttacks()) != null && !ca.isShowing()) {//攻击未完并且ca未开始就继续
+        else if(isWaitBack(0)) {//对话播放完毕开始攻击，每一阶段等待75ticks
+            if(boss.getNumberOfAttacks() < boss.attacks.size() && !ca.isShowing()) {//攻击未完并且ca未开始就继续
                 if(boss.isDead()) {//每阶段完毕回血，下一攻击
+                    bossDie();//调用方法
                     clear(true);
                     boss.reHealth();
-                    screen.wait(75, 0);
+                    wait(75, 0);
                     boss.nextAttack();
                 }//攻击tick
-                else if(screen.isWaitBack(0)) {
+                else if(isWaitBack(0)) {
                     boss.attacks.get(boss.getNumberOfAttacks()).tick(boss);
                 }
             }
@@ -173,26 +181,69 @@ public class StageCanvas extends Canvas {
 
     }
 
-    public void playerDie() {}
+    public void bossDie() {}
 
-    public void effectTick(int sizeDown, double turnSpeed, int weight) {
+    public void effectMove(ElementVector e) {
 
-        ElementVector e;
-        int sizeE = effects.size();
+        if(e.getWidth() > 0) {
+            e.setSize(e.getWidth() - 1, e.getHeight() - 1);
+        }
+        else {
+            e.setSize(0, 0);
+        }
+        e.setAngle(e.getAngle() + 1);
+        e.locate(R2DVector.vectorX(e.getX(), e.getSpeed(), e.getAngle()), R2DVector.vectorY(e.getY(), R2DGravity.gravityJump(e.getTimer(), 2), R2DGravity.ANGLE_G));
 
-        for(int i = 0; i < sizeE; i++) {
-            if(effects.get(i) != null) {
-                e = effects.get(i);
-                e.setSize(e.getWidth() - sizeDown, e.getHeight() - sizeDown);
-                if(e.getWidth() <= 0) {
-                    effects.remove(i);
-                    sizeE--;
+    }
+
+    private boolean isBlackIn;
+    private boolean isBlackOut;
+    private int blackTimer;
+    private StageCanvas nextCanvas;
+
+    //**PUT IN RENDER ABOVE**//
+    public void blackScreenLoad(BufferedImage imgStr) {
+
+        if(isBlackIn || isBlackOut) {
+            Graphic2D.setColor(new Color(0, 0, 0, blackTimer), getGraphicsBuffer());//渲染黑屏
+            Graphic2D.renderRect(0, 0, WI_WIDTH, WI_HEIGHT, getGraphicsBuffer());
+
+            Graphic.render(900, 650, imgStr, getGraphicsBuffer());
+
+            if(isBlackIn) {
+                blackTimer += 5;//如果是进入黑屏，提高不透明度
+                if(blackTimer == 255) {
+                    isBlackIn = false;
+                    screen.loadFromCanvas(nextCanvas);//加载下一个画布
+                    nextCanvas.blackOut();
                 }
-                e.setAngle(e.getAngle() + turnSpeed);
-                e.locate(R2DVector.vectorX(e.getX(), e.getSpeed(), e.getAngle()),
-                        R2DVector.vectorY(e.getY(), R2DGravity.gravityJump(e.getTimer(), 100 / weight), R2DGravity.ANGLE_G));
+            }
+            else if(isBlackOut) {
+                blackTimer -= 5;
+                if(blackTimer <= 0) {
+                    isBlackOut = false;
+                }
             }
         }
+
+    }
+
+    public void blackIn(StageCanvas next) {
+
+        nextCanvas = next;
+        blackTimer = 0;
+
+        isBlackIn = true;
+        isBlackOut = false;
+
+    }
+
+    public void blackOut() {
+
+        blackTimer = 255;
+
+        isBlackOut = true;
+        isBlackIn = false;
 
     }
 

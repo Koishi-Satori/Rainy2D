@@ -1,39 +1,63 @@
 package rainy2D.element.action;
 
-import rainy2D.element.image.ElementImageInset;
-import rainy2D.render.desktop.Window;
+import rainy2D.element.image.ElementImageOffset;
+import rainy2D.render.desktop.Canvas;
 import rainy2D.util.Input;
-import rainy2D.util.MathData;
+import rainy2D.util.Maths;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class ElementButton extends ElementImageInset {
+public class ElementButton extends ElementImageOffset {
 
     int maxWidth;
     int maxHeight;
     int minWidth;
     int minHeight;
 
-    public ElementButton(double x, double y, int width, int height, BufferedImage img) {
+    boolean hangingEffect = true;
 
-        super(x, y, width, height, img);
+    public ElementButton(double offsetX, double offsetY, int width, int height, BufferedImage img) {
 
-        maxWidth = MathData.round(width * 1.2);
-        maxHeight = MathData.round(height * 1.2);
+        super(offsetX, offsetY, width, height, img);
+
+        maxWidth = Maths.round(width * 1.2);
+        maxHeight = Maths.round(height * 1.2);
         minWidth = width;
         minHeight = height;
 
     }
 
-    @Override
-    public void tick(Window window) {
+    public void tick(Canvas canvas) {
 
-        if(isMouseHanging(window.getScreenIn().input)) {
-            setSize(maxWidth, maxHeight);
+        if(hangingEffect) {
+            if(isMouseHanging(canvas.getInput())) {
+                setSize(maxWidth, maxHeight);
+            } else {
+                setSize(minWidth, minHeight);
+            }
         }
-        else {
-            setSize(minWidth, minHeight);
-        }
+
+    }
+
+    //Button不受暂停影响
+    public void update(Canvas canvas, Graphics g) {
+
+        tick(canvas);
+        render(g);
+        callTimer();
+
+    }
+
+    public void noHangingEffect() {
+
+        hangingEffect = false;
+
+    }
+
+    public void simulateMouseHanging() {
+
+        setSize(maxWidth, maxHeight);
 
     }
 

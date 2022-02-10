@@ -16,4 +16,10 @@ public class ElementImageInset extends ElementImageOffset {
 
     }
 
+    public ElementImageInset(int width, int height, BufferedImage img) {
+
+        super(- width / 2, - height / 2, width, height, img);
+
+    }
+
 }

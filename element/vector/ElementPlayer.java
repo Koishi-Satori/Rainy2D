@@ -1,13 +1,12 @@
 package rainy2D.element.vector;
 
-import rainy2D.render.desktop.Window;
+import rainy2D.render.desktop.Canvas;
 import rainy2D.render.graphic.Graphic;
 import rainy2D.render.graphic.Graphic2D;
-import rainy2D.resource.ImageLocation;
+import rainy2D.section.Attack;
 import rainy2D.shape.Circle;
-import rainy2D.shape.Rectangle;
 import rainy2D.util.Input;
-import rainy2D.util.MathData;
+import rainy2D.util.Maths;
 import rainy2D.vector.R2DVector;
 
 import java.awt.*;
@@ -27,23 +26,27 @@ public class ElementPlayer extends ElementVector {
     public boolean right;
     public boolean up;
     public boolean down;
+    public boolean pause;
 
     boolean shoot;
     boolean slow;
-    boolean run;
+    boolean quick;
 
-    private BufferedImage playerPoint = new ImageLocation("plp").get();
+    private BufferedImage playerPoint;
 
     private int BIGGEST_POINT_SIZE = 16;
     private int pointSize;
     private double pointAngle;
 
-    public ElementPlayer(double x, double y, int width, int height, double speed, BufferedImage img) {
+    Attack attack;
+
+    public ElementPlayer(double x, double y, int width, int height, double speed, BufferedImage img, BufferedImage point) {
 
         super(x, y, width, height, speed, 0, img);
         
         speedQuick = speed * 1.6;
         speedSlow = speed * 0.45;
+        playerPoint = point;
 
     }
 
@@ -67,9 +70,9 @@ public class ElementPlayer extends ElementVector {
     }
 
     @Override
-    public void tick(Window window) {
+    public void tick(Canvas canvas) {
 
-        playerControl(window.getScreenIn().input);
+        playerControl(canvas.getInput());
         checkAngle();
 
         if(up || left || down || right) {
@@ -79,33 +82,33 @@ public class ElementPlayer extends ElementVector {
         if(slow) {
             speed = speedSlow;
         }
-        else if(run) {
+        else if(quick) {
             speed = speedQuick;
         }
         else {
             speed = speedBackup;
         }
 
-        checkOutField(window.getScreenIn().getCanvas().getField());
+        checkOutField(canvas);
 
     }
 
-    public void checkOutField(Rectangle field) {
+    public void checkOutField(Canvas canvas) {
 
-        if(x < field.getOffsetX()) {
-            locate(field.getOffsetX(), y);
+        if(offsetX < canvas.left) {
+            locateOffset(canvas.left, offsetY);
         }
 
-        if(y < field.getOffsetY()) {
-            locate(x, field.getOffsetY());
+        if(offsetY < canvas.top) {
+            locateOffset(offsetX, canvas.top);
         }
 
-        if(x > field.getX2()) {
-            locate(field.getX2(), y);
+        if(offsetX + width > canvas.right) {
+            locateOffset(canvas.right - width, offsetY);
         }
 
-        if(y > field.getY2()) {
-            locate(x, field.getY2());
+        if(offsetY + height > canvas.bottom) {
+            locateOffset(offsetX, canvas.bottom - height);
         }
 
     }
@@ -139,6 +142,7 @@ public class ElementPlayer extends ElementVector {
         
     }
 
+    //**USE JAVA SWING**//
     public void playerControl(Input input) {
 
         left = input.isKeyDown(KeyEvent.VK_A);
@@ -147,7 +151,22 @@ public class ElementPlayer extends ElementVector {
         down = input.isKeyDown(KeyEvent.VK_S);
         slow = input.isKeyDown(KeyEvent.VK_SHIFT);
         shoot = input.isKeyDown(KeyEvent.VK_SPACE);
-        run = input.isKeyDown(KeyEvent.VK_CONTROL);
+        quick = input.isKeyDown(KeyEvent.VK_CONTROL);
+        pause = input.isKeyDown(KeyEvent.VK_ESCAPE);
+
+    }
+
+    public void attack() {
+
+        if(Maths.noNull(attack)) {
+            attack.tick(this);
+        }
+
+    }
+
+    public void setAttack(Attack a) {
+
+        attack = a;
 
     }
 
@@ -160,11 +179,18 @@ public class ElementPlayer extends ElementVector {
     /**
      * @return 判定点 返回判定半径为：1/10 width的圆形
      */
-    @Override
     public Circle getCircle() {
 
-        circle.locate(MathData.round(x), MathData.round(y));
+        circle.locate(Maths.round(x), Maths.round(y));
         circle.setSize(5, 5);
+        return circle;
+
+    }
+
+    public Circle getGrazedCircle() {
+
+        circle.locate(Maths.round(x), Maths.round(y));
+        circle.setSize(50, 50);
         return circle;
 
     }

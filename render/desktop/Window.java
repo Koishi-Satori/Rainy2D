@@ -3,6 +3,7 @@ package rainy2D.render.desktop;
 import javax.swing.*;
 import java.awt.*;
 
+//**USE JAVA SWING**//
 public class Window extends JFrame {
 
     int x;
@@ -18,6 +19,7 @@ public class Window extends JFrame {
 
     boolean isFull;
     boolean isNoFrame;
+    boolean isClosed;
 
     public Window(String title, Image icon, int width, int height) {
 
@@ -46,10 +48,13 @@ public class Window extends JFrame {
 
     }
 
-    /**
-     * 全屏
-     * 修了好久的bug
-     */
+    public void close() {
+
+        setVisible(false);
+        isClosed = true;
+
+    }
+
     public void fullFrame() {
 
         setLocation(0, 0);
@@ -64,9 +69,6 @@ public class Window extends JFrame {
 
     }
 
-    /**
-     * 去除边框
-     */
     public void deleteFrame() {
 
         setUndecorated(true);
@@ -97,6 +99,12 @@ public class Window extends JFrame {
     public boolean isNoFrame() {
 
         return isNoFrame;
+
+    }
+
+    public boolean isClosed() {
+
+        return isClosed;
 
     }
 

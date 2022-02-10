@@ -2,10 +2,7 @@ package rainy2D.resource;
 
 import rainy2D.util.Array;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class StringLocation extends Location {
 
@@ -23,16 +20,17 @@ public class StringLocation extends Location {
 
         Array<String> texts = new Array<>();
         String temp;
-        String path = StringLocation.class.getResource("/" + folder + "/" + name + format).getPath();
+        InputStream is = findLocalStream("/" + folder + "/" + name + format);
 
         try {
-            InputStreamReader isr = new InputStreamReader(new FileInputStream(path), charset);
+            InputStreamReader isr = new InputStreamReader(is, charset);
             BufferedReader br = new BufferedReader(isr);
 
             while((temp = br.readLine()) != null) {
                 check(texts, temp);
             }
 
+            is.close();
             isr.close();
             br.close();
 
@@ -48,7 +46,7 @@ public class StringLocation extends Location {
 
     public void check(Array<String> texts, String temp) {
 
-        if(temp.equals("/")) {
+        if(temp.equals("/")) {//只输入斜线视为空行
             texts.add("");
         }
         else {

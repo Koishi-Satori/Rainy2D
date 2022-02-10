@@ -1,10 +1,10 @@
 package rainy2D.section;
 
-import rainy2D.element.vector.ElementEnemy;
+import rainy2D.element.Element;
 import rainy2D.render.desktop.Canvas;
 
 /**
- * 使用本类时先继承出MyAttack，构造函数传入自己的canvas就可以任意使用自己的资源了
+ * 使用本类时先继承出MyAttack，构造函数传入自己的canvas，然后再继承，就能使用自己的资源了
  */
 public class Attack {
 
@@ -18,6 +18,6 @@ public class Attack {
 
     }
 
-    public void tick(ElementEnemy e) {}
+    public void tick(Element e) {}
 
 }

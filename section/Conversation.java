@@ -15,16 +15,14 @@ import java.awt.image.BufferedImage;
 
 public class Conversation {
 
-    public static Color DEFAULT_COLOR = new Color(221, 221, 221);
-    public static Color DEFAULT_BG_COLOR = new Color(0, 0, 0, 120);
-    public static Font DEFAULT_FONT = new Font("", 0, 25);
-
     Canvas canvas;
     Rectangle field;
     Rectangle2D textIn;
 
     ElementImageInset characterA;
     ElementImageInset characterB;
+    int chaWidth;
+    int chaHeight;
 
     int directionSpeak;
     int textIndex;
@@ -33,11 +31,12 @@ public class Conversation {
 
     public Array<String> texts = new Array<>(100);
 
-    public Conversation(Canvas canvas) {
+    public Conversation(Canvas c) {
 
-        this.canvas = canvas;
+        canvas = c;
 
-        field = this.canvas.getField();
+        setDefaultSize(400, 730);//IMAGE : 800X1460 IS DEFAULT
+        field = canvas.getField();
         textIn = new Rectangle2D(field.getX(0.05), field.getY(0.85), field.getX(0.95), field.getY(0.85)) ;
 
     }
@@ -45,6 +44,13 @@ public class Conversation {
     public void readFromTxt(StringLocation stl, String charset) {
 
         texts = stl.get(charset);
+
+    }
+
+    public void setDefaultSize(int width, int height) {
+
+        chaWidth = width;
+        chaHeight = height;
 
     }
 
@@ -56,8 +62,11 @@ public class Conversation {
         characterA = left;
         characterB = right;
         //定位在屏幕外
-        characterA.locate(field.getOffsetX() - characterA.getWidth() / 2, field.getY(0.7));
+        characterA.locate(-(characterA.getWidth() / 2), field.getY(0.7));
         characterB.locate(field.getX2() + characterB.getWidth() / 2, field.getY(0.7));
+
+        characterA.setSize(chaWidth, chaHeight);
+        characterB.setSize(chaWidth, chaHeight);
 
     }
 
@@ -117,20 +126,22 @@ public class Conversation {
 
         double ax = characterA.getX();
         double bx = characterB.getX();
+        double speed = chaWidth / 50.0;
 
-        //如果人物未出现，则让人物进入屏幕
-        if(ax < field.getX(0.1) && bx > field.getX(0.9) && hasText()) {
-            characterA.locate(ax + 6, characterA.getY());
-            characterB.locate(bx - 6, characterB.getY());
+        if(hasText()) {
             //文本框缓慢出现
             if(textIn.getY2() < field.getY(0.95)) {
-                textIn.setSize(textIn.getWidth(), textIn.getHeight() + 2);
+                textIn.setSize(textIn.getWidth(), textIn.getHeight() + 4);
+            } else if(ax < field.getX(0.2) && bx > field.getX(0.8)) {
+                //如果人物未出现，则让人物进入屏幕
+                characterA.locate(ax + speed, characterA.getY());
+                characterB.locate(bx - speed, characterB.getY());
             }
         }
-        //如果没有文本了，让人物离开屏幕
-        if(!hasText()) {
-            characterA.locate(ax - 6, characterA.getY());
-            characterB.locate(bx + 6, characterB.getY());
+        else {
+            //如果没有文本了，让人物离开屏幕
+            characterA.locate(ax - speed, characterA.getY());
+            characterB.locate(bx + speed, characterB.getY());
             //同时文本框缓慢消失
             if(textIn.getHeight() > 0) {
                 textIn.setSize(textIn.getWidth(), textIn.getHeight() - 2);
@@ -155,15 +166,12 @@ public class Conversation {
         Graphic.render(characterA, g);
         Graphic.render(characterB, g);
 
-        Graphic2D.setColor(DEFAULT_BG_COLOR, g);
+        Graphic2D.setColor(Graphic2D.SHADOW, g);
         Graphic2D.renderRect(textIn, g);
 
-        Graphic2D.setColor(DEFAULT_COLOR, g);
-        Graphic2D.setFont(DEFAULT_FONT, g);
-
-        if(textIn.getHeight() > DEFAULT_FONT.getSize() && hasText()) {
-            Graphic2D.renderString(textIn.getX(0.1), textIn.getY(0.4), texts.get(textIndex * 2), g);
-            Graphic2D.renderString(textIn.getX(0.1), textIn.getY(0.8), texts.get(textIndex * 2 + 1), g);
+        if(textIn.getHeight() > 30 && hasText()) {
+            Graphic2D.renderStringOutLine(textIn.getX(0.1), textIn.getY(0.4), texts.get(textIndex * 2), Graphic2D.MID_FONT, g);
+            Graphic2D.renderStringOutLine(textIn.getX(0.1), textIn.getY(0.8), texts.get(textIndex * 2 + 1), Graphic2D.MID_FONT, g);
         }
 
     }

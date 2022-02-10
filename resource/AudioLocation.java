@@ -3,29 +3,27 @@ package rainy2D.resource;
 import javax.sound.sampled.*;
 import java.io.IOException;
 
-/**
- * 一个location只能储存一个音乐！注意
- */
 public class AudioLocation extends Location {
 
-    Clip clip;
+    Clip playNow;
 
     public AudioLocation(String name) {
 
         super(name);
 
         init("bgm", ".wav");
+        get();
 
     }
 
     public Clip get() {
 
         try {
-            AudioInputStream ais = AudioSystem.getAudioInputStream(AudioLocation.class.getResource("/" + folder + "/" + name + format));
-            clip = AudioSystem.getClip();
-            clip.open(ais);
+            AudioInputStream ais = AudioSystem.getAudioInputStream(findLocalPath("/" + folder + "/" + name + format));
+            playNow = AudioSystem.getClip();
+            playNow.open(ais);
             ais.close();
-            return clip;
+            return playNow;
         }
         catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
@@ -35,21 +33,34 @@ public class AudioLocation extends Location {
 
     }
 
-    public void singlePlay() {
+    public static void newAudioPlayer(String name) {
 
-        clip.start();
+        new AudioLocation(name).singlePlay();
 
     }
 
-    public void loopPlay(int time) {
+    public void singlePlay() {
 
-        clip.loop(time - 1);
+        playNow.start();
+
+    }
+
+    public void loopPlay() {
+
+        playNow.loop(-1);
 
     }
 
     public void stop() {
 
-        clip.stop();
+        playNow.stop();
+
+    }
+
+    public void setVolume(float value) {
+
+        FloatControl fc = (FloatControl) playNow.getControl(FloatControl.Type.MASTER_GAIN);
+        fc.setValue(value);
 
     }
 
